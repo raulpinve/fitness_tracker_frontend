@@ -1,0 +1,153 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: 'Inter', sans-serif;
+  --font-serif: 'Playfair Display', serif;
+}
+
+.header-profile-li{
+  @apply flex items-center w-full gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-200 dark:hover:bg-white/5 dark:hover:text-gray-300 cursor-pointer
+}
+.sidebar-li {
+  @apply flex items-center gap-3 px-3 py-2 cursor-pointer rounded-lg hover:bg-gray-100 transition dark:hover:bg-gray-800 dark:hover:text-white/90
+}
+.sidebar-li.active{
+  @apply bg-blue-100 text-blue-600 dark:bg-gray-800 dark:text-white/90;
+}
+
+@layer components {
+  .input-form {
+    @apply h-11 w-full appearance-none rounded-lg border border-gray-300 bg-white px-4 py-3 
+      text-sm text-gray-800 placeholder:text-gray-400 
+      focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-300/50 
+      dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:border-gray-800 transition-all;
+  }
+  .input-form-error {
+    @apply border-red-600 dark:border-red-600  /* Resplandor rojo por defecto */;
+  }
+  .input-form-primary{
+    @apply border-blue-600 dark:border-blue-600  /* Resplandor rojo por defecto */;
+  }
+  .input-required{
+    @apply text-red-600
+  }
+  .input-form-error:focus {
+      @apply border-red-600 ring-red-300/50 /* Mantiene el error en focus */;
+  }
+  .input-message-error{
+    @apply text-red-600 text-sm  dark:font-medium dark:text-red-600/80
+  }
+  .select-form {
+    @apply h-11 w-full appearance-none rounded-lg border bg-transparent px-4 py-3 pr-7
+      text-sm text-gray-800 placeholder:text-gray-400 
+      focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-300/50 
+      border-gray-300 
+      dark:border-gray-800 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 
+      dark:focus:border-blue-400 dark:focus:ring-blue-400/20;
+  }
+  .select-form-error {
+    @apply border-red-600 ring-4 ring-red-300/50 dark:border-red-600;
+  }
+  .select-form-error:focus {
+      @apply border-red-600 ring-red-300/50;
+  }
+  .label-form{
+    @apply mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400
+  }
+  .button-form{
+    @apply inline-flex items-center justify-center gap-2 px-4 py-3 h-11 text-sm font-medium  
+      transition rounded-lg cursor-pointer border text-gray-600 border-gray-300
+       ; 
+  }
+  .button-form.small{
+    @apply py-1 px-2
+  }
+  .button-form-primary {
+    @apply bg-blue-600 text-white dark:text-white/90 dark:bg-slate-700 
+      focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-300/50 
+      dark:border-gray-800 rounded-md px-4 font-medium;
+  }
+  .button-form-secondary {
+    @apply bg-white text-gray-700 border border-gray-300 
+      dark:bg-gray-900 dark:text-gray-200 dark:border-gray-800
+      hover:bg-gray-50 dark:hover:bg-gray-800
+      focus:outline-none focus:ring-4 focus:ring-blue-300/30
+     rounded-md px-4 font-medium transition-colors;
+  }
+  
+  .button-form-danger {
+    @apply bg-red-600 text-white dark:text-white/90 dark:bg-slate-700 
+      focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-400/50 
+      dark:border-gray-800  rounded-md px-4 font-medium;
+  }
+  
+  .message-error{
+    @apply bg-red-600 text-white text-sm rounded-xl py-2 px-4 
+  }
+  .button-form-disabled {
+    @apply bg-slate-200 text-white dark:text-white/40 dark:bg-slate-800 
+      border border-gray-300 dark:border-gray-700 
+      cursor-not-allowed rounded-md px-4 font-medium focus:border-none focus:ring-0;
+  }
+}
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin; /* Firefox: Scroll delgado */
+  scrollbar-color: #d1d5db transparent; /* Color del thumb y sin fondo */
+}
+
+/* WebKit (Chrome, Edge, Safari) */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px; /* Grosor del scrollbar */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent; /* Sin imagen de fondo */
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #d1d5db; /* Color del thumb */
+  border-radius: 4px;
+  border: 2px solid transparent; /* Hace que se vea más delgado */
+}
+
+/* Ocultar las flechas en WebKit */
+.custom-scrollbar::-webkit-scrollbar-button {
+  display: none;
+}
+
+/* Cambiar color al hacer hover */
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #9ca3af;
+}
+
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
+  20%, 40%, 60%, 80% { transform: translateX(8px); }
+}
+
+.shake {
+  animation: shake 0.6s cubic-bezier(.36,.07,.19,.97) both; /* Duración y efecto */
+}
+
+input[type="month"]::-webkit-calendar-picker-indicator, input[type="date"]::-webkit-calendar-picker-indicator  {
+  filter: invert(32%) sepia(8%) saturate(293%) hue-rotate(175deg) brightness(96%) contrast(89%);
+  cursor: pointer;
+}
+.dark input[type="month"]::-webkit-calendar-picker-indicator, input[type="date"]::-webkit-calendar-picker-indicator   {
+  filter: invert(95%) sepia(8%) saturate(316%) hue-rotate(180deg) brightness(108%) contrast(85%);
+}
+
+.recharts-wrapper:focus,
+.recharts-wrapper *:focus {
+  outline: none;
+}

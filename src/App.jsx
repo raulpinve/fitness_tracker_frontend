@@ -1,0 +1,72 @@
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import ProtectedRoute from "./shared/components/ProtectedRoute";
+import LoginPage from "./pages/auth/LoginPage";
+import SignupPage from "./pages/auth/SignupPage";
+import RootRedirect from "./shared/components/RootRedirect";
+import PublicRoute from "./shared/components/PublicRoute";
+import MobileLayout from "./shared/components/MobileLayout";
+import ExercisesPage from "./pages/exercises/ExercisesPage";
+import ExercisesCreatePage from "./pages/exercises/ExerciseCreatePage";
+import { Toaster } from 'sonner';
+import ExerciseUpdatePage from "./pages/exercises/ExerciseUpdatePage";
+import RoutinesPage from "./pages/routines/RoutinesPage";
+import RoutineCreatePage from "./pages/routines/RoutineCreatePage";
+import RoutineUpdatePage from "./pages/routines/RoutineUpdatePage";
+import RoutineExercisePage from "./pages/routineExercise/RoutineExercisePage";
+import RoutineExerciseCreatePage from "./pages/routineExercise/RoutineExerciseCreatePage";
+import RoutineExerciseEditPage from "./pages/routineExercise/RoutineExerciseEditPage";
+import WorkoutsPage from "./pages/workouts/WorkoutsPage";
+import WorkoutPage from "./pages/workouts/WorkoutPage";
+import WorkoutsCreatePage from "./pages/workouts/WorkoutsCreatePage";
+
+function App() {
+  return (
+    <>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<RootRedirect />} />
+
+          {/* Public routes */}
+          <Route element={<PublicRoute />}>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+          </Route>
+
+          {/* Proteted routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route element={<MobileLayout />}>
+
+              {/* exercises */}
+              <Route path="/exercises" element={<ExercisesPage />} />
+              <Route path="/exercises/create" element={<ExercisesCreatePage />} />
+              <Route path="/exercises/:exerciseId/update" element={<ExerciseUpdatePage />} />
+
+              {/* Routines */}
+              <Route path="/routines" element={<RoutinesPage />} />
+              <Route path="/routines/create" element={<RoutineCreatePage />} />
+              <Route path="/routines/:routineId/update" element={<RoutineUpdatePage />} />
+              
+              {/* Routine exercises */}
+              <Route path="/routines/:routineId/exercises" element={<RoutineExercisePage />} />
+              <Route path="/routines/:routineId/exercises/create" element={<RoutineExerciseCreatePage/> }/>
+              <Route path="/routines/:routineExerciseId/exercises/edit" element={<RoutineExerciseEditPage/> }/>
+
+              {/* Workouts */}
+              <Route path="/workouts" element={<WorkoutsPage />} />
+              <Route path="/workouts/:workoutId" element={<WorkoutPage />} />
+              <Route path="/workouts/create" element = {<WorkoutsCreatePage />} />
+            </Route>
+        </Route>
+      </Routes>
+
+      </BrowserRouter>
+        <Toaster
+          position="bottom-center"
+          offset={160}
+          theme="dark"
+        />
+    </>
+  );
+}
+
+export default App
