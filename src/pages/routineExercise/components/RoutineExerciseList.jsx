@@ -4,6 +4,7 @@ export default function RoutineExerciseList({ routinesExercises, onOpenActions }
         const parts = [];
             if (ex.targetSets) parts.push(`${ex.targetSets} series`);
             if (ex.targetReps) parts.push(`${ex.targetReps} reps`);
+            if (ex.targetWeight) parts.push(`${ex.targetWeight} kg`);
             if (ex.targetDurationSeconds) parts.push(`${ex.targetDurationSeconds / 60} min`);
             if (ex.targetDistanceKm) parts.push(`${ex.targetDistanceKm} km`);
             return parts.join(" • ");

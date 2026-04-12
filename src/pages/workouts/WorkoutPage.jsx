@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { act, useEffect, useState } from 'react';
 import Header from '../../shared/components/Header';
-import BottomSheet from '../../shared/components/BottomSheet';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useWorkoutServices } from '../../services/workout.service';
 import { toast } from 'sonner';
@@ -13,7 +12,7 @@ import ExerciseSelector from './components/ExerciseSelector';
 
 const WorkoutsPage = () => {
     const { getWorkout, finishWorkout } = useWorkoutServices();
-    const { getAllWorkoutExercises } = useWorkoutExerciseServices();
+    const { getAllWorkoutExercises, createWorkoutExercise, deleteWorkoutExercise } = useWorkoutExerciseServices();
     const [activeExercises, setActiveExercises] = useState([]);
     const [loading, setLoading] = useState(true);
     const [workout, setWorkout] = useState([]);
@@ -22,29 +21,21 @@ const WorkoutsPage = () => {
     const [allExercises, setAllExercises] = useState([]);
     const { getAllExercises } = useExerciseServices(); 
 
-    const [skippedIds, setSkippedIds] = useState(() => {
-        const saved = localStorage.getItem(`skipped_${workoutId}`);
-        return saved ? JSON.parse(saved) : [];
-    });
-
-    // TODO: 
-    const handleRemoveExercise = async (exerciseId) => {
+    const handleRemoveExercise = async (workoutExerciseId) => {
         if (!window.confirm("¿Omitir este ejercicio permanentemente en esta sesión?")) return;
 
         try {
-            // 1. Llamada al nuevo endpoint de la DB
-            // await api.patch(`/workouts/${workoutId}/skip`, { exerciseId });
+            // 1. Call to the new DB endpoint
+            await deleteWorkoutExercise(workoutExerciseId);
             
-            // 2. Actualizar el estado local para que desaparezca de la vista
-            setActiveExercises(prev => prev.filter(ex => (ex.exerciseId || ex.id) !== exerciseId));
-            
+            // 2. Update the local state so it disappears from the view
+            setActiveExercises(prev => prev.filter(ex => (ex.workoutExerciseId || ex.id) !== workoutExerciseId));
             toast.success("Ejercicio omitido");
         } catch (error) {
             toast.error("No se pudo guardar la omisión");
         }
     };
 
-    // TODO: 
     const handleFinishWorkout = async () => {
         try {
             const confirm = window.confirm("¿Estás seguro de que quieres finalizar el entrenamiento?");
@@ -52,9 +43,8 @@ const WorkoutsPage = () => {
 
             await finishWorkout(workoutId);
             localStorage.removeItem(`skipped_${workoutId}`); 
-            toast.success("¡Entrenamiento finalizado! Buen trabajo.");
-            
-            navigate('/workouts'); 
+
+            navigate(`/workouts/${workoutId}/summary`);
         } catch (error){
             toast.error(error?.response?.data?.message || "No se pudo finalizar el entrenamiento.");
         }
@@ -73,12 +63,6 @@ const WorkoutsPage = () => {
                 if (workoutData?.routineId) {
                     const resExercises = await getAllWorkoutExercises(workoutId);
                     setActiveExercises(resExercises.data)
-
-                    /*  const resExercises = await getAllRoutineExercises(workoutData.routineId, workoutId);
-                    const filtered = resExercises.data.filter(ex => !skippedIds.includes(ex.exerciseId));
-                    setActiveExercises(filtered);
-                    // setActiveExercises(resExercises.data || []);
-                    */
                 } 
             } catch (error) {
                 console.error("Error cargando datos:", error);
@@ -91,22 +75,44 @@ const WorkoutsPage = () => {
         
     }, [workoutId]); 
 
-  /*  useEffect(() => {
+
+    useEffect(() => {
         const loadExercises = async () => {
             const res = await getAllExercises();
             setAllExercises(res.data || []);
         };
         loadExercises();
-    }, []); */
-    /*
-    const handleAddExtraExercise = (exercise) => {
+    }, []);
+    
+    const handleAddExtraExercise = async (exercise) => {
         if (activeExercises.find(ex => ex.exerciseId === exercise.id)) {
             return toast.error("Este ejercicio ya está en la lista");
         }
-        setActiveExercises([...activeExercises, exercise]);
-        toast.success(`${exercise.name} añadido`);
+
+        try {
+            const response = await createWorkoutExercise({
+                workoutId: workoutId,
+                exerciseId: exercise.id
+            });
+
+            const newWorkoutExercise = {
+                id: response.data.id, 
+                workoutExerciseId: response.data.id, 
+                exerciseId: exercise.id,
+                exerciseName: exercise.name,
+                name: exercise.name,
+                exerciseType: exercise.type,
+                avatar: exercise.avatar,
+                createdAt: new Date().toISOString()
+            };
+
+            setActiveExercises(prev => [...prev, newWorkoutExercise]);
+            toast.success(`${exercise.name} añadido`);
+        } catch (error) {
+            toast.error("No se pudo añadir el ejercicio");
+        }
     };
-    */
+
     if (loading) {
         return (
             <div className="flex justify-center items-center h-screen">
@@ -120,12 +126,6 @@ const WorkoutsPage = () => {
             <Header 
                 showBack={true}
                 title={workout.name}
-                rightAction={<button
-                    className="text-blue-600 transition cursor-pointer px-4"
-                    // onClick={ () => navigate("/workouts/create")}
-                >
-                    Agregar
-                </button>}   
             />
             <div className="grid gap-6 p-4"> 
                 <div className="grid gap-4">
@@ -143,10 +143,10 @@ const WorkoutsPage = () => {
                     )}
                 </div>
                 
-                {/* {!workout.finishedAt && (<>
+                {!workout.finishedAt && (<>
                     <ExerciseSelector 
                         availableExercises={allExercises} 
-                        // onSelect={handleAddExtraExercise} 
+                        onSelect={handleAddExtraExercise} 
                     />
                     <Button
                         colorButton={`primary`}
@@ -155,7 +155,7 @@ const WorkoutsPage = () => {
                     >
                         Finalizar Entrenamiento
                     </Button>
-                </>)} */}
+                </>)} 
             </div>
         </>
     );

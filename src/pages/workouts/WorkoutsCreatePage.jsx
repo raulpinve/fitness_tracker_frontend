@@ -33,7 +33,6 @@ const WorkoutsCreatePage = () => {
         }
     }
 
-    // Get all routines 
     useEffect(() => {
         const fecthData = async () => {
             setIsLoadingRoutineData(true);

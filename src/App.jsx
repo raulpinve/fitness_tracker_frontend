@@ -18,6 +18,7 @@ import RoutineExerciseEditPage from "./pages/routineExercise/RoutineExerciseEdit
 import WorkoutsPage from "./pages/workouts/WorkoutsPage";
 import WorkoutPage from "./pages/workouts/WorkoutPage";
 import WorkoutsCreatePage from "./pages/workouts/WorkoutsCreatePage";
+import WorkoutSummaryPage from "./pages/workouts/WorkoutSummaryPage";
 
 function App() {
   return (
@@ -54,6 +55,7 @@ function App() {
               {/* Workouts */}
               <Route path="/workouts" element={<WorkoutsPage />} />
               <Route path="/workouts/:workoutId" element={<WorkoutPage />} />
+              <Route path="/workouts/:workoutId/summary" element={<WorkoutSummaryPage />} />
               <Route path="/workouts/create" element = {<WorkoutsCreatePage />} />
             </Route>
         </Route>

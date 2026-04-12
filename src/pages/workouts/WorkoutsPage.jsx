@@ -44,7 +44,7 @@ const WorkoutsPage = () => {
         fetchWorkout(1);
     }, []);
 
-    // Load more exercises
+    // Load more workouts
     const handleLoadMore = () => {
         const nextPage = page + 1;
         setPage(nextPage);

@@ -9,7 +9,7 @@ const ExerciseBlock = ({ exercise, workout, onRemove }) => {
     const { register, handleSubmit, reset } = useForm();
     const { getAllWorkoutSets, createWorkoutSet, deleteWorkoutSet } = useWorkoutSetServices();
     const { getAllCardioLogs, createCardioLog, deleteCardioLog} = useCardioLogServices();
-    const isCardio = exercise.type === 'cardio';
+    const isCardio = exercise.exerciseType === 'cardio';
     const workoutExerciseId = exercise.workoutExerciseId;
 
     useEffect(() => {
@@ -49,7 +49,7 @@ const ExerciseBlock = ({ exercise, workout, onRemove }) => {
                 reset(); 
             }
         } catch (error) {
-            console.error("Error al guardar:", error);
+            toast.error("Error al guardar");
         }
     };
 
@@ -72,7 +72,7 @@ const ExerciseBlock = ({ exercise, workout, onRemove }) => {
     };
 
     return (
-        <div className="border border-gray-200 dark:border-zinc-800 rounded-xl p-4 bg-white dark:bg-zinc-950 shadow-sm relative mb-4">
+        <div className="border border-gray-200 dark:border-zinc-800 rounded-xl p-4 bg-white dark:bg-zinc-950 shadow-sm relative mb-2">
             {!workout.finishedAt && (
                 <button 
                     onClick={() => onRemove(workoutExerciseId)} 
@@ -87,8 +87,8 @@ const ExerciseBlock = ({ exercise, workout, onRemove }) => {
             </h3>
 
             {/* Listado de Series o Logs de Cardio */}
-            <div className="space-y-2 mb-4">
-                {/* Dentro del map de history */}
+            <div className="space-y-2 mb-2">
+
                 {history.map((item, index) => (
                     <div key={item.id} className="group flex justify-between items-center bg-gray-50 dark:bg-zinc-900 p-2 rounded border-l-4 border-blue-400">
                         <div className="flex flex-col">

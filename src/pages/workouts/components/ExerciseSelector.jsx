@@ -9,7 +9,7 @@ export default function ExerciseSelector({ onSelect, availableExercises }){
                 onChange={(e) => {
                     const ex = availableExercises.find(ex => ex.id === e.target.value);
                     if (ex) onSelect(ex);
-                    e.target.value = ""; // Reset del select
+                    e.target.value = ""; 
                 }}
             >
                 <option value="">+ Añadir ejercicio extra...</option>
