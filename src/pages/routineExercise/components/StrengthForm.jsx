@@ -40,16 +40,14 @@ export const StrengthForm = ({ exercise, routineId, setMessageError, initialData
             };
 
             if (initialData) {
-                // LÓGICA DE EDICIÓN
+                // Lógica de edición
                 await updateRoutineExercise(routineExerciseId, payload);
                 toast.success('Ejercicio actualizado correctamente');
             } else {
-                // LÓGICA DE CREACIÓN
+                // Lógica de creación
                 await createRoutineExercise(payload);
                 toast.success('Ejercicio agregado a la rutina');
             }
-
-            // Redirección común
             navigate(`/routines/${routineId}/exercises`);
         } catch (error) {
             handleErrors(error, setError, setMessageError);

@@ -1,58 +1,61 @@
 import { HiOutlineLogout } from "react-icons/hi";
-import { LuClipboardList, LuDumbbell, LuFlame, LuLogOut } from "react-icons/lu";
+import { LuClipboardList, LuDumbbell, LuFlame } from "react-icons/lu";
 import { NavLink, Outlet } from "react-router-dom";
-import BottomSheet from "./BottomSheet";
 
 export default function MobileLayout() {
   
     return (
-        <div className="max-w-md mx-auto h-screen flex flex-col  border border-gray-200 relative">
+        // Contenedor principal con fondo Zinc-950 (más profundo) para el modo oscuro
+        <div className="max-w-md mx-auto h-screen flex flex-col border border-slate-200 dark:border-zinc-800 dark:bg-zinc-950 relative">
             <main className="flex-1 overflow-y-auto pb-20">
                <Outlet />
             </main>
-            <nav className="h-16 bg-white border-t fixed bottom-0 w-full max-w-md border-gray-200">
+            
+            {/* Nav con fondo Zinc-900 para crear jerarquía sobre el fondo principal */}
+            <nav className="h-16 bg-white border-t fixed bottom-0 w-full max-w-md border-gray-200 dark:border-zinc-800 dark:bg-zinc-900">
                 <div className="flex justify-around items-center h-full">
                   <NavLink
                         to="/exercises"
                         className={({ isActive }) =>
                             `flex flex-col items-center text-xs transition-all duration-200 ${
-                                isActive ? "text-blue-600 scale-110" : "text-gray-600"
+                                isActive ? "text-blue-600 scale-110" : "text-gray-600 dark:text-zinc-400"
                             }`
                         }
                     >
-                        <LuDumbbell size={20} />Ejercicios
+                        <LuDumbbell size={20} />
+                        <span>Ejercicios</span>
                     </NavLink>
+
                     <NavLink
                         to="/routines"
                         className={({ isActive }) =>
                             `flex flex-col items-center text-xs transition-all duration-200 ${
-                            isActive ? "text-blue-600 scale-110" : "text-gray-600"
+                            isActive ? "text-blue-600 scale-110" : "text-gray-600 dark:text-zinc-400"
                             }`
                         }
                     >
-                        <LuClipboardList size={20} /> Rutinas
+                        <LuClipboardList size={20} /> 
+                        <span>Rutinas</span>
                     </NavLink>
+
                     <NavLink
                         to="/workouts"
                         className={({ isActive }) =>
                             `flex flex-col items-center text-xs transition-all duration-200 ${
-                            isActive ? "text-blue-600 scale-110" : "text-gray-600"
+                            isActive ? "text-blue-600 scale-110" : "text-gray-600 dark:text-zinc-400"
                             }`
                         }
                     >
                         <LuFlame size={20} />
-                        Workouts
+                        <span>Workouts</span>
                     </NavLink>
-                    <button className="flex flex-col items-center text-xs text-gray-600 hover:text-red-500 transition">
+
+                    <button className="flex flex-col items-center text-xs text-gray-600 dark:text-zinc-400 hover:text-red-500 transition">
                         <HiOutlineLogout size={20} />
-                        Salir
+                        <span>Salir</span>
                     </button>
                 </div>
             </nav>
-            {/* <BottomSheet open={open} onClose={() => setOpen(false)}>
-               <button className="py-2">Editar</button>
-               <button className="py-2 text-red-500">Eliminar</button>
-            </BottomSheet>  */}
-           </div>
+        </div>
     );
-}
+};

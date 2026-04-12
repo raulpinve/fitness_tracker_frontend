@@ -57,10 +57,6 @@ const WorkoutsPage = () => {
         setOpenButtonSheet(true);
     };
 
-    const handleEdit = (exercise) => {
-        navigate(`/exercises/${exercise.id}/update`, { state: { exercise } });
-    }
-
     const handleDelete = async (selectedWorkout) => {
         setIsLoadingDelete(true);
         try {
@@ -85,7 +81,7 @@ const WorkoutsPage = () => {
                 title={`Workouts`}
                 rightAction={<button
                     className="text-blue-600 transition cursor-pointer px-4"
-                    onClick={ () => navigate("/workouts/create")}
+                    // onClick={ () => navigate("/workouts/create")}
                 >
                     Crear
                 </button>}    
@@ -112,30 +108,29 @@ const WorkoutsPage = () => {
                     {modeButtonSheet === "actions" && (<>
                         <button     
                             onClick={() => setModeButtonSheet("confirm-delete")}
-                            className="px-4 py-4 cursor-pointer text-red-500"
-                        > Eliminar {selectedWorkout?.name} </button>
+                            className="px-4 py-4 cursor-pointer text-red-500 dark:hover:bg-red-950/30"
+                        > Eliminar la rutina: {selectedWorkout?.name} </button>
                     </>)}
 
                     {modeButtonSheet === "confirm-delete" && (
                         <>
-                            <p className="py-4 text-center font-medium">
+                            <p className="py-4 text-center font-medium dark:text-zinc-100">
                                 ¿Eliminar ejercicio?
                             </p>
                             <button
-                                className="py-4 text-red-500 cursor-pointer flex justify-center gap-3 items-center"
+                                className="py-4 text-red-500 cursor-pointer flex justify-center gap-3 items-center dark:hover:bg-red-950/30"
                                 onClick={() => handleDelete(selectedWorkout)}
                             >
-                               {isLoadingDelete ? <AiOutlineLoading3Quarters className='animate-spin transition-all' /> : ""} Sí, eliminar
+                                {isLoadingDelete ? <AiOutlineLoading3Quarters className='animate-spin transition-all' /> : ""} Sí, eliminar
                             </button>
                             <button
-                                className="py-4 text-gray-500 cursor-pointer"
+                                className="py-4 text-gray-500 dark:text-zinc-400 cursor-pointer dark:hover:bg-zinc-900"
                                 onClick={() => setModeButtonSheet("actions")}
                             >
                                 Cancelar
                             </button>
                         </>
                     )}
-
                 </BottomSheet>
             </div>
         </>

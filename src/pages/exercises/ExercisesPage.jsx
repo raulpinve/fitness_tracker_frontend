@@ -108,37 +108,43 @@ const ExercisesPage = () => {
                 )}
 
                 <BottomSheet open={openButtonSheet} onClose={() => setOpenButtonSheet(false)}>
-                    {modeButtonSheet === "actions" && (<>
-                        <button 
-                            className='px-4 py-4 cursor-pointer'
-                            onClick={() => handleEdit(selectedExercise)}
-                        >   Editar </button>
-                        <button     
-                            onClick={() => setModeButtonSheet("confirm-delete")}
-                            className="px-4 py-4 cursor-pointer text-red-500"
-                        > Eliminar {selectedExercise?.name} </button>
-                    </>)}
+                    {modeButtonSheet === "actions" && (
+                        <>
+                            <button 
+                                className='px-4 py-4 cursor-pointer text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                onClick={() => handleEdit(selectedExercise)}
+                            >   
+                                Editar 
+                            </button>
+                            
+                            <button     
+                                onClick={() => setModeButtonSheet("confirm-delete")}
+                                className="px-4 py-4 cursor-pointer text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30"
+                            > 
+                                Eliminar {selectedExercise?.name} 
+                            </button>
+                        </>
+                    )}
 
                     {modeButtonSheet === "confirm-delete" && (
                         <>
-                            <p className="py-4 text-center font-medium">
+                            <p className="py-4 text-center font-medium text-gray-800 dark:text-zinc-100">
                                 ¿Eliminar ejercicio?
                             </p>
                             <button
-                                className="py-4 text-red-500 cursor-pointer flex justify-center gap-3 items-center"
+                                className="py-4 text-red-500 cursor-pointer flex justify-center gap-3 items-center hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
                                 onClick={() => handleDelete(selectedExercise)}
                             >
-                               {isLoadingDelete ? <AiOutlineLoading3Quarters className='animate-spin transition-all' /> : ""} Sí, eliminar
+                                {isLoadingDelete ? <AiOutlineLoading3Quarters className='animate-spin transition-all' /> : ""} Sí, eliminar
                             </button>
                             <button
-                                className="py-4 text-gray-500 cursor-pointer"
+                                className="py-4 text-gray-500 dark:text-zinc-400 cursor-pointer hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors"
                                 onClick={() => setModeButtonSheet("actions")}
                             >
                                 Cancelar
                             </button>
                         </>
                     )}
-
                 </BottomSheet>
             </div>
         </>

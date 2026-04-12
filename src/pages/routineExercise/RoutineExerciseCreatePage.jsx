@@ -50,7 +50,7 @@ const RoutineExerciseCreatePage = () => {
                                     <option key={ex.id} value={ex.id}>{ex.name}</option>
                                 ))}
                             </select>
-                            <span className='absolute top-3 right-3 pointer-events-none'>
+                            <span className='absolute top-3 right-3 pointer-events-none dark:text-zinc-400'>
                                 <IoIosArrowDown />
                             </span>
                         </div>
@@ -64,7 +64,6 @@ const RoutineExerciseCreatePage = () => {
                             setMessageError={setMessageError}
                         />
                     )}
-                    
                     {selectedExercise?.type === 'cardio' && (
                         <CardioForm 
                             exercise={selectedExercise} 
@@ -72,7 +71,6 @@ const RoutineExerciseCreatePage = () => {
                             setMessageError={setMessageError}
                         />
                     )}
-
                     {messageError && <MessageError>{messageError}</MessageError>}
                 </div>
             </div>

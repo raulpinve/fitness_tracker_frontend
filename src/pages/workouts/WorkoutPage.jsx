@@ -3,17 +3,17 @@ import Header from '../../shared/components/Header';
 import BottomSheet from '../../shared/components/BottomSheet';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useWorkoutServices } from '../../services/workout.service';
-import { useRoutineExerciseService } from '../../services/routineExercise.service';
 import { toast } from 'sonner';
 import ExerciseBlock from './components/ExerciseBlock';
 import Button from '../../shared/components/Button';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import { useExerciseServices } from '../../services/exercises.service';
+import { useWorkoutExerciseServices } from '../../services/workoutExercise.service';
 import ExerciseSelector from './components/ExerciseSelector';
 
 const WorkoutsPage = () => {
     const { getWorkout, finishWorkout } = useWorkoutServices();
-    const { getAllRoutineExercises } = useRoutineExerciseService();
+    const { getAllWorkoutExercises } = useWorkoutExerciseServices();
     const [activeExercises, setActiveExercises] = useState([]);
     const [loading, setLoading] = useState(true);
     const [workout, setWorkout] = useState([]);
@@ -27,6 +27,7 @@ const WorkoutsPage = () => {
         return saved ? JSON.parse(saved) : [];
     });
 
+    // TODO: 
     const handleRemoveExercise = async (exerciseId) => {
         if (!window.confirm("¿Omitir este ejercicio permanentemente en esta sesión?")) return;
 
@@ -43,8 +44,7 @@ const WorkoutsPage = () => {
         }
     };
 
-
-
+    // TODO: 
     const handleFinishWorkout = async () => {
         try {
             const confirm = window.confirm("¿Estás seguro de que quieres finalizar el entrenamiento?");
@@ -69,13 +69,17 @@ const WorkoutsPage = () => {
                 const workoutData = resWorkout?.data;
                 setWorkout(workoutData);
 
-                // 2. If it has a routine, load its exercises
+                // 2. If it has a routine, load its exercises from workout exercises
                 if (workoutData?.routineId) {
-                    const resExercises = await getAllRoutineExercises(workoutData.routineId, workoutId);
+                    const resExercises = await getAllWorkoutExercises(workoutId);
+                    setActiveExercises(resExercises.data)
+
+                    /*  const resExercises = await getAllRoutineExercises(workoutData.routineId, workoutId);
                     const filtered = resExercises.data.filter(ex => !skippedIds.includes(ex.exerciseId));
                     setActiveExercises(filtered);
                     // setActiveExercises(resExercises.data || []);
-                }
+                    */
+                } 
             } catch (error) {
                 console.error("Error cargando datos:", error);
                 toast.error("No se pudo cargar la información del entrenamiento");
@@ -87,14 +91,14 @@ const WorkoutsPage = () => {
         
     }, [workoutId]); 
 
-    useEffect(() => {
+  /*  useEffect(() => {
         const loadExercises = async () => {
             const res = await getAllExercises();
             setAllExercises(res.data || []);
         };
         loadExercises();
-    }, []);
-
+    }, []); */
+    /*
     const handleAddExtraExercise = (exercise) => {
         if (activeExercises.find(ex => ex.exerciseId === exercise.id)) {
             return toast.error("Este ejercicio ya está en la lista");
@@ -102,7 +106,7 @@ const WorkoutsPage = () => {
         setActiveExercises([...activeExercises, exercise]);
         toast.success(`${exercise.name} añadido`);
     };
-
+    */
     if (loading) {
         return (
             <div className="flex justify-center items-center h-screen">
@@ -115,16 +119,22 @@ const WorkoutsPage = () => {
         <>
             <Header 
                 showBack={true}
-                title={`5 de abril`}
+                title={workout.name}
+                rightAction={<button
+                    className="text-blue-600 transition cursor-pointer px-4"
+                    // onClick={ () => navigate("/workouts/create")}
+                >
+                    Agregar
+                </button>}   
             />
             <div className="grid gap-6 p-4"> 
                 <div className="grid gap-4">
                     {!activeExercises.length ? (
-                        <p>No hay ejercicios</p>
+                        <p className="text-center p-4 text-gray-500 italic">No hay ejercicios registrados</p>
                     ) : (
                         activeExercises.map((exercise) => (
                             <ExerciseBlock 
-                                key={exercise.id} 
+                                key={exercise.workoutExerciseId} 
                                 exercise={exercise} 
                                 workout={workout} 
                                 onRemove={handleRemoveExercise} 
@@ -132,10 +142,11 @@ const WorkoutsPage = () => {
                         ))
                     )}
                 </div>
-                {!workout.finishedAt && (<>
+                
+                {/* {!workout.finishedAt && (<>
                     <ExerciseSelector 
                         availableExercises={allExercises} 
-                        onSelect={handleAddExtraExercise} 
+                        // onSelect={handleAddExtraExercise} 
                     />
                     <Button
                         colorButton={`primary`}
@@ -144,7 +155,7 @@ const WorkoutsPage = () => {
                     >
                         Finalizar Entrenamiento
                     </Button>
-                </>)}
+                </>)} */}
             </div>
         </>
     );

@@ -82,9 +82,8 @@ const ExerciseCreatePage = () => {
                                 <option value="strength">Fuerza</option>
                                 <option value="cardio">Cardio</option>
                             </select>
-                            <IoIosArrowDown className='absolute top-3.5 right-3' />
+                            <IoIosArrowDown className='absolute top-3.5 right-3 dark:text-zinc-400' />
                             {errors.type && (<p className="input-message-error">{errors.type.message}</p>)} 
-
                         </div>
                     </div>
 

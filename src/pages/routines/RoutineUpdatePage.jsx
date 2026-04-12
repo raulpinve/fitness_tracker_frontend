@@ -37,18 +37,31 @@ const RoutineUpdatePage = () => {
     }
 
     useEffect(() => {
+        let isMounted = true;
+
         const loadData = async () => {
             try {
+                // We try to get the name from the navigation state or from the API
                 const sourceData = state?.exercise || (await getRoutine(routineId)).data;
-                setValue("name", sourceData.name);
+                
+                if (isMounted) {
+                    // We only set the value if the component is still mounted
+                    setValue("name", sourceData.name);
+                    setLoadingData(false);
+                }
             } catch {
                 toast.error("Error al obtener la información de la rutina");
-            } finally {
                 setLoadingData(false);
             }
         };
+
         loadData();
-    }, [routineId, state, setValue, getRoutine]);
+
+        return () => { isMounted = false; };
+        // We remove 'getRoutine' and 'state' if we know we only want to load on mount
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [routineId, setValue]); 
+
 
     if (loadingData) {
         return (

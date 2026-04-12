@@ -12,11 +12,10 @@ export const useWorkoutSetServices = () => {
             const res = await api.get(`/workout-sets/${workoutSetId}`);
             return res.data;
         },
-        getAllWorkoutSets: async(workoutId, exerciseId = null) => {
+        getAllWorkoutSets: async(workoutExerciseId) => {
             const res = await api.get("/workout-sets", {
                 params: {
-                    workoutId,
-                    exerciseId 
+                    workoutExerciseId: workoutExerciseId,
                 }
             });
             return res.data;

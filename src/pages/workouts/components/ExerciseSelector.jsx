@@ -1,6 +1,6 @@
 export default function ExerciseSelector({ onSelect, availableExercises }){
     return (
-        <div className="mt-6 p-4 border-2 border-dashed border-gray-300 rounded-xl">
+        <div className="p-4 border-2 border-dashed border-gray-300 rounded-xl">
             <label className="block text-sm font-medium text-gray-600 mb-2">
                 ¿Quieres añadir algo más?
             </label>

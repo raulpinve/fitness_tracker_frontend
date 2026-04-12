@@ -112,7 +112,7 @@ const ExerciseUpdatePage = () => {
                                 <option value="cardio">Cardio</option>
                             </select>
                             <label htmlFor="type">
-                                <IoChevronDown  className='absolute right-3 top-3.5' />
+                                <IoChevronDown  className='absolute right-3 top-3.5 dark:text-zinc-400' />
                             </label>
                         </div>
                     </div>

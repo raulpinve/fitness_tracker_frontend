@@ -61,8 +61,8 @@ const RoutineExerciseEditPage = () => {
                 <div className='grid gap-4'>
                     {/* Información del ejercicio (no editable para no romper la lógica) */}
                     <div>
-                        <label className="label-form font-bold">Ejercicio seleccionado:</label>
-                        <div className="p-3 bg-gray-100 rounded-lg text-gray-700">
+                        <label className="label-form ">Ejercicio seleccionado:</label>
+                        <div className="p-3 bg-gray-100 dark:bg-zinc-800 dark:text-gray-200 text-sm font-bold rounded-lg text-gray-700">
                             {routineExercise?.exerciseName || 
                              availableExercises.find(ex => ex.id === routineExercise?.exerciseId)?.name}
                         </div>

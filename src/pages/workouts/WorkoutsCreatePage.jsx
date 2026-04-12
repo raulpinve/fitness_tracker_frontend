@@ -24,7 +24,7 @@ const WorkoutsCreatePage = () => {
         setLoading(true)
         try {
             const resWorkout = await createWorkout(values);
-            navigate(`/routines/${resWorkout.data.id}`);
+            navigate(`/workouts/${resWorkout.data.id}`);
             toast.success('Rutina creada exitosamente.');
         } catch (error) {
             handleErrors(error, setError, setMessageError);
@@ -64,7 +64,24 @@ const WorkoutsCreatePage = () => {
             />
             <div className="p-4">
                 <form onSubmit={handleSubmit(onSubmit)} autoComplete='off' className='grid gap-4'>
-                    {/* Selección de Rutina (Opcional) */}
+                    {/* Nombre del entrenamiento */}
+                    <div>
+                        <label htmlFor='name' className='label-form'>Nombre del entrenamiento</label>
+                        <input 
+                            type="text" 
+                            className={`${errors.name && errors.name.message ? "input-form-error" : ""} input-form`}
+                            {...register("name", {
+                                minLength: {
+                                    value: 2,
+                                    message: "El nombre debe tener al menos dos caracteres.",
+                                },
+                                maxLength: {
+                                    value: 100,
+                                    message: "El nombre no debe exceder los 100 caracteres.",
+                                },
+                            })}
+                        />
+                    </div>
                     <div>
                         <label htmlFor="routineId" className="label-form">
                             Seleccione una rutina
@@ -95,8 +112,6 @@ const WorkoutsCreatePage = () => {
                         Iniciar entrenamiento
                     </Button>
                 </form>
-
-
             </div>
         </>
     );

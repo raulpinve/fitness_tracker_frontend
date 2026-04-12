@@ -110,36 +110,35 @@ const RoutinesPage = () => {
                 <BottomSheet open={openButtonSheet} onClose={() => setOpenButtonSheet(false)}>
                     {modeButtonSheet === "actions" && (<>
                         <button 
-                            className='px-4 py-4 cursor-pointer'
+                            className='px-4 py-4 cursor-pointer dark:text-zinc-100 dark:hover:bg-zinc-900'
                             onClick={() => handleEdit(selectedRoutine)}
                         >   Editar </button>
                         <button     
                             onClick={() => setModeButtonSheet("confirm-delete")}
-                            className="px-4 py-4 cursor-pointer text-red-500"
+                            className="px-4 py-4 cursor-pointer text-red-500 dark:hover:bg-red-950/30"
                         > Eliminar {selectedRoutine?.name} </button>
                     </>)}
-
                     {modeButtonSheet === "confirm-delete" && (
                         <>
-                            <p className="py-4 text-center font-medium">
+                            <p className="py-4 text-center font-medium dark:text-zinc-100">
                                 ¿Eliminar rutina?
                             </p>
                             <button
-                                className="py-4 text-red-500 cursor-pointer flex justify-center gap-3 items-center"
+                                className="py-4 text-red-500 cursor-pointer flex justify-center gap-3 items-center dark:hover:bg-red-950/30"
                                 onClick={() => handleDelete(selectedRoutine)}
                             >
-                               {isLoadingDelete ? <AiOutlineLoading3Quarters className='animate-spin transition-all' /> : ""} Sí, eliminar
+                                {isLoadingDelete ? <AiOutlineLoading3Quarters className='animate-spin transition-all' /> : ""} Sí, eliminar
                             </button>
                             <button
-                                className="py-4 text-gray-500 cursor-pointer"
+                                className="py-4 text-gray-500 dark:text-zinc-400 cursor-pointer dark:hover:bg-zinc-900"
                                 onClick={() => setModeButtonSheet("actions")}
                             >
                                 Cancelar
                             </button>
                         </>
                     )}
-
                 </BottomSheet>
+
             </div>
         </>
     );
