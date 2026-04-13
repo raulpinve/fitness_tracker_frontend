@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import Header from '../../shared/components/Header';
 import Button from '../../shared/components/Button';
 import { useForm } from 'react-hook-form';
-import { IoChevronDown } from 'react-icons/io5';
 import MessageError from '../../shared/components/MessageError';
 import { toast } from 'sonner';
 import { handleErrors } from '../../utils/handleErrors';
@@ -10,33 +9,17 @@ import { useExerciseServices } from '../../services/exercises.service';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useParams } from "react-router-dom";
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
+import { IoIosArrowDown } from 'react-icons/io';
 
-const ExerciseUpdatePage = () => {
-    const {register, handleSubmit, setError, formState: { errors }, setValue, reset} = useForm({  mode: "onChange" });
+const ExerciseEditPage = () => {
+    const { register, handleSubmit, setError, formState: { errors }, setValue } = useForm({ mode: "onChange" });
     const [loading, setLoading] = useState(false);
     const [messageError, setMessageError] = useState(false);
-    const { updateExercise } = useExerciseServices();
+    const { updateExercise, getExercise } = useExerciseServices();
     const navigate = useNavigate();
-    const { getExercise } = useExerciseServices();
     const { exerciseId } = useParams();
     const { state } = useLocation();
     const [loadingData, setLoadingData] = useState(!state?.exercise);
-
-    const onSubmit = async(values) => {
-        setMessageError(false)
-        setLoading(true)
-        try {
-            await updateExercise(exerciseId, values);
-            setValue("name", "");
-            setValue("type", "");
-            navigate("/exercises");
-            toast.success('Ejercicio editado exitosamente.');
-        } catch (error) {
-            handleErrors(error, setError, setMessageError);
-        } finally{
-            setLoading(false)
-        }
-    }
 
     useEffect(() => {
         const loadData = async () => {
@@ -44,6 +27,8 @@ const ExerciseUpdatePage = () => {
                 const sourceData = state?.exercise || (await getExercise(exerciseId)).data;
                 setValue("name", sourceData.name);
                 setValue("type", sourceData.type);
+                setValue("muscleGroup", sourceData.muscleGroup);
+                setValue("equipment", sourceData.equipment);
             } catch {
                 toast.error("Error al obtener la información del ejercicio");
             } finally {
@@ -53,6 +38,34 @@ const ExerciseUpdatePage = () => {
         loadData();
     }, [exerciseId, state, setValue, getExercise]);
 
+    const onSubmit = async (values) => {
+        setMessageError(false);
+        setLoading(true);
+        try {
+            const formData = new FormData();
+            formData.append("name", values.name);
+            formData.append("type", values.type);
+            formData.append("muscleGroup", values.muscleGroup);
+            formData.append("equipment", values.equipment);
+
+            // Solo enviamos archivos si el usuario seleccionó uno nuevo
+            if (values.image && values.image[0]) {
+                formData.append("image", values.image[0]);
+            }
+            if (values.video && values.video[0]) {
+                formData.append("video", values.video[0]);
+            }
+
+            await updateExercise(exerciseId, formData);
+            toast.success('Ejercicio editado exitosamente.');
+            navigate("/exercises");
+        } catch (error) {
+            handleErrors(error, setError, setMessageError);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     if (loadingData) {
         return (
             <div className="flex justify-center items-center h-screen">
@@ -60,13 +73,10 @@ const ExerciseUpdatePage = () => {
             </div>
         );
     }
-     
+
     return (
         <>
-            <Header 
-                title={`Editar ejercicio`}
-                showBack={true}
-            />
+            <Header title={`Editar ejercicio`} showBack={true} />
             <div className="p-4">
                 <form onSubmit={handleSubmit(onSubmit)} autoComplete='off' className='grid gap-2'>
                     {/* Nombre */}
@@ -95,26 +105,139 @@ const ExerciseUpdatePage = () => {
                         {errors.name && (<p className="input-message-error">{errors.name.message}</p>)} 
                     </div>
 
-                    {/* tipo */}
+                    {/* Tipo */}
                     <div>
                         <label htmlFor="type" className="label-form">
-                            Tipo <span className="input-required">*</span>
+                            Tipo<span className="input-required">*</span>
                         </label>
                         <div className="relative">
-                            <select 
-                                id='type' className={`${errors.type && errors.type.message ? "input-form-error" : ""} input-form`}
+                            <select
                                 {...register("type", {
                                     required: "Debe seleccionar un tipo"
                                 })}
+                                className={`${errors.type && errors.type.message ? "input-form-error" : ""} input-form`}
                             >
-                                <option value="">Seleccionar...</option>
+                                <option value="">Seleccionar</option>
                                 <option value="strength">Fuerza</option>
                                 <option value="cardio">Cardio</option>
                             </select>
-                            <label htmlFor="type">
-                                <IoChevronDown  className='absolute right-3 top-3.5 dark:text-zinc-400' />
-                            </label>
+                            <IoIosArrowDown className='absolute top-3.5 right-3 dark:text-zinc-400' />
+                            {errors.type && (<p className="input-message-error">{errors.type.message}</p>)} 
                         </div>
+                    </div>
+
+                    {/* Muscular group */}
+                    <div>
+                        <label htmlFor="muscleGroup" className="label-form">
+                            Grupo muscular<span className="input-required">*</span>
+                        </label>
+                        <div className="relative">
+                            <select
+                                {...register("muscleGroup", {
+                                    required: "Debe seleccionar un tipo"
+                                })}
+                                className={`${errors.muscleGroup && errors.muscleGroup.message ? "input-form-error" : ""} input-form`}
+                            >
+                                <option value="">Seleccionar</option>
+                                <option value="pecho">Pecho</option>
+                                <option value="espalda">Espalda</option>
+                                <option value="hombros">Hombros</option>
+                                <option value="biceps">Bíceps</option>
+                                <option value="triceps">Triceps</option>
+                                <option value="antebrazos">Antebrazos</option>
+                                <option value="cuadriceps">Cuádriceps</option>
+                                <option value="isquios">Isquios</option>
+                                <option value="gluteos">Gluteos</option>
+                                <option value="gemelos">Gemelos</option>
+                                <option value="abs">Abdominales</option>
+                                <option value="cardio">Cardio</option>
+                                <option value="full_body">Full body</option>
+                            </select>
+                            <IoIosArrowDown className='absolute top-3.5 right-3 dark:text-zinc-400' />
+                            {errors.muscleGroup && (<p className="input-message-error">{errors.muscleGroup.message}</p>)} 
+                        </div>
+                    </div>
+
+                    {/* Equipamiento */}
+                    <div>
+                        <label htmlFor="equipment" className="label-form">
+                            Equipamiento<span className="input-required">*</span>
+                        </label>
+                        <div className="relative">
+                            <select
+                                {...register("equipment", {
+                                    required: "Debe seleccionar un tipo"
+                                })}
+                                className={`${errors.equipment && errors.equipment.message ? "input-form-error" : ""} input-form`}
+                            >
+                                <option value="">Seleccionar</option>
+                                <option value="barras">Barras</option>
+                                <option value="mancuernas">Mancuernas</option>
+                                <option value="maquinas">Máquinas</option>
+                                <option value="poleas">Poleas</option>
+                                <option value="peso_corporal">Peso corporal</option>
+                                <option value="bandas">Bandas</option>
+                                <option value="kettlebells">Kettlebells</option>
+                                <option value="ninguno">Ninguno</option>
+                            </select>
+                            <IoIosArrowDown className='absolute top-3.5 right-3 dark:text-zinc-400' />
+                            {errors.equipment && (<p className="input-message-error">{errors.equipment.message}</p>)} 
+                        </div>
+                    </div>
+
+                    {/* Imagen del ejercicio */}
+                    <div>
+                        <label htmlFor="image" className="label-form">Imagen</label>
+                        <input 
+                            id="image"
+                            type="file" 
+                            accept="image/png, image/jpeg, image/webp"
+                            className="block w-full text-sm text-slate-500
+                                file:mr-4 file:py-2 file:px-4
+                                file:rounded-full file:border-0
+                                file:text-sm file:font-semibold
+                                file:bg-blue-50 file:text-blue-700
+                                hover:file:bg-blue-100
+                                cursor-pointer"
+                            {...register("image", {
+                                validate: {
+                                    lessThan2Mb: (files) => 
+                                        !files[0] || files[0].size < 2000000 || "La imagen debe pesar menos de 2MB",
+                                    acceptedFormats: (files) => 
+                                        !files[0] || ['image/jpeg', 'image/png', 'image/webp'].includes(files[0].type) || 
+                                        "Solo se permiten formatos JPG, PNG o WebP"
+                                }
+                            })}
+
+                        />
+                        {errors.image && <p className="input-message-error">{errors.image.message}</p>} 
+                    </div>
+
+                    <div>
+                        <label htmlFor="video" className="label-form">Video</label>
+                        <input 
+                            id="video"
+                            type="file" 
+                            accept="video/mp4, video/webm"
+                            className="block w-full text-sm text-slate-500
+                                file:mr-4 file:py-2 file:px-4
+                                file:rounded-full file:border-0
+                                file:text-sm file:font-semibold
+                                file:bg-blue-50 file:text-blue-700
+                                hover:file:bg-blue-100
+                                cursor-pointer"
+                            {...register("video", {
+                                validate: {
+                                    lessThan15Mb: (files) => 
+                                        !files[0] || files[0].size < 15000000 || "El video debe pesar menos de 15MB",
+                                    acceptedFormats: (files) => 
+                                        !files[0] || ['video/mp4', 'video/webm', 'video/quicktime'].includes(files[0].type) || 
+                                        "Solo se permiten videos MP4, WebM o MOV"
+                                }
+                            })}
+
+                        />
+                        {errors.video && <p className="input-message-error">{errors.video.message}</p>} 
                     </div>
 
                     {messageError && 
@@ -122,7 +245,6 @@ const ExerciseUpdatePage = () => {
                             {messageError}
                         </MessageError>
                     }   
-                    
                     <Button 
                         colorButton={`primary`}
                         loading={loading}
@@ -135,4 +257,4 @@ const ExerciseUpdatePage = () => {
     );
 };
 
-export default ExerciseUpdatePage;
+export default ExerciseEditPage;

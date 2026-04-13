@@ -58,7 +58,7 @@ const ExercisesPage = () => {
     };
 
     const handleEdit = (exercise) => {
-        navigate(`/exercises/${exercise.id}/update`, { state: { exercise } });
+        navigate(`/exercises/${exercise.id}/edit`, { state: { exercise } });
     }
 
     const handleDelete = async (selectedExercise) => {
@@ -91,7 +91,7 @@ const ExercisesPage = () => {
                 </button>}    
             />
 
-            <div>
+            <div className='p-4'>
                 <ExercisesList
                     exercises={exercises}
                     onOpenActions={handleOpenButtonSheet}

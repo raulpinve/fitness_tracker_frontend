@@ -128,7 +128,7 @@ const WorkoutsPage = () => {
                 title={workout.name}
             />
             <div className="grid gap-6 p-4"> 
-                <div className="grid gap-4">
+                <div className="grid gap-4 pt-4">
                     {!activeExercises.length ? (
                         <p className="text-center p-4 text-gray-500 italic">No hay ejercicios registrados</p>
                     ) : (
@@ -153,7 +153,7 @@ const WorkoutsPage = () => {
                         className='bg-red-600'
                         onClick={handleFinishWorkout}
                     >
-                        Finalizar Entrenamiento
+                        Finalizar workout
                     </Button>
                 </>)} 
             </div>

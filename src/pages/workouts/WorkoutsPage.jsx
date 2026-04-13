@@ -81,7 +81,7 @@ const WorkoutsPage = () => {
                 title={`Workouts`}
                 rightAction={<button
                     className="text-blue-600 transition cursor-pointer px-4"
-                    // onClick={ () => navigate("/workouts/create")}
+                    onClick={ () => navigate("/workouts/create")}
                 >
                     Crear
                 </button>}    

@@ -13,7 +13,7 @@ export default function WorkoutsList({ workouts, onOpenActions }) {
     return (
         <div className="flex flex-col divide-y divide-gray-100 dark:divide-zinc-800 bg-white dark:bg-zinc-950">
             {workouts.length === 0 ? (
-                <p className="text-center p-6 text-gray-500 dark:text-zinc-400 italic">No hay entrenamientos registrados</p>
+                <p className="text-center p-6 text-gray-500 dark:text-zinc-400 italic">No hay workouts registrados</p>
             ) : (
                 workouts.map((workout) => (
                     <div

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import Header from '../../shared/components/Header';
 import Button from '../../shared/components/Button';
 import { useForm } from 'react-hook-form';
-import { IoChevronDown } from 'react-icons/io5';
 import MessageError from '../../shared/components/MessageError';
 import { toast } from 'sonner';
 import { handleErrors } from '../../utils/handleErrors';
@@ -17,20 +16,42 @@ const ExerciseCreatePage = () => {
     const {createExercise} = useExerciseServices();
     const navigate = useNavigate();
 
-    const onSubmit = async(values) => {
-        setMessageError(false)
-        setLoading(true)
+    const onSubmit = async (values) => {
+        setMessageError(false);
+        setLoading(true);
+
         try {
-            await createExercise(values);
+            // 1. Convertimos los valores a FormData
+            const formData = new FormData();
+            
+            // Agregamos los campos de texto
+            formData.append("name", values.name);
+            
+            // Agregamos otros campos que tengas (ejemplo: description, equipment...)
+            if (values.description) formData.append("description", values.description);
+
+            // 2. Agregamos los archivos (FileList[0] para obtener el archivo real)
+            if (values.image && values.image[0]) {
+                formData.append("image", values.image[0]);
+            }
+            
+            if (values.video && values.video[0]) {
+                formData.append("video", values.video[0]);
+            }
+
+            // 3. Enviamos el formData al servicio
+            // Tu función 'createExercise' recibirá este formData y Axios hará el resto
+            await createExercise(formData);
+
             setValue("name", "");
             navigate("/exercises");
             toast.success('Ejercicio creado exitosamente.');
         } catch (error) {
             handleErrors(error, setError, setMessageError);
-        } finally{
-            setLoading(false)
+        } finally {
+            setLoading(false);
         }
-    }
+    };
 
     return (
         <>
@@ -87,12 +108,127 @@ const ExerciseCreatePage = () => {
                         </div>
                     </div>
 
+                    {/* Muscular group */}
+                    <div>
+                        <label htmlFor="muscleGroup" className="label-form">
+                            Grupo muscular<span className="input-required">*</span>
+                        </label>
+                        <div className="relative">
+                            <select
+                                {...register("muscleGroup", {
+                                    required: "Debe seleccionar un tipo"
+                                })}
+                                className={`${errors.muscleGroup && errors.muscleGroup.message ? "input-form-error" : ""} input-form`}
+                            >
+                                <option value="">Seleccionar</option>
+                                <option value="pecho">Pecho</option>
+                                <option value="espalda">Espalda</option>
+                                <option value="hombros">Hombros</option>
+                                <option value="biceps">Bíceps</option>
+                                <option value="triceps">Triceps</option>
+                                <option value="antebrazos">Antebrazos</option>
+                                <option value="cuadriceps">Cuádriceps</option>
+                                <option value="isquios">Isquios</option>
+                                <option value="gluteos">Gluteos</option>
+                                <option value="gemelos">Gemelos</option>
+                                <option value="abs">Abdominales</option>
+                                <option value="cardio">Cardio</option>
+                                <option value="full_body">Full body</option>
+                            </select>
+                            <IoIosArrowDown className='absolute top-3.5 right-3 dark:text-zinc-400' />
+                            {errors.muscleGroup && (<p className="input-message-error">{errors.muscleGroup.message}</p>)} 
+                        </div>
+                    </div>
+
+                    {/* Equipamiento */}
+                    <div>
+                        <label htmlFor="equipment" className="label-form">
+                            Equipamiento<span className="input-required">*</span>
+                        </label>
+                        <div className="relative">
+                            <select
+                                {...register("equipment", {
+                                    required: "Debe seleccionar un tipo"
+                                })}
+                                className={`${errors.equipment && errors.equipment.message ? "input-form-error" : ""} input-form`}
+                            >
+                                <option value="">Seleccionar</option>
+                                <option value="barras">Barras</option>
+                                <option value="mancuernas">Mancuernas</option>
+                                <option value="maquinas">Máquinas</option>
+                                <option value="poleas">Poleas</option>
+                                <option value="peso_corporal">Peso corporal</option>
+                                <option value="bandas">Bandas</option>
+                                <option value="kettlebells">Kettlebells</option>
+                                <option value="ninguno">Ninguno</option>
+                            </select>
+                            <IoIosArrowDown className='absolute top-3.5 right-3 dark:text-zinc-400' />
+                            {errors.equipment && (<p className="input-message-error">{errors.equipment.message}</p>)} 
+                        </div>
+                    </div>
+
+                    {/* Imagen del ejercicio */}
+                    <div>
+                        <label htmlFor="image" className="label-form">Imagen</label>
+                        <input 
+                            id="image"
+                            type="file" 
+                            accept="image/png, image/jpeg, image/webp"
+                            className="block w-full text-sm text-slate-500
+                                file:mr-4 file:py-2 file:px-4
+                                file:rounded-full file:border-0
+                                file:text-sm file:font-semibold
+                                file:bg-blue-50 file:text-blue-700
+                                hover:file:bg-blue-100
+                                cursor-pointer"
+                            {...register("image", {
+                                required: "La imagen es obligatoria",
+                                validate: {
+                                    // Validar que sea menor a 2MB
+                                    lessThan2Mb: (files) => files[0]?.size < 2000000 || "La imagen debe pesar menos de 2MB",
+                                    // Validar formato de imagen
+                                    acceptedFormats: (files) => 
+                                        ['image/jpeg', 'image/png', 'image/webp'].includes(files[0]?.type) || 
+                                        "Solo se permiten formatos JPG, PNG o WebP"
+                                }
+                            })}
+                        />
+                        {errors.image && <p className="input-message-error">{errors.image.message}</p>} 
+                    </div>
+
+                    <div>
+                        <label htmlFor="video" className="label-form">Video</label>
+                        <input 
+                            id="video"
+                            type="file" 
+                            accept="video/mp4, video/webm"
+                            className="block w-full text-sm text-slate-500
+                                file:mr-4 file:py-2 file:px-4
+                                file:rounded-full file:border-0
+                                file:text-sm file:font-semibold
+                                file:bg-blue-50 file:text-blue-700
+                                hover:file:bg-blue-100
+                                cursor-pointer"
+                            {...register("video", {
+                                required: "El video es obligatorio",
+                                validate: {
+                                    // Los videos pesan más, aquí puse 15MB (15,000,000 bytes)
+                                    lessThan15Mb: (files) => files[0]?.size < 15000000 || "El video debe pesar menos de 15MB",
+                                    // Validar formato de video
+                                    acceptedFormats: (files) => 
+                                        ['video/mp4', 'video/webm', 'video/quicktime'].includes(files[0]?.type) || 
+                                        "Solo se permiten videos MP4, WebM o MOV"
+                                }
+                            })}
+                        />
+                        {errors.video && <p className="input-message-error">{errors.video.message}</p>} 
+                    </div>
+
                     {messageError && 
                         <MessageError>
                             {messageError}
                         </MessageError>
                     }   
-                    
                     <Button 
                         colorButton={`primary`}
                         loading={loading}

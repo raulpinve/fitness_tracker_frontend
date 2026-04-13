@@ -8,7 +8,7 @@ import MobileLayout from "./shared/components/MobileLayout";
 import ExercisesPage from "./pages/exercises/ExercisesPage";
 import ExercisesCreatePage from "./pages/exercises/ExerciseCreatePage";
 import { Toaster } from 'sonner';
-import ExerciseUpdatePage from "./pages/exercises/ExerciseUpdatePage";
+import ExerciseEditPage from "./pages/exercises/ExerciseUpdatePage";
 import RoutinesPage from "./pages/routines/RoutinesPage";
 import RoutineCreatePage from "./pages/routines/RoutineCreatePage";
 import RoutineUpdatePage from "./pages/routines/RoutineUpdatePage";
@@ -19,6 +19,7 @@ import WorkoutsPage from "./pages/workouts/WorkoutsPage";
 import WorkoutPage from "./pages/workouts/WorkoutPage";
 import WorkoutsCreatePage from "./pages/workouts/WorkoutsCreatePage";
 import WorkoutSummaryPage from "./pages/workouts/WorkoutSummaryPage";
+import ExerciseDetailPage from "./pages/exercises/ExerciseDetailPage";
 
 function App() {
   return (
@@ -39,8 +40,9 @@ function App() {
 
               {/* exercises */}
               <Route path="/exercises" element={<ExercisesPage />} />
+              <Route path="/exercises/:exerciseId" element={<ExerciseDetailPage />} />
               <Route path="/exercises/create" element={<ExercisesCreatePage />} />
-              <Route path="/exercises/:exerciseId/update" element={<ExerciseUpdatePage />} />
+              <Route path="/exercises/:exerciseId/edit" element={<ExerciseEditPage />} />
 
               {/* Routines */}
               <Route path="/routines" element={<RoutinesPage />} />

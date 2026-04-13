@@ -58,7 +58,7 @@ const WorkoutsCreatePage = () => {
     return (
         <>
             <Header 
-                title={`Crear entrenamiento`}
+                title={`Crear workout`}
                 showBack={true}
             />
             <div className="p-4">
