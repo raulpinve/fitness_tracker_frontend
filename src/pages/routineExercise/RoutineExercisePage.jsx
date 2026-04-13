@@ -94,7 +94,7 @@ const RoutineExercisePage = () => {
                 </button>}    
             />
 
-            <div>
+            <div className='p-4'>
                 <RoutineExerciseList
                     routinesExercises={routinesExercises}
                     onOpenActions={handleOpenButtonSheet}

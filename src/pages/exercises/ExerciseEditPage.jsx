@@ -58,7 +58,7 @@ const ExerciseEditPage = () => {
 
             await updateExercise(exerciseId, formData);
             toast.success('Ejercicio editado exitosamente.');
-            navigate("/exercises");
+            navigate("/exercises/" + exerciseId);
         } catch (error) {
             handleErrors(error, setError, setMessageError);
         } finally {
@@ -212,7 +212,8 @@ const ExerciseEditPage = () => {
                         />
                         {errors.image && <p className="input-message-error">{errors.image.message}</p>} 
                     </div>
-
+                        
+                    {/* Video del ejercicio */}
                     <div>
                         <label htmlFor="video" className="label-form">Video</label>
                         <input 
@@ -248,6 +249,7 @@ const ExerciseEditPage = () => {
                     <Button 
                         colorButton={`primary`}
                         loading={loading}
+                        className='mt-4'
                     >
                         Guardar cambios
                     </Button>

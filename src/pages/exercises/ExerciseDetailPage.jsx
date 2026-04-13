@@ -5,15 +5,18 @@ import Header from '../../shared/components/Header';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import { FaDumbbell, FaRunning, FaVideo } from 'react-icons/fa';
 import { toast } from 'sonner';
+import BottomSheet from '../../shared/components/BottomSheet';
 
 const ExerciseDetailPage = () => {
-    const { exerciseId } = useParams();
     const navigate = useNavigate();
+    const { exerciseId } = useParams();
     const { getExercise } = useExerciseServices();
     const [exercise, setExercise] = useState(null);
     const [loading, setLoading] = useState(true);
+    const { getAllExercises, deleteExercise } = useExerciseServices();
+    const [isLoadingDelete, setIsLoadingDelete] = useState();
+    const [openButtonSheet, setOpenButtonSheet] = useState(false);
     const [view, setView] = useState('image');
-
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
     useEffect(() => {
@@ -35,6 +38,25 @@ const ExerciseDetailPage = () => {
         if (exercise && !exercise.video) setView('image');
     }, [exercise]);
 
+    const handleEdit = (exercise) => {
+        navigate(`/exercises/${exercise.id}/edit`, { state: { exercise } });
+    }
+
+    const handleDelete = async (exerciseId) => {
+        setIsLoadingDelete(true);
+        try {
+            await deleteExercise(exerciseId);
+            toast("Ejercicio eliminado exitosamente.");
+
+            setOpenButtonSheet(false);
+            navigate("/exercises");
+        } catch {
+            toast.error("Ha ocurrido un error al momento de eliminar el ejercicio");
+        } finally {
+            setIsLoadingDelete(false);
+        }
+    }
+
     if (loading) return (
         <div className="flex justify-center items-center h-screen dark:bg-zinc-950">
             <AiOutlineLoading3Quarters className="animate-spin text-blue-600 text-4xl" />
@@ -44,11 +66,9 @@ const ExerciseDetailPage = () => {
     const folderPath = `${API_URL}/uploads/exercises/${exercise.id}/`;
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-zinc-950">
-            <Header title={exercise.name} showBack={true} />
-
+        <>
+            <Header title={exercise.name} showBack={true} backTo={`/exercises`} />
             <div className="max-w-2xl mx-auto p-4 space-y-6">
-                
                 {/* Multimedia: Video o Imagen */}
                 <div className="overflow-hidden rounded-3xl bg-zinc-100 dark:bg-zinc-800 shadow-xl aspect-video relative flex items-center justify-center border border-gray-200 dark:border-zinc-800">
                     {view === 'video' && exercise.video ? (
@@ -56,6 +76,7 @@ const ExerciseDetailPage = () => {
                             src={`${folderPath}${exercise.video}`} 
                             controls 
                             className="w-full h-full object-contain bg-black" 
+                            muted
                         />
                     ) : exercise.avatar ? (
                         <img 
@@ -125,25 +146,60 @@ const ExerciseDetailPage = () => {
                     </p>
                     <div className="grid grid-cols-2 gap-3">
                         <button 
-                            onClick={() => navigate(`/exercises/edit/${exercise.id}`)}
-                            className="flex items-center justify-center gap-2 py-4 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-2xl font-bold text-sm shadow-lg active:scale-95 transition-transform"
+                            onClick={() => handleEdit(exercise)}
+                            className="flex items-center cursor-pointer justify-center gap-2 py-4 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-2xl font-bold text-sm shadow-lg active:scale-95 transition-transform"
                         >
                             <FaDumbbell className="text-xs" />
                             Editar
                         </button>
 
-                        {/* Botón Eliminar - Secundario/Peligro */}
                         <button 
-                            // onClick={() => handleDelete(exercise.id)}
-                            className="flex items-center justify-center gap-2 py-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl font-bold text-sm border border-red-100 dark:border-red-900/30 active:scale-95 transition-transform"
+                            onClick={() => setOpenButtonSheet(true)}
+                            className="flex items-center cursor-pointer justify-center gap-2 py-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl font-bold text-sm border border-red-100 dark:border-red-900/30 active:scale-95 transition-transform"
                         >
                             Eliminar
                         </button>
                     </div>
                 </div>
-
             </div>
-        </div>
+
+            <BottomSheet open={openButtonSheet} onClose={() => setOpenButtonSheet(false)}>
+                <div className="pt-2 pb-6">
+                    <div className="flex flex-col items-center text-center mb-6">
+                        <div className="w-14 h-14 bg-red-100 dark:bg-red-500/10 rounded-full flex items-center justify-center mb-3">
+                            <svg className="w-7 h-7 text-red-600 dark:text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </div>
+                        <p className="text-xl font-bold text-gray-900 dark:text-zinc-100">
+                            ¿Eliminar ejercicio?
+                        </p>
+                        <p className="text-sm text-gray-500 dark:text-zinc-400 px-8 mt-1 leading-relaxed">
+                            Estás a punto de borrar <span className="font-bold text-zinc-800 dark:text-zinc-200">"{exercise.name}"</span>. Esta acción no se puede deshacer.
+                        </p>
+                    </div>
+
+                    <div className="grid gap-3 px-2">
+                        <button
+                            disabled={isLoadingDelete}
+                            onClick={() => handleDelete(exercise.id)}
+                            className="w-full py-4 bg-red-600 hover:bg-red-700 text-white rounded-2xl font-bold flex justify-center gap-3 items-center transition-all active:scale-95 shadow-lg shadow-red-500/20"
+                        >
+                            {isLoadingDelete ? <AiOutlineLoading3Quarters className='animate-spin' /> : "Sí, eliminar ejercicio"}
+                        </button>
+
+                        <button
+                            className="w-full py-4 text-gray-500 dark:text-zinc-400 font-bold hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-2xl transition-colors text-sm"
+                            onClick={() => setOpenButtonSheet(false)}
+                        >
+                            No, mantener ejercicio
+                        </button>
+                    </div>
+                </div>
+            </BottomSheet>
+
+
+        </>
     );
 };
 

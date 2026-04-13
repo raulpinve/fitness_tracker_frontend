@@ -24,12 +24,11 @@ const ExerciseCreatePage = () => {
             // 1. Convertimos los valores a FormData
             const formData = new FormData();
             
-            // Agregamos los campos de texto
             formData.append("name", values.name);
+            formData.append("type", values.type);
+            formData.append("muscleGroup", values.muscleGroup);
+            formData.append("equipment", values.equipment);
             
-            // Agregamos otros campos que tengas (ejemplo: description, equipment...)
-            if (values.description) formData.append("description", values.description);
-
             // 2. Agregamos los archivos (FileList[0] para obtener el archivo real)
             if (values.image && values.image[0]) {
                 formData.append("image", values.image[0]);
@@ -182,20 +181,20 @@ const ExerciseCreatePage = () => {
                                 hover:file:bg-blue-100
                                 cursor-pointer"
                             {...register("image", {
-                                required: "La imagen es obligatoria",
                                 validate: {
-                                    // Validar que sea menor a 2MB
-                                    lessThan2Mb: (files) => files[0]?.size < 2000000 || "La imagen debe pesar menos de 2MB",
-                                    // Validar formato de imagen
+                                    lessThan2Mb: (files) => 
+                                        !files[0] || files[0].size < 2000000 || "La imagen debe pesar menos de 2MB",
                                     acceptedFormats: (files) => 
-                                        ['image/jpeg', 'image/png', 'image/webp'].includes(files[0]?.type) || 
+                                        !files[0] || ['image/jpeg', 'image/png', 'image/webp'].includes(files[0].type) || 
                                         "Solo se permiten formatos JPG, PNG o WebP"
                                 }
                             })}
+
                         />
                         {errors.image && <p className="input-message-error">{errors.image.message}</p>} 
                     </div>
-
+                        
+                    {/* Video del ejercicio */}
                     <div>
                         <label htmlFor="video" className="label-form">Video</label>
                         <input 
@@ -210,28 +209,25 @@ const ExerciseCreatePage = () => {
                                 hover:file:bg-blue-100
                                 cursor-pointer"
                             {...register("video", {
-                                required: "El video es obligatorio",
                                 validate: {
-                                    // Los videos pesan más, aquí puse 15MB (15,000,000 bytes)
-                                    lessThan15Mb: (files) => files[0]?.size < 15000000 || "El video debe pesar menos de 15MB",
-                                    // Validar formato de video
+                                    lessThan15Mb: (files) => 
+                                        !files[0] || files[0].size < 15000000 || "El video debe pesar menos de 15MB",
                                     acceptedFormats: (files) => 
-                                        ['video/mp4', 'video/webm', 'video/quicktime'].includes(files[0]?.type) || 
+                                        !files[0] || ['video/mp4', 'video/webm', 'video/quicktime'].includes(files[0].type) || 
                                         "Solo se permiten videos MP4, WebM o MOV"
                                 }
                             })}
+
                         />
                         {errors.video && <p className="input-message-error">{errors.video.message}</p>} 
                     </div>
 
-                    {messageError && 
-                        <MessageError>
-                            {messageError}
-                        </MessageError>
-                    }   
+                    {messageError && <MessageError> {messageError} </MessageError>}   
+
                     <Button 
                         colorButton={`primary`}
                         loading={loading}
+                        className='mt-4'
                     >
                         Guardar
                     </Button>

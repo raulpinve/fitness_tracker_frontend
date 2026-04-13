@@ -30,10 +30,6 @@ const RoutineCreatePage = () => {
         }
     }
 
-    useEffect(() => {
-        setValue("name", "Rutina de prueba");
-    }, [setValue])
-
     return (
         <>
             <Header 

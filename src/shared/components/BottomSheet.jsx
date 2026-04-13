@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function BottomSheet({ open, onClose, children }) {
   return (
-      <div className={`fixed inset-0 z-50 ${open ? "" : "pointer-events-none"}`}>
+      <div className={`fixed inset-0 z-60 ${open ? "" : "pointer-events-none"}`}>
 
         {/* Overlay */}
         <div 

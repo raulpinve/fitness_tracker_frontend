@@ -8,7 +8,7 @@ import MobileLayout from "./shared/components/MobileLayout";
 import ExercisesPage from "./pages/exercises/ExercisesPage";
 import ExercisesCreatePage from "./pages/exercises/ExerciseCreatePage";
 import { Toaster } from 'sonner';
-import ExerciseEditPage from "./pages/exercises/ExerciseUpdatePage";
+import ExerciseEditPage from "./pages/exercises/ExerciseEditPage";
 import RoutinesPage from "./pages/routines/RoutinesPage";
 import RoutineCreatePage from "./pages/routines/RoutineCreatePage";
 import RoutineUpdatePage from "./pages/routines/RoutineUpdatePage";
@@ -66,7 +66,7 @@ function App() {
       </BrowserRouter>
         <Toaster
           position="bottom-center"
-          offset={160}
+          offset={80}
           theme="dark"
         />
     </>

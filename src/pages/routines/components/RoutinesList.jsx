@@ -1,64 +1,56 @@
 import { useNavigate } from "react-router-dom";
 
-export default function RoutinesList({ routines, onOpenActions }) {
-    const navigate = useNavigate();    
-    
+export default function RoutinesList({ routines }) {
+    const navigate = useNavigate();
+
     return (
-        /* Contenedor principal: Zinc 950 es el estándar para fondos oscuros profundos */
-        <div className="flex flex-col divide-y divide-zinc-100 dark:divide-zinc-800 bg-white dark:bg-zinc-950 transition-colors">
+        <div className="flex flex-col gap-3">
             {routines.length === 0 ? (
-                <p className="text-center p-6 text-zinc-500 dark:text-zinc-400 italic">No hay rutinas aún</p>
+                <div className="bg-white dark:bg-zinc-950 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl p-10 text-center">
+                    <p className="text-sm text-zinc-500 dark:text-zinc-500 italic">No hay rutinas creadas</p>
+                </div>
             ) : (
                 routines.map(routine => (
                     <div
                         key={routine.id}
                         onClick={() => navigate(`/routines/${routine.id}/exercises`)}
-                        /* Hover sutil en Zinc 900 para el modo oscuro */
-                        className="flex items-center p-4 hover:bg-zinc-50 dark:hover:bg-zinc-900/50 transition-colors cursor-pointer group"
+                        className="group relative bg-white dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800/60 rounded-2xl p-4 shadow-sm hover:shadow-md hover:border-blue-200 dark:hover:border-blue-900/30 transition-all cursor-pointer active:scale-[0.98]"
                     >
-                        {/* Main Info */}
-                        <div className="flex-1 ml-2">
-                            {/* Texto principal en Zinc 900/100 */}
-                            <p className="font-semibold text-zinc-800 dark:text-zinc-100 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                                {routine.name || "Sin nombre"}
-                            </p>
+                        <div className="flex items-center">
+                            <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center flex-shrink-0 mr-3 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/40 transition-colors">
+                                <span className="text-blue-600 dark:text-blue-400 font-bold text-lg">R</span>
+                            </div>
 
-                            {/* Contenedor de Píldoras Dinámicas */}
-                            <div className="flex items-center gap-1.5 mt-1 overflow-hidden">
-                                {routine.exercises && routine.exercises.length > 0 ? (
-                                    <>
-                                        {routine.exercises.slice(0, 2).map((ex, index) => (
-                                            /* Píldoras: Usamos Zinc para mantener la estética limpia */
-                                            <span 
-                                                key={index} 
-                                                className="whitespace-nowrap px-1.5 py-0.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-[10px] font-bold rounded uppercase tracking-tighter border border-zinc-200 dark:border-zinc-700"
-                                            >
-                                                {ex.name}
-                                            </span>
-                                        ))}
-                                        
-                                        {routine.exercises.length > 2 && (
-                                            <span className="text-[10px] text-zinc-400 dark:text-zinc-500 font-medium">
-                                                +{routine.exercises.length - 2}
-                                            </span>
-                                        )}
-                                    </>
-                                ) : (
-                                    <span className="text-[10px] text-zinc-400 dark:text-zinc-500 font-medium uppercase tracking-wide">
-                                        Sin ejercicios aún
-                                    </span>
-                                )}
+                            <div className="flex-1 min-w-0">
+                                <h3 className="font-bold text-zinc-900 dark:text-zinc-100 text-base leading-tight truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                    {routine.name || "Rutina sin nombre"}
+                                </h3>
+                                <div className="flex items-center gap-1.5 mt-2 overflow-hidden">
+                                    {routine.exercises && routine.exercises.length > 0 ? (
+                                        <>
+                                            {routine.exercises.slice(0, 2).map((ex, index) => (
+                                                <span 
+                                                    key={index} 
+                                                    className="whitespace-nowrap px-2 py-0.5 bg-zinc-50 dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 text-[9px] font-black uppercase tracking-wider rounded-md border border-zinc-100 dark:border-zinc-800"
+                                                >
+                                                    {ex.name}
+                                                </span>
+                                            ))}
+                                            
+                                            {routine.exercises.length > 2 && (
+                                                <span className="text-[10px] text-zinc-400 dark:text-zinc-500 font-bold ml-1">
+                                                    +{routine.exercises.length - 2}
+                                                </span>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <span className="text-[9px] text-zinc-400 dark:text-zinc-600 font-black uppercase tracking-widest">
+                                            Vacía • Añade ejercicios
+                                        </span>
+                                    )}
+                                </div>
                             </div>
                         </div>
-
-                        {/* Botón de Acción */}
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                onOpenActions(routine);
-                            }}
-                            className="p-2 text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-200 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors"
-                        > ⋮ </button>
                     </div>
                 ))
             )}

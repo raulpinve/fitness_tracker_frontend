@@ -9,10 +9,7 @@ import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 
 const ExercisesPage = () => {
     const [selectedExercise, setSelectedExercise] = useState(null);
-    const [openButtonSheet, setOpenButtonSheet] = useState(false);
-    const [modeButtonSheet, setModeButtonSheet] = useState("actions"); 
     const { getAllExercises, deleteExercise } = useExerciseServices();
-    const [isLoadingDelete, setIsLoadingDelete] = useState();
     const navigate = useNavigate();
     const [exercises, setExercises] = useState([]);
     const [page, setPage] = useState(1);
@@ -50,35 +47,6 @@ const ExercisesPage = () => {
         setPage(nextPage);
         fetchExercises(nextPage);
     };
-    
-    /** Handlers */
-    const handleOpenButtonSheet = (exercise) => {
-        setSelectedExercise(exercise);
-        setOpenButtonSheet(true);
-    };
-
-    const handleEdit = (exercise) => {
-        navigate(`/exercises/${exercise.id}/edit`, { state: { exercise } });
-    }
-
-    const handleDelete = async (selectedExercise) => {
-        setIsLoadingDelete(true);
-        try {
-            await deleteExercise(selectedExercise.id);
-            toast("Ejercicio eliminado exitosamente.");
-
-            setModeButtonSheet("actions");
-            setOpenButtonSheet(false);
-
-            const updatedExercises = exercises.filter(exercise => exercise.id !== selectedExercise.id);
-            setExercises(updatedExercises);
-        } catch {
-            toast.error("Ha ocurrido un error al momento de eliminar el ejercicio");
-        } finally {
-            setIsLoadingDelete(false);
-        }
-    }
-
     return (
         <>
             <Header 
@@ -94,7 +62,6 @@ const ExercisesPage = () => {
             <div className='p-4'>
                 <ExercisesList
                     exercises={exercises}
-                    onOpenActions={handleOpenButtonSheet}
                 />
                 {hasMore && (
                     <button
@@ -106,46 +73,6 @@ const ExercisesPage = () => {
                         {loading ? "Cargando..." : "Cargar más"}
                     </button>
                 )}
-
-                <BottomSheet open={openButtonSheet} onClose={() => setOpenButtonSheet(false)}>
-                    {modeButtonSheet === "actions" && (
-                        <>
-                            <button 
-                                className='px-4 py-4 cursor-pointer text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800'
-                                onClick={() => handleEdit(selectedExercise)}
-                            >   
-                                Editar 
-                            </button>
-                            
-                            <button     
-                                onClick={() => setModeButtonSheet("confirm-delete")}
-                                className="px-4 py-4 cursor-pointer text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30"
-                            > 
-                                Eliminar {selectedExercise?.name} 
-                            </button>
-                        </>
-                    )}
-
-                    {modeButtonSheet === "confirm-delete" && (
-                        <>
-                            <p className="py-4 text-center font-medium text-gray-800 dark:text-zinc-100">
-                                ¿Eliminar ejercicio?
-                            </p>
-                            <button
-                                className="py-4 text-red-500 cursor-pointer flex justify-center gap-3 items-center hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
-                                onClick={() => handleDelete(selectedExercise)}
-                            >
-                                {isLoadingDelete ? <AiOutlineLoading3Quarters className='animate-spin transition-all' /> : ""} Sí, eliminar
-                            </button>
-                            <button
-                                className="py-4 text-gray-500 dark:text-zinc-400 cursor-pointer hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors"
-                                onClick={() => setModeButtonSheet("actions")}
-                            >
-                                Cancelar
-                            </button>
-                        </>
-                    )}
-                </BottomSheet>
             </div>
         </>
     );
