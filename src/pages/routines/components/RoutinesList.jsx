@@ -1,4 +1,6 @@
+import { LuClipboardList } from "react-icons/lu";
 import { useNavigate } from "react-router-dom";
+import EmptyState from "../../../shared/components/EmptyState";
 
 export default function RoutinesList({ routines }) {
     const navigate = useNavigate();
@@ -6,9 +8,10 @@ export default function RoutinesList({ routines }) {
     return (
         <div className="flex flex-col gap-3">
             {routines.length === 0 ? (
-                <div className="bg-white dark:bg-zinc-950 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl p-10 text-center">
-                    <p className="text-sm text-zinc-500 dark:text-zinc-500 italic">No hay rutinas creadas</p>
-                </div>
+                <EmptyState  
+                    message="No hay rutinas registradas todavía" 
+                    icon={LuClipboardList} 
+                />
             ) : (
                 routines.map(routine => (
                     <div

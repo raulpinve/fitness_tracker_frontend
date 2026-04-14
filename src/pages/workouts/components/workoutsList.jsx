@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { LuClock, LuFlame } from "react-icons/lu";
+import EmptyState from "../../../shared/components/EmptyState";
 
 export default function WorkoutsList({ workouts }) {
     const navigate = useNavigate();
@@ -21,9 +22,10 @@ export default function WorkoutsList({ workouts }) {
     return (
         <div className="flex flex-col gap-3">
             {workouts.length === 0 ? (
-                <div className="bg-white dark:bg-zinc-950 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl p-10 text-center">
-                    <p className="text-sm text-zinc-500 italic">No hay entrenamientos registrados</p>
-                </div>
+                <EmptyState  
+                    message="No hay workouts registrados todavía" 
+                    icon={LuFlame} 
+                />
             ) : (
                 workouts.map((workout) => {
                     const duration = getDuration(workout.startedAt, workout.finishedAt);

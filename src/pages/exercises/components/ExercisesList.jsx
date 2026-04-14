@@ -1,4 +1,6 @@
+import { LuDumbbell } from 'react-icons/lu';
 import { Link } from 'react-router-dom';
+import EmptyState from '../../../shared/components/EmptyState';
 
 export default function ExercisesList({ exercises }) {
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
@@ -6,9 +8,10 @@ export default function ExercisesList({ exercises }) {
     return (
         <div className="flex flex-col gap-3">
             {exercises.length === 0 ? (
-                <div className="bg-white dark:bg-zinc-950 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-2xl p-10 text-center">
-                    <p className="text-sm text-zinc-500 italic">No hay ejercicios registrados</p>
-                </div>
+                <EmptyState  
+                    message="No hay ejercicios registrados todavía" 
+                    icon={LuDumbbell} 
+                />
             ) : (
                 exercises.map((exercise) => (
                     <Link 

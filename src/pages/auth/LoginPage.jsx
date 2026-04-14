@@ -6,6 +6,7 @@ import Button from '../../shared/components/Button';
 import { handleErrors } from '../../utils/handleErrors';
 import { IoFitnessOutline } from 'react-icons/io5';
 import { useAuthServices } from '../../services/auth.service';
+import MessageError from '../../shared/components/MessageError';
 
 const LoginPage = () => {
     const { register, handleSubmit, setError, formState: { errors }, setValue } = useForm({ mode: "onChange" });
@@ -100,7 +101,7 @@ const LoginPage = () => {
                         )}
                     </div>
                     {/* Mensaje de error general */}
-                    {messageError && <p className="message-error">{messageError}</p>}
+                    {messageError && <MessageError>{messageError}</MessageError>}
 {/* 
                     <Link to="/solicitar-restablecer-contrasena" className="text-indigo-700 underline dark:text-white">
                         ¿Olvidó su contraseña?
