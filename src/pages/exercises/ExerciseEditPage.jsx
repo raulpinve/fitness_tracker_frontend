@@ -10,6 +10,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useParams } from "react-router-dom";
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import { IoIosArrowDown } from 'react-icons/io';
+import { FaDumbbell } from 'react-icons/fa';
 
 const ExerciseEditPage = () => {
     const { register, handleSubmit, setError, formState: { errors }, setValue } = useForm({ mode: "onChange" });
@@ -251,7 +252,7 @@ const ExerciseEditPage = () => {
                         loading={loading}
                         className='mt-4'
                     >
-                        Guardar cambios
+                        <FaDumbbell className="text-xs" /> Editar
                     </Button>
                 </form>
             </div>

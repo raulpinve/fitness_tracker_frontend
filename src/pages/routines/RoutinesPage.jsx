@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { useRoutineServices } from '../../services/routine.service';
 import { toast } from 'sonner';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
+import LoadMoreButton from '../../shared/components/LoadMoreButton';
+import FloatingActionButton from '../../shared/components/FloatingActionButton';
 
 const RoutinesPage = () => {
     const navigate = useNavigate();
@@ -58,12 +60,6 @@ const RoutinesPage = () => {
         <>
             <Header 
                 title={`Rutinas`}
-                rightAction={<button
-                    className="text-blue-600 transition cursor-pointer px-4"
-                    onClick={ () => navigate("/routines/create")}
-                >
-                    Crear
-                </button>}    
             />
 
             <div className="p-4">
@@ -71,16 +67,16 @@ const RoutinesPage = () => {
                     routines={routines}
                     onOpenActions={handleOpenButtonSheet}
                 />
-                {hasMore && (
-                    <button
-                        onClick={handleLoadMore}
-                        disabled={loading}
-                        className="w-full py-2 text-sm text-blue-600 font-medium flex justify-center items-center gap-2  rounded-lg disabled:opacity-50"
-                    >
-                        {loading && <AiOutlineLoading3Quarters className="animate-spin" />}
-                        {loading ? "Cargando..." : "Cargar más"}
-                    </button>
-                )}
+                <LoadMoreButton 
+                    onClick={handleLoadMore} 
+                    loading={loading} 
+                    hasMore={hasMore} 
+                    text="Cargar más rutinas" 
+                />
+                <FloatingActionButton 
+                    text="Rutina" 
+                    onClick={() => navigate('/routines/create')} 
+                />
             </div>
         </>
     );

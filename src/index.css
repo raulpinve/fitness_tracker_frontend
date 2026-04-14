@@ -55,22 +55,35 @@
   }
 
   /* --- BOTONES (Afinados para mobile) --- */
-
   .button-form {
     @apply inline-flex items-center justify-center gap-2 px-6 py-4 min-h-[56px] text-sm font-black uppercase tracking-widest
       transition-all rounded-2xl cursor-pointer border border-gray-200 bg-white text-zinc-700
       active:scale-[0.96]
-      /* Dark Mode */
-      dark:bg-zinc-900 dark:text-zinc-300 dark:border-zinc-800 dark:hover:bg-zinc-800; 
+      /* Dark Mode: Zinc profundo para que se hunda en el fondo */
+      dark:bg-zinc-900 dark:text-zinc-400 dark:border-zinc-800 dark:hover:bg-zinc-800; 
   }
 
-  .button-form-primary {
-    @apply bg-zinc-900 text-white border-transparent shadow-lg shadow-zinc-900/10
-      /* El modo oscuro usa blanco/zinc-100 para destacar */
-      dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white
-      focus:outline-none focus:ring-4 focus:ring-blue-500/20 
-      active:scale-[0.96] transition-transform;
+    .button-form-primary {
+    /* Base: Negro con texto blanco */
+    @apply flex items-center justify-center gap-2 py-4 px-6 bg-zinc-900 text-white 
+      rounded-2xl font-bold text-sm shadow-lg cursor-pointer 
+      transition-all duration-200 active:scale-95 border border-transparent;
+
+    /* Hover Modo Claro: Un gris más suave para que se note el clic */
+    @apply hover:bg-zinc-800;
+
+    /* Dark Mode: Blanco con texto negro */
+    @apply dark:bg-zinc-100 dark:text-zinc-900;
+
+    /* Hover Modo Oscuro: Un blanco más brillante o puro */
+    @apply dark:hover:bg-white;
+
+    /* Focus states */
+    @apply focus:outline-none focus:ring-4 focus:ring-zinc-500/20;
   }
+
+
+
 
   .button-form-secondary {
     @apply bg-zinc-100 text-zinc-800 border-transparent

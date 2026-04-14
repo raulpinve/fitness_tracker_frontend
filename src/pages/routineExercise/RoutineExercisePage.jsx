@@ -2,11 +2,14 @@ import React, { useEffect, useState } from 'react';
 import Header from '../../shared/components/Header';
 // import RoutinesList from './components/RoutinesList';
 import BottomSheet from '../../shared/components/BottomSheet';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useRoutineExerciseService } from '../../services/routineExercise.service';
 import { toast } from 'sonner';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import RoutineExerciseList from './components/RoutineExerciseList';
+import { useRoutineServices } from '../../services/routine.service';
+import FloatingActionButton from '../../shared/components/FloatingActionButton';
+import { FaDumbbell, FaTrash } from 'react-icons/fa';
 
 const RoutineExercisePage = () => {
     const navigate = useNavigate();
@@ -16,10 +19,13 @@ const RoutineExercisePage = () => {
     const {getAllRoutineExercises, deleteRoutineExercise} = useRoutineExerciseService();
     const [isLoadingDelete, setIsLoadingDelete] = useState();
     const [routinesExercises, setRoutinesExercises] = useState([]);
-    const {routineId} = useParams();
+    const {routineExerciseId} = useParams();
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(false);
+    const { state } = useLocation();
+    const { getRoutine } = useRoutineServices(); // Tu servicio para obtener una 
+    const [routineName, setRoutineName] = useState(state?.routineName || "");
 
     const fetchRoutineExercises = async (pageToLoad) => {
         // Prevents loading multiples petitions
@@ -27,7 +33,7 @@ const RoutineExercisePage = () => {
         setLoading(true);
 
         try {
-            const res = await getAllRoutineExercises(routineId, pageToLoad); 
+            const res = await getAllRoutineExercises(routineExerciseId, pageToLoad); 
             const newData = res.data;
             const total = res.pagination?.totalRecords || 0; 
 
@@ -82,16 +88,27 @@ const RoutineExercisePage = () => {
         }
     }
 
+     useEffect(() => {
+        const loadInitialData = async () => {
+            // Si NO hay nombre en el state, lo pedimos a la BD
+            if (!routineName) {
+                try {
+                    const res = await getRoutine(routineExerciseId);
+                    setRoutineName(res.data.name);
+                } catch (error) {
+                    console.error("Error al recuperar el nombre de la rutina", error);
+                    setRoutineName("Rutina"); // Fallback por si todo falla
+                }
+            }
+        };
+
+        loadInitialData();
+    }, [routineExerciseId, routineName]);
+
     return (
         <>
             <Header 
-                title={`Ejercicios de la rutina`}
-                rightAction={<button
-                    className="text-blue-600 transition cursor-pointer px-4"
-                    onClick={ () => navigate(`/routines/${routineId}/exercises/create`)}
-                >
-                    Agregar
-                </button>}    
+                title={routineName || "Cargando..."} 
             />
 
             <div className='p-4'>
@@ -110,38 +127,68 @@ const RoutineExercisePage = () => {
                     </button>
                 )}
 
-                <BottomSheet open={openButtonSheet} onClose={() => setOpenButtonSheet(false)}>
-                    {modeButtonSheet === "actions" && (<>
-                        <button 
-                            className='px-4 py-4 cursor-pointer dark:text-zinc-100 dark:hover:bg-zinc-900'
-                            onClick={() => handleEdit(selectedRoutineExercise)}
-                        >   Editar </button>
-                        <button     
-                            onClick={() => setModeButtonSheet("confirm-delete")}
-                            className="px-4 py-4 cursor-pointer text-red-500 dark:hover:bg-red-950/30"
-                        > Eliminar {selectedRoutineExercise?.name} </button>
-                    </>)}
+                <FloatingActionButton 
+                    text="Ejercicio a rutina" 
+                    onClick={() => navigate(`/routines/${routineExerciseId}/exercises/create`)} 
+                />
+
+               <BottomSheet open={openButtonSheet} onClose={() => setOpenButtonSheet(false)}>
+                    {modeButtonSheet === "actions" && (
+                        <div className="flex flex-col p-2">
+                            <div className="flex flex-col divide-y divide-gray-100 dark:divide-zinc-800/50">
+                                <button 
+                                    className="w-full py-5 flex items-center justify-center gap-3 text-sm font-bold text-zinc-700 dark:text-zinc-200 active:bg-zinc-50 dark:active:bg-zinc-800/50 transition-colors rounded-xl"
+                                    onClick={() => handleEdit(selectedRoutineExercise)}
+                                >
+                                    <FaDumbbell className="text-blue-500" />
+                                    Editar metas (Sets/Reps)
+                                </button>
+
+                                <button     
+                                    onClick={() => setModeButtonSheet("confirm-delete")}
+                                    className="w-full py-5 flex items-center justify-center gap-3 text-sm font-bold text-red-500 active:bg-red-50 dark:active:bg-red-900/10 transition-colors rounded-xl"
+                                >
+                                    <FaTrash className="text-xs" />
+                                    Quitar de la rutina
+                                </button>
+                            </div>
+                        </div>
+                    )}
 
                     {modeButtonSheet === "confirm-delete" && (
-                        <>
-                            <p className="py-4 text-center font-medium dark:text-zinc-100">
-                                ¿Eliminar ejercicio?
-                            </p>
-                            <button
-                                className="py-4 text-red-500 cursor-pointer flex justify-center gap-3 items-center dark:hover:bg-red-950/30"
-                                onClick={() => handleDelete(selectedRoutineExercise)}
-                            >
-                               {isLoadingDelete ? <AiOutlineLoading3Quarters className='animate-spin transition-all' /> : ""} Sí, eliminar
-                            </button>
-                            <button
-                                className="py-4 text-gray-500 dark:text-zinc-400 cursor-pointer dark:hover:bg-zinc-900"
-                                onClick={() => setModeButtonSheet("actions")}
-                            >
-                                Cancelar
-                            </button>
-                        </>
+                        <div className="pt-2 pb-6 px-2">
+                            <div className="flex flex-col items-center text-center mb-6">
+                                <div className="w-14 h-14 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center mb-3">
+                                    <FaTrash className="text-red-600 dark:text-red-500 text-xl" />
+                                </div>
+                                <p className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
+                                    ¿Quitar ejercicio?
+                                </p>
+                                <p className="text-sm text-zinc-500 dark:text-zinc-400 px-8 mt-1 leading-relaxed">
+                                    Se eliminarán las metas establecidas para <span className="font-bold text-zinc-800 dark:text-zinc-200">"{selectedRoutineExercise?.exerciseName}"</span> en esta rutina.
+                                </p>
+                            </div>
+
+                            <div className="grid gap-3">
+                                <button
+                                    disabled={isLoadingDelete}
+                                    onClick={() => handleDelete(selectedRoutineExercise)}
+                                    className="w-full py-4 bg-red-600 text-white rounded-2xl font-bold flex justify-center gap-3 items-center active:scale-[0.96] transition-all shadow-lg shadow-red-500/20 disabled:opacity-50"
+                                >
+                                    {isLoadingDelete ? <AiOutlineLoading3Quarters className="animate-spin" /> : "Sí, quitar ejercicio"}
+                                </button>
+
+                                <button
+                                    className="w-full py-4 text-zinc-500 dark:text-zinc-400 font-bold active:bg-zinc-100 dark:active:bg-zinc-800 rounded-2xl transition-colors text-sm"
+                                    onClick={() => setModeButtonSheet("actions")}
+                                >
+                                    Cancelar
+                                </button>
+                            </div>
+                        </div>
                     )}
                 </BottomSheet>
+
             </div>
         </>
     );

@@ -6,18 +6,19 @@ import { useNavigate } from 'react-router-dom';
 import { useExerciseServices } from '../../services/exercises.service';
 import { toast } from 'sonner';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
+import { HiOutlinePlus } from 'react-icons/hi';
+import FloatingActionButton from '../../shared/components/FloatingActionButton';
+import LoadMoreButton from '../../shared/components/LoadMoreButton';
 
 const ExercisesPage = () => {
-    const [selectedExercise, setSelectedExercise] = useState(null);
     const { getAllExercises, deleteExercise } = useExerciseServices();
     const navigate = useNavigate();
     const [exercises, setExercises] = useState([]);
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
-    const [hasMore, setHasMore] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
 
     const fetchExercises = async (pageToLoad) => {
-        // Prevents loading multiples petitions
         if (loading) return;
         setLoading(true);
 
@@ -51,29 +52,22 @@ const ExercisesPage = () => {
         <>
             <Header 
                 title={`Ejercicios`}
-                rightAction={<button
-                    className="text-blue-600 transition cursor-pointer px-4"
-                    onClick={ () => navigate("/exercises/create")}
-                >
-                    Crear
-                </button>}    
             />
-
             <div className='p-4'>
                 <ExercisesList
                     exercises={exercises}
                 />
-                {hasMore && (
-                    <button
-                        onClick={handleLoadMore}
-                        disabled={loading}
-                        className="w-full py-2 text-sm text-blue-600 font-medium flex justify-center items-center gap-2  rounded-lg disabled:opacity-50"
-                    >
-                        {loading && <AiOutlineLoading3Quarters className="animate-spin" />}
-                        {loading ? "Cargando..." : "Cargar más"}
-                    </button>
-                )}
+                <LoadMoreButton 
+                    onClick={handleLoadMore} 
+                    loading={loading} 
+                    hasMore={hasMore} 
+                    text="Cargar más ejercicios" 
+                />
             </div>
+            <FloatingActionButton 
+                text="Ejercicio" 
+                onClick={() => navigate('/exercises/create')} 
+            />
         </>
     );
 };

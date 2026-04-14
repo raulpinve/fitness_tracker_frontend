@@ -13,12 +13,14 @@ export default function RoutinesList({ routines }) {
                 routines.map(routine => (
                     <div
                         key={routine.id}
-                        onClick={() => navigate(`/routines/${routine.id}/exercises`)}
+                        onClick={() => navigate(`/routines/${routine.id}/exercises`, { 
+                            state: { routineName: routine.name } 
+                        })}
                         className="group relative bg-white dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800/60 rounded-2xl p-4 shadow-sm hover:shadow-md hover:border-blue-200 dark:hover:border-blue-900/30 transition-all cursor-pointer active:scale-[0.98]"
                     >
                         <div className="flex items-center">
                             <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center flex-shrink-0 mr-3 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/40 transition-colors">
-                                <span className="text-blue-600 dark:text-blue-400 font-bold text-lg">R</span>
+                                <span className="text-blue-600 dark:text-blue-400 font-bold text-lg">{routine.name[0]}</span>
                             </div>
 
                             <div className="flex-1 min-w-0">

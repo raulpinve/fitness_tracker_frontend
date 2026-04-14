@@ -6,6 +6,7 @@ import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import { FaDumbbell, FaRunning, FaVideo } from 'react-icons/fa';
 import { toast } from 'sonner';
 import BottomSheet from '../../shared/components/BottomSheet';
+import Button from '../../shared/components/Button';
 
 const ExerciseDetailPage = () => {
     const navigate = useNavigate();
@@ -139,26 +140,30 @@ const ExerciseDetailPage = () => {
                     </div>
                 </div>
 
-                {/* Botón de acción rápido */}
                 <div className="grid gap-3 pt-4">
                     <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">
                         Acciones del ejercicio
                     </p>
                     <div className="grid grid-cols-2 gap-3">
-                        <button 
-                            onClick={() => handleEdit(exercise)}
-                            className="flex items-center cursor-pointer justify-center gap-2 py-4 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-2xl font-bold text-sm shadow-lg active:scale-95 transition-transform"
+                        <Button 
+                            colorButton={`primary`}
+                            loading={loading}
+                            onClick={() => navigate(`/exercises/${exercise.id}/edit`)}
+                            className='mt-4'
                         >
                             <FaDumbbell className="text-xs" />
                             Editar
-                        </button>
+                        </Button>
 
-                        <button 
+                        <Button 
+                            colorButton={`danger`}
+                            loading={loading}
+                            className='mt-4'
                             onClick={() => setOpenButtonSheet(true)}
-                            className="flex items-center cursor-pointer justify-center gap-2 py-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl font-bold text-sm border border-red-100 dark:border-red-900/30 active:scale-95 transition-transform"
                         >
                             Eliminar
-                        </button>
+                        </Button>
+                     
                     </div>
                 </div>
             </div>

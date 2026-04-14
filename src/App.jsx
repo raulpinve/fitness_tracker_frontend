@@ -50,7 +50,7 @@ function App() {
               <Route path="/routines/:routineId/update" element={<RoutineUpdatePage />} />
               
               {/* Routine exercises */}
-              <Route path="/routines/:routineId/exercises" element={<RoutineExercisePage />} />
+              <Route path="/routines/:routineExerciseId/exercises" element={<RoutineExercisePage />} />
               <Route path="/routines/:routineId/exercises/create" element={<RoutineExerciseCreatePage/> }/>
               <Route path="/routines/:routineExerciseId/exercises/edit" element={<RoutineExerciseEditPage/> }/>
 
@@ -66,7 +66,7 @@ function App() {
       </BrowserRouter>
         <Toaster
           position="bottom-center"
-          offset={80}
+          offset={120}
           theme="dark"
         />
     </>
