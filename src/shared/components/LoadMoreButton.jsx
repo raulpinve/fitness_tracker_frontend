@@ -9,7 +9,7 @@ const LoadMoreButton = ({ onClick, loading, hasMore, text = "Cargar más" }) => 
             <button
                 onClick={onClick}
                 disabled={loading}
-                className="w-full py-4 bg-zinc-100 dark:bg-zinc-900/50 text-zinc-500 dark:text-zinc-400 text-[10px] font-black uppercase tracking-widest rounded-2xl border border-zinc-200 dark:border-zinc-800/50 flex justify-center items-center gap-3 transition-all active:scale-[0.97] disabled:opacity-50"
+                className="w-full py-4 bg-zinc-100 dark:bg-zinc-900/50 cursor-pointer text-zinc-500 dark:text-zinc-400 text-[10px] font-black uppercase tracking-widest rounded-2xl border border-zinc-200 dark:border-zinc-800/50 flex justify-center items-center gap-3 transition-all active:scale-[0.97] disabled:opacity-50"
             >
                 {loading ? (
                     <>

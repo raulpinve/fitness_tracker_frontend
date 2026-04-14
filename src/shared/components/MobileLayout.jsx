@@ -1,23 +1,20 @@
 import { HiOutlineLogout } from "react-icons/hi";
 import { LuClipboardList, LuDumbbell, LuFlame } from "react-icons/lu";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { useAuthServices } from "../../services/auth.service";
+import { NavLink, Outlet } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "../../auth/useAuth";
 import { useState } from "react";
 import BottomSheet from "./BottomSheet";
 
 export default function MobileLayout() {
-    const { logout } = useAuth(); // Extraemos la función de tu AuthProvider
+    const { logout } = useAuth(); 
     const [openLogoutSheet, setOpenLogoutSheet] = useState(false);
 
     const handleConfirmLogout = async () => {
         try {
-            await logout(); // Esto ya hace el POST a /logout y limpia el estado
+            await logout(); 
             toast.success("Sesión cerrada");
-            // No necesitas navigate manualmente si tu App.jsx 
-            // redirige al login cuando accessToken es null
-        } catch (error) {
+        } catch {
             toast.error("Error al cerrar sesión");
         }
     };

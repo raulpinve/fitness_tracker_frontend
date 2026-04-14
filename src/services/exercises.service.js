@@ -12,15 +12,20 @@ export const useExerciseServices = () => {
             const res = await api.get(`/exercises/${exerciseId}`);
             return res.data;
         },
-        getAllExercises: async (page = 1, pageSize = 20) => {
+        getAllExercises: async (page = 1, pageSize = 20, name = "", filters = {}) => {
             const res = await api.get("/exercises", {
                 params: {
                     page,
-                    pageSize
+                    pageSize,
+                    // Solo enviamos los valores si existen (evita enviar strings vacíos al backend)
+                    name: name || undefined,
+                    type: filters.type || undefined,
+                    muscleGroup: filters.muscleGroup || undefined
                 }
             });
             return res.data; 
         },
+
         updateExercise: async(exerciseId, data) => {
             const res = await api.patch(`/exercises/${exerciseId}`, data);
             return res.data;

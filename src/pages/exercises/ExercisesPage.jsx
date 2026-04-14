@@ -1,46 +1,57 @@
 import React, { useEffect, useState } from 'react';
-import Header from '../../shared/components/Header';
-import ExercisesList from './components/ExercisesList';
-import BottomSheet from '../../shared/components/BottomSheet';
-import { useNavigate } from 'react-router-dom';
-import { useExerciseServices } from '../../services/exercises.service';
-import { toast } from 'sonner';
-import { AiOutlineLoading3Quarters } from 'react-icons/ai';
-import { HiOutlinePlus } from 'react-icons/hi';
 import FloatingActionButton from '../../shared/components/FloatingActionButton';
+import { LuChevronDown, LuDumbbell, LuSearch, LuX } from 'react-icons/lu';
+import { useExerciseServices } from '../../services/exercises.service';
 import LoadMoreButton from '../../shared/components/LoadMoreButton';
+import ExerciseSkeleton from './components/ExerciseSkeleton';
+import EmptyState from '../../shared/components/EmptyState';
+import useDebounce from '../../shared/hooks/useDebounce';
+import ExercisesList from './components/ExercisesList';
+import Header from '../../shared/components/Header';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import FilterBarExercise from './components/FilterBarExercise';
 
 const ExercisesPage = () => {
-    const { getAllExercises, deleteExercise } = useExerciseServices();
+    const { getAllExercises } = useExerciseServices();
     const navigate = useNavigate();
+
+    // States
     const [exercises, setExercises] = useState([]);
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
+    const [pagination, setPagination] = useState({ totalRecords: 0 });
+    
+    // Filtering states
+    const [search, setSearch] = useState("");
+    const [filters, setFilters] = useState({ type: "", muscleGroup: "" });
+    
+    // We apply debounce only to the search text
+    const debouncedSearch = useDebounce(search, 400);
 
-    const fetchExercises = async (pageToLoad) => {
-        if (loading) return;
+    const fetchExercises = async (pageToLoad, searchTerm, currentFilters) => {
         setLoading(true);
-
         try {
-            const res = await getAllExercises(pageToLoad); 
+            const res = await getAllExercises(pageToLoad, 20, searchTerm, currentFilters);
             const newData = res.data;
-            const total = res.pagination?.totalRecords || 0; 
-
-            setExercises(prev => {
-                return pageToLoad === 1 ? newData : [...prev, ...newData];
-            });
-            setHasMore(exercises.length + newData.length < total);
-        } catch{
+            
+            setPagination(res.pagination);
+            setExercises(prev => (pageToLoad === 1 ? newData : [...prev, ...newData]));
+            setHasMore(pageToLoad * 20 < res.pagination.totalRecords);
+        } catch {
             toast.error("Error al cargar ejercicios");
         } finally {
             setLoading(false);
         }
     };
 
+    // This effect runs when the user stops typing
+    // Or when a selection filter changes (which is instant)
     useEffect(() => {
-        fetchExercises(1);
-    }, []);
+        setPage(1);
+        fetchExercises(1, debouncedSearch, filters);
+    }, [debouncedSearch, filters]);
 
     // Load more exercises
     const handleLoadMore = () => {
@@ -48,15 +59,33 @@ const ExercisesPage = () => {
         setPage(nextPage);
         fetchExercises(nextPage);
     };
+
     return (
         <>
-            <Header 
-                title={`Ejercicios`}
-            />
+            <Header  title={`Ejercicios`}/>
             <div className='p-4'>
-                <ExercisesList
-                    exercises={exercises}
+                <FilterBarExercise 
+                    search={search}
+                    setSearch={setSearch}
+                    filters={filters}
+                    setFilters={setFilters}
+                    totalRecords={pagination.totalRecords}
+                    placeholder="BUSCAR EJERCICIO..."
                 />
+
+                {/* List */}
+                {loading && page === 1 ? (
+                    [...Array(10)].map((_, i) => <ExerciseSkeleton key={i} />)
+                ) : exercises.length === 0 ? (
+                    <EmptyState message="No se encontraron ejercicios" />
+                ) : (
+                    <ExercisesList 
+                        exercises={exercises} 
+                        message="No hay ejercicios registrados todavía" 
+                        icon={LuDumbbell} 
+                    />
+                )}
+
                 <LoadMoreButton 
                     onClick={handleLoadMore} 
                     loading={loading} 
