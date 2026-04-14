@@ -29,7 +29,6 @@ export default function RoutineExerciseList({ routinesExercises, onOpenActions }
                             className="flex items-center p-3 transition-colors group cursor-pointer active:bg-gray-100 dark:active:bg-zinc-800/80"
                             onClick={() => navigate(`/exercises/${item.exerciseId}`)}
                         >
-                                                    
                             {/* Número de orden */}
                             <div className="flex flex-col items-center justify-center w-6 mr-1">
                                 <span className="text-[10px] font-black text-blue-600 dark:text-blue-500/80 uppercase">

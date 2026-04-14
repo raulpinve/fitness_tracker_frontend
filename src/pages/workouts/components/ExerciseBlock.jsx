@@ -1,162 +1,128 @@
-import { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useWorkoutSetServices } from '../../../services/workoutSet.service';
 import { useCardioLogServices } from '../../../services/cardioLog.service'; 
 import { toast } from 'sonner';
+import { LuPlus, LuTrash2, LuDumbbell, LuTimer, LuX } from 'react-icons/lu';
 
-const ExerciseBlock = ({ exercise, workout, onRemove }) => {
+export default function ExerciseBlock ({ exercise, workout, onRemove }) {
     const [history, setHistory] = useState([]);
-    const { register, handleSubmit, reset } = useForm();
+    const { register, handleSubmit, reset, setValue } = useForm();
     const { getAllWorkoutSets, createWorkoutSet, deleteWorkoutSet } = useWorkoutSetServices();
     const { getAllCardioLogs, createCardioLog, deleteCardioLog} = useCardioLogServices();
+    
     const isCardio = exercise.exerciseType === 'cardio';
     const workoutExerciseId = exercise.workoutExerciseId;
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Consultamos la tabla correcta según el tipo
                 const res = isCardio 
                     ? await getAllCardioLogs(workoutExerciseId)
                     : await getAllWorkoutSets(workoutExerciseId);
-                setHistory(res.data); 
-            } catch (error) {
-                console.error("Error cargando datos:", error);
-            }
+                setHistory(res.data);
+                
+                if (res.data.length > 0) {
+                    const last = res.data[res.data.length - 1];
+                    setValue(isCardio ? "distance" : "weight", isCardio ? last.distanceKm : last.weight);
+                }
+            } catch (error) { console.error(error); }
         };
         fetchData();
-    }, [workoutExerciseId, isCardio]);
+    }, [workoutExerciseId, isCardio, setValue]);
 
     const onSubmit = async (data) => {
         try {
-            let response;
-            if (isCardio) {
-                response = await createCardioLog({
-                    workoutExerciseId,
-                    durationSeconds: parseInt(data.minutes) * 60,
-                    distanceKm: data.distance ? parseFloat(data.distance) : null
-                });
-            } else {
-                response = await createWorkoutSet({
-                    workoutExerciseId,
-                    reps: parseInt(data.reps),
-                    weight: parseFloat(data.weight)
-                });
-            }
+            const response = isCardio 
+                ? await createCardioLog({ workoutExerciseId, durationSeconds: parseInt(data.minutes) * 60, distanceKm: data.distance ? parseFloat(data.distance) : null })
+                : await createWorkoutSet({ workoutExerciseId, reps: parseInt(data.reps), weight: parseFloat(data.weight) });
 
             if (response.statusCode === 201) {
                 setHistory([...history, response.data]);
-                reset(); 
+                setValue("reps", ""); 
             }
-        } catch (error) {
-            toast.error("Error al guardar");
-        }
+        } catch (error) { toast.error("Error al guardar"); }
     };
 
     const handleDeleteLog = async (id) => {
         if (!window.confirm("¿Eliminar este registro?")) return;
-
         try {
-            if (isCardio) {
-                await deleteCardioLog(id);
-            } else {
-                await deleteWorkoutSet(id);
-            }
-            
-            // Filtramos el estado para quitar el elemento borrado
+            if (isCardio) await deleteCardioLog(id);
+            else await deleteWorkoutSet(id);
             setHistory(prev => prev.filter(item => item.id !== id));
-            toast.success("Registro eliminado");
-        } catch (error) {
-            toast.error("No se pudo eliminar");
-        }
+            toast.success("Eliminado");
+        } catch (error) { toast.error("Error al eliminar"); }
     };
 
     return (
-        <div className="border border-gray-200 dark:border-zinc-800 rounded-xl p-4 bg-white dark:bg-zinc-950 shadow-sm relative mb-2">
-            {!workout.finishedAt && (
-                <button 
-                    onClick={() => onRemove(workoutExerciseId)} 
-                    className="absolute top-4 right-4 text-gray-400 hover:text-red-500 text-sm"
-                >
-                    Saltar
-                </button>
-            )}
+        <div className="group relative bg-white dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-900 rounded-[2rem] p-6 shadow-sm mb-6 transition-all">
             
-            <h3 className="text-xl font-bold mb-4 dark:text-zinc-100">
-                {exercise.exerciseName || exercise.name}
-            </h3>
+            {/* Header: Solo Título e Icono */}
+            <div className="flex justify-between items-center mb-4">
+                <div className="flex items-center gap-4">
+                    <div className="p-3 bg-blue-50 dark:bg-blue-500/10 rounded-2xl">
+                        {isCardio ? <LuTimer className="text-blue-600" size={20}/> : <LuDumbbell className="text-blue-600" size={20}/>}
+                    </div>
+                    <h3 className="text-lg font-black text-zinc-800 dark:text-zinc-100 uppercase tracking-tighter">
+                        {exercise.exerciseName || exercise.name}
+                    </h3>
+                </div>
+                {!workout.finishedAt && (
+                    <button onClick={() => onRemove(workoutExerciseId)} className="p-2 text-zinc-300 hover:text-red-500 transition-colors">
+                        <LuX size={20} />
+                    </button>
+                )}
+            </div>
 
-            {/* Listado de Series o Logs de Cardio */}
-            <div className="space-y-2 mb-2">
-
+            {/* Listado de Registros en Formato "Pill" Horizontal */}
+            <div className="flex flex-wrap gap-3 mb-4">
                 {history.map((item, index) => (
-                    <div key={item.id} className="group flex justify-between items-center bg-gray-50 dark:bg-zinc-900 p-2 rounded border-l-4 border-blue-400">
-                        <div className="flex flex-col">
-                            <span className="font-bold text-gray-500 dark:text-zinc-400 text-[10px] uppercase">
-                                {isCardio ? 'Sesión' : `SET ${index + 1}`}
-                            </span>
-                            <div className="flex gap-4 dark:text-zinc-200 text-sm">
-                                {isCardio ? (
-                                    <>
-                                        <span>{item.durationSeconds / 60} min</span>
-                                        {item.distanceKm && <span>{item.distanceKm} km</span>}
-                                    </>
-                                ) : (
-                                    <>
-                                        <span>{item.weight} kg</span>
-                                        <span>{item.reps} reps</span>
-                                    </>
-                                )}
-                            </div>
+                    <div key={item.id} className="relative flex flex-col items-center justify-center min-w-[75px] py-3 px-3 bg-zinc-50 dark:bg-zinc-900 rounded-2xl border border-zinc-100 dark:border-zinc-800 group/item transition-all">
+                        <span className="text-[8px] font-black text-blue-500 uppercase mb-1">
+                            {isCardio ? 'LOG' : `SET ${index + 1}`}
+                        </span>
+                        <div className="text-xs font-black text-zinc-700 dark:text-zinc-200 flex flex-col items-center leading-tight">
+                            {isCardio ? (
+                                <><span className="whitespace-nowrap">{item.durationSeconds / 60}m</span><span className="opacity-40">{item.distanceKm}k</span></>
+                            ) : (
+                                <><span className="whitespace-nowrap">{item.weight}kg</span><span className="opacity-40">{item.reps}r</span></>
+                            )}
                         </div>
-
-                        {/* Botón de eliminar serie */}
                         {!workout.finishedAt && (
                             <button 
                                 onClick={() => handleDeleteLog(item.id)}
-                                className="p-2 text-gray-300 hover:text-red-500 transition-colors"
-                                title="Eliminar serie"
+                                className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover/item:opacity-100 transition-opacity shadow-lg"
                             >
-                                <svg xmlns="http://w3.org" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
+                                <LuTrash2 size={10} />
                             </button>
                         )}
                     </div>
                 ))}
             </div>
 
-            {/* Formulario Dinámico */}
+            {/* Formulario Estilo "Control Panel" */}
             {!workout.finishedAt && (
-                <form onSubmit={handleSubmit(onSubmit)} className="flex gap-2 items-end border-t border-gray-200 dark:border-zinc-800 pt-4">
-                    {isCardio ? (
-                        <>
-                            <div className="flex-1">
-                                <label className="block text-[10px] font-bold text-gray-500 uppercase">Minutos</label>
-                                <input type="number" {...register("minutes", { required: true })} className="input-form dark:bg-zinc-900" placeholder="0" />
-                            </div>
-                            <div className="flex-1">
-                                <label className="block text-[10px] font-bold text-gray-500 uppercase">Km</label>
-                                <input type="number" step="0.1" {...register("distance")} className="input-form dark:bg-zinc-900" placeholder="0.0" />
-                            </div>
-                        </>
-                    ) : (
-                        <>
-                            <div className="flex-1">
-                                <label className="block text-[10px] font-bold text-gray-500 uppercase">Peso (kg)</label>
-                                <input type="number" step="0.25" {...register("weight", { required: true })} className="input-form dark:bg-zinc-900" placeholder="0" />
-                            </div>
-                            <div className="flex-1">
-                                <label className="block text-[10px] font-bold text-gray-500 uppercase">Reps</label>
-                                <input type="number" {...register("reps", { required: true })} className="input-form dark:bg-zinc-900" placeholder="0" />
-                            </div>
-                        </>
-                    )}
-                    <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-blue-700 h-[38px]">+</button>
+                <form onSubmit={handleSubmit(onSubmit)} className="bg-zinc-50 dark:bg-zinc-900/50 p-4 rounded-3xl border border-zinc-100 dark:border-zinc-800/50 flex items-center gap-4 shadow-inner">
+                    <div className="flex flex-1 gap-2">
+                        <div className="flex-1">
+                            <label className="text-[8px] font-black text-zinc-400 uppercase ml-2 tracking-widest">
+                                {isCardio ? 'Minutos' : 'Peso'}
+                            </label>
+                            <input type="number" step="0.25" {...register(isCardio ? "minutes" : "weight", { required: true })} className="w-full bg-transparent text-sm font-black p-1 focus:outline-none dark:text-white" placeholder="0" />
+                        </div>
+                        <div className="w-[1px] h-6 bg-zinc-200 dark:bg-zinc-800 self-end mb-2 opacity-50" />
+                        <div className="flex-1">
+                            <label className="text-[8px] font-black text-zinc-400 uppercase ml-2 tracking-widest">
+                                {isCardio ? 'Distancia' : 'Reps'}
+                            </label>
+                            <input type="number" step="0.1" {...register(isCardio ? "distance" : "reps", { required: true })} className="w-full bg-transparent text-sm font-black p-1 focus:outline-none dark:text-white" placeholder="0" />
+                        </div>
+                    </div>
+                    <button type="submit" className="w-12 h-12 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30 active:scale-[0.85] transition-all">
+                        <LuPlus size={24} strokeWidth={4} />
+                    </button>
                 </form>
             )}
         </div>
     );
 };
-
-export default ExerciseBlock;
