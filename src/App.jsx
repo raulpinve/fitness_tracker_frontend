@@ -20,6 +20,7 @@ import WorkoutPage from "./pages/workouts/WorkoutPage";
 import WorkoutsCreatePage from "./pages/workouts/WorkoutsCreatePage";
 import WorkoutSummaryPage from "./pages/workouts/WorkoutSummaryPage";
 import ExerciseDetailPage from "./pages/exercises/ExerciseDetailPage";
+import ProfilePage from "./pages/profile/ProfilePage";
 
 function App() {
   return (
@@ -59,6 +60,9 @@ function App() {
               <Route path="/workouts/:workoutId" element={<WorkoutPage />} />
               <Route path="/workouts/:workoutId/summary" element={<WorkoutSummaryPage />} />
               <Route path="/workouts/create" element = {<WorkoutsCreatePage />} />
+
+              {/* Profile */}
+              <Route path="/profile" element={<ProfilePage />} />
             </Route>
         </Route>
       </Routes>

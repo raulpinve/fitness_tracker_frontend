@@ -1,5 +1,6 @@
 import { HiOutlineArrowLeft } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
+import { useDarkMode } from "../hooks/useDarkMode";
 
 export default function Header({
     title,
@@ -17,6 +18,7 @@ export default function Header({
             navigate(-1);
         }
     };
+
 
     return (
         <header className="sticky top-0 z-40 h-16 w-full flex items-center justify-between border-b border-gray-100/50 dark:border-zinc-800/50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl px-4 transition-all">

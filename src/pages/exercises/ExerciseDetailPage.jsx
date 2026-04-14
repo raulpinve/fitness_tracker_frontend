@@ -8,13 +8,41 @@ import { toast } from 'sonner';
 import BottomSheet from '../../shared/components/BottomSheet';
 import Button from '../../shared/components/Button';
 
+const muscleGroupNames = {
+    pecho: 'Pecho',
+    espalda: 'Espalda',
+    hombros: 'Hombros',
+    biceps: 'Bíceps',
+    triceps: 'Tríceps',
+    antebrazos: 'Antebrazos',
+    cuadriceps: 'Cuádriceps',
+    isquios: 'Isquios',
+    gluteos: 'Glúteos',
+    gemelos: 'Gemelos',
+    abs: 'Abdominales',
+    cardio: 'Cardio',
+    full_body: 'Cuerpo Completo'
+};
+
+const equipmentNames = {
+    barras: 'Barras',
+    mancuernas: 'Mancuernas',
+    maquinas: 'Máquinas',
+    máquinas: 'Máquinas', 
+    poleas: 'Poleas',
+    peso_corporal: 'Peso Corporal',
+    bandas: 'Bandas Elásticas',
+    kettlebells: 'Kettlebells',
+    ninguno: 'Sin equipo'
+};
+
 const ExerciseDetailPage = () => {
     const navigate = useNavigate();
     const { exerciseId } = useParams();
     const { getExercise } = useExerciseServices();
     const [exercise, setExercise] = useState(null);
     const [loading, setLoading] = useState(true);
-    const { getAllExercises, deleteExercise } = useExerciseServices();
+    const { deleteExercise } = useExerciseServices();
     const [isLoadingDelete, setIsLoadingDelete] = useState();
     const [openButtonSheet, setOpenButtonSheet] = useState(false);
     const [view, setView] = useState('image');
@@ -38,10 +66,6 @@ const ExerciseDetailPage = () => {
     useEffect(() => {
         if (exercise && !exercise.video) setView('image');
     }, [exercise]);
-
-    const handleEdit = (exercise) => {
-        navigate(`/exercises/${exercise.id}/edit`, { state: { exercise } });
-    }
 
     const handleDelete = async (exerciseId) => {
         setIsLoadingDelete(true);
@@ -110,6 +134,7 @@ const ExerciseDetailPage = () => {
                 )}
 
                 {/* Info Card */}
+                
                 <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-zinc-800">
                     <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-4">
                         Información General
@@ -118,23 +143,23 @@ const ExerciseDetailPage = () => {
                     <div className="grid grid-cols-2 gap-4">
                         <div className="p-4 rounded-xl bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30">
                             <p className="text-[10px] uppercase font-bold text-blue-600 dark:text-blue-400 mb-1">Tipo</p>
-                            <div className="flex items-center gap-2 text-zinc-800 dark:text-zinc-200 font-semibold capitalize">
+                            <div className="flex items-center gap-2 text-zinc-800 dark:text-zinc-200 font-semibold">
                                 {exercise.type === 'strength' ? <FaDumbbell /> : <FaRunning />}
-                                {exercise.type}
+                                <span className="capitalize">{exercise.type === 'strength' ? 'Fuerza' : 'Cardio'}</span>
                             </div>
                         </div>
 
                         <div className="p-4 rounded-xl bg-orange-50 dark:bg-orange-900/10 border border-orange-100 dark:border-orange-900/30">
                             <p className="text-[10px] uppercase font-bold text-orange-600 dark:text-orange-400 mb-1">Músculo</p>
-                            <p className="text-zinc-800 dark:text-zinc-200 font-semibold capitalize">
-                                {exercise.muscleGroup}
+                            <p className="text-zinc-800 dark:text-zinc-200 font-semibold">
+                                {muscleGroupNames[exercise.muscleGroup] || exercise.muscleGroup}
                             </p>
                         </div>
 
                         <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 col-span-2">
                             <p className="text-[10px] uppercase font-bold text-zinc-500 mb-1">Equipamiento</p>
-                            <p className="text-zinc-800 dark:text-zinc-200 font-semibold capitalize">
-                                {exercise.equipment}
+                            <p className="text-zinc-800 dark:text-zinc-200 font-semibold">
+                                {equipmentNames[exercise.equipment] || exercise.equipment}
                             </p>
                         </div>
                     </div>

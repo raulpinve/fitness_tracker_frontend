@@ -13,7 +13,7 @@ const SignupPage = () => {
     const [mostrarPassword, setMostrarPassword] = useState(false);
     const [ messageError, setMessageError] = useState(null);
     const [ loading, setLoading ] = useState(false);
-    const { setAccessToken } = useAuth();
+    const { setAccessToken, setUser } = useAuth();
     const navigate = useNavigate();
     const { signUp } = useAuthServices();
     
@@ -23,7 +23,8 @@ const SignupPage = () => {
 
         try {
             const resultado = await signUp(data)
-            setAccessToken(resultado.data.accessToken);
+            setAccessToken(resultado?.data?.accessToken);
+            setUser(resultado?.data?.user);
             navigate("/exercises");
         } catch (error) {
             if(error === "errorInterno"){

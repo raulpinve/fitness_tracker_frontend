@@ -3,7 +3,6 @@ import { AuthContext } from "./AuthContext";
 import axios from "axios";
 
 export function AuthProvider({ children }) {
-  
     const [accessToken, setAccessToken] = useState(null);
     const [isLoading, setIsLoading] = useState(true); 
     const [user, setUser] = useState(null);
@@ -13,6 +12,9 @@ export function AuthProvider({ children }) {
             try {
                 const res = await axios.post('http://localhost:3000/auth/refresh', {}, { withCredentials: true });
                 setAccessToken(res?.data?.data?.accessToken);
+                if (res?.data?.data?.user) {
+                    setUser(res.data.data.user);
+                }
             } catch (err) {
                 setAccessToken(null);
             } finally {

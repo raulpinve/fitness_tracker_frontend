@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* Esta línea es la que activa el modo oscuro por clase en Tailwind v4 */
+@custom-variant dark (&:where(.dark, .dark *));
+
+
 @theme {
   --font-sans: 'Inter', sans-serif;
   --font-serif: 'Playfair Display', serif;
@@ -106,7 +110,6 @@
       cursor-not-allowed active:scale-100;
   }
 }
-
 
 .ellipsis {
   white-space: nowrap;

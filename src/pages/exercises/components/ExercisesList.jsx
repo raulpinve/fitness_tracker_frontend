@@ -4,6 +4,18 @@ import { Link } from 'react-router-dom';
 export default function ExercisesList({ exercises }) {
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
+    const labels = {
+        // Muscle
+        pecho: "Pecho", espalda: "Espalda", hombros: "Hombros", biceps: "Bíceps",
+        triceps: "Tríceps", antebrazos: "Antebrazos", cuadriceps: "Cuádriceps",
+        isquios: "Isquios", gluteos: "Glúteos", gemelos: "Gemelos",
+        abs: "Abs", cardio: "Cardio", full_body: "Full Body",
+        // Equipment
+        barras: "Barras", mancuernas: "Mancuernas", máquinas: "Máquinas",
+        poleas: "Poleas", peso_corporal: "Peso corporal", bandas: "Bandas",
+        kettlebells: "Kettlebells", ninguno: "Sin equipo"
+    };
+
     return (
         <div className="flex flex-col gap-3">
             {exercises.map((exercise) => (
@@ -35,19 +47,16 @@ export default function ExercisesList({ exercises }) {
                         </p>
                         
                         <div className="flex items-center gap-2 mt-2">
+                            {/* Badge de Músculo Normalizado */}
                             <span className="px-2 py-0.5 bg-zinc-50 dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 text-[9px] font-black uppercase tracking-wider rounded-md border border-zinc-100 dark:border-zinc-800">
-                                {exercise.muscleGroup || 'General'}
+                                {labels[exercise.muscleGroup] || exercise.muscleGroup || 'General'}
                             </span>
+
+                            {/* Equipo Normalizado */}
                             <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 italic truncate">
-                                {exercise.equipment || 'Sin equipo'}
+                                {labels[exercise.equipment] || exercise.equipment || 'Sin equipo'}
                             </span>
                         </div>
-                    </div>
-
-                    <div className="ml-2 text-zinc-300 dark:text-zinc-700 group-hover:text-blue-500 transition-colors">
-                        <svg xmlns="http://w3.org" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                        </svg>
                     </div>
                 </Link>
             ))}

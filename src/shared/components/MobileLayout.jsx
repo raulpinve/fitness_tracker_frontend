@@ -1,14 +1,16 @@
 import { HiOutlineLogout } from "react-icons/hi";
-import { LuClipboardList, LuDumbbell, LuFlame } from "react-icons/lu";
+import { LuClipboardList, LuDumbbell, LuFlame, LuMoon, LuSun, LuUser  } from "react-icons/lu";
 import { NavLink, Outlet } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "../../auth/useAuth";
 import { useState } from "react";
 import BottomSheet from "./BottomSheet";
+import { useDarkMode } from "../hooks/useDarkMode";
 
 export default function MobileLayout() {
     const { logout } = useAuth(); 
-    const [openLogoutSheet, setOpenLogoutSheet] = useState(false);
+    const [ openProfileSheet, setOpenProfileSheet] = useState(false);
+    const { isDark, toggleDarkMode } = useDarkMode();
 
     const handleConfirmLogout = async () => {
         try {
@@ -166,50 +168,35 @@ export default function MobileLayout() {
                             {/* Separador tipo "Gema" */}
                             <div className="w-[1.5px] h-4 bg-zinc-200 dark:bg-zinc-800 rounded-full mx-1" />
 
-                            {/* Salir */}
-                            <button 
-                                className="flex flex-col items-center justify-center w-14 h-12 text-zinc-400 dark:text-zinc-600 hover:text-red-500 transition-all active:scale-90"
-                                onClick={() => {setOpenLogoutSheet(true)}}
+                            {/* Perfil   */}
+                            <NavLink
+                                to="/profile"
+                                className={({ isActive }) =>
+                                    `relative flex flex-col items-center justify-center w-14 h-12 rounded-xl transition-all duration-300 ${
+                                        isActive 
+                                        ? "text-blue-600 dark:text-blue-400 scale-110" 
+                                        : "text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300"
+                                    }`
+                                }
                             >
-                                <HiOutlineLogout size={22} />
-                                <span className="text-[9px] font-black uppercase tracking-tighter mt-1">Salir</span>
-                            </button>
+                                {({ isActive }) => (
+                                    <>
+                                        <LuUser size={22} strokeWidth={isActive ? 2.5 : 2} />
+                                        <span className="text-[9px] font-black uppercase tracking-tighter mt-1">Perfil</span>
+                                        
+                                        {/* Brillo de fondo sutil cuando la ruta es /profile */}
+                                        {isActive && (
+                                            <div className="absolute inset-0 bg-blue-500/10 dark:bg-blue-400/10 rounded-xl blur-md -z-10 animate-pulse" />
+                                        )}
+                                    </>
+                                )}
+                            </NavLink>
                         </div>
                     </nav>
                 </div>
             </div>
 
-            {/* BottonSheet para el logout */}
-            <BottomSheet open={openLogoutSheet} onClose={() => setOpenLogoutSheet(false)}>
-                <div className="pt-2 pb-6 px-4">
-                    <div className="flex flex-col items-center text-center mb-8">
-                        <div className="w-16 h-16 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mb-4">
-                            <HiOutlineLogout className="text-zinc-600 dark:text-zinc-300 text-2xl" />
-                        </div>
-                        <p className="text-xl font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-tight">
-                            ¿Cerrar sesión?
-                        </p>
-                        <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-2 font-black uppercase tracking-[0.2em]">
-                            Tu progreso está a salvo
-                        </p>
-                    </div>
-
-                    <div className="grid gap-3">
-                        <button
-                            onClick={handleConfirmLogout}
-                            className="button-form-primary w-full"
-                        >
-                            SÍ, CERRAR SESIÓN
-                        </button>
-                        <button
-                            className="w-full py-4 text-zinc-400 font-bold text-[10px] uppercase tracking-widest"
-                            onClick={() => setOpenLogoutSheet(false)}
-                        >
-                            VOLVER
-                        </button>
-                    </div>
-                </div>
-            </BottomSheet>
+       
         </>
     );
 };
