@@ -12,14 +12,16 @@ export const useWorkoutSetServices = () => {
             const res = await api.get(`/workout-sets/${workoutSetId}`);
             return res.data;
         },
-        getAllWorkoutSets: async(workoutExerciseId) => {
+        getAllWorkoutSets: async ({ workoutId, exerciseId }) => {
+            // Send both IDs to the backend to find the related sets
             const res = await api.get("/workout-sets", {
                 params: {
-                    workoutExerciseId: workoutExerciseId,
+                    workoutId,
+                    exerciseId,
                 }
             });
             return res.data;
-        }, 
+        },
         updateWorkoutSet: async(workoutSetId, data) => {
             const res = await api.patch(`/workout-sets/${workoutSetId}`, data);
             return res.data;

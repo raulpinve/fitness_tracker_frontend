@@ -7,15 +7,10 @@ import { useRoutineExerciseService } from '../../../services/routineExercise.ser
 import { handleErrors } from '../../../utils/handleErrors';
 
 export const CardioForm = ({ exercise, routineId, setMessageError, initialData }) => {
-    // 1. Obtenemos el ID de la relación desde la URL
+    const { createRoutineExercise, updateRoutineExercise } = useRoutineExerciseService();
+    const [loading, setLoading] = useState(false);
     const { routineExerciseId } = useParams();
     const navigate = useNavigate();
-    const [loading, setLoading] = useState(false);
-    
-    // 2. Servicios
-    const { createRoutineExercise, updateRoutineExercise } = useRoutineExerciseService();
-
-    // 3. Configuración del Formulario con conversión de segundos a minutos
     const { register, handleSubmit, setError } = useForm({
         defaultValues: initialData ? {
             targetDurationMinutes: initialData.targetDurationSeconds ? initialData.targetDurationSeconds / 60 : '',
@@ -27,25 +22,19 @@ export const CardioForm = ({ exercise, routineId, setMessageError, initialData }
         setLoading(true);
         setMessageError(false);
         try {
-            // 4. Preparamos el payload convirtiendo minutos a segundos para la DB
             const payload = {
                 exerciseId: exercise.id,
                 routineId,
                 targetDistanceKm: values.targetDistanceKm ? parseFloat(values.targetDistanceKm) : null,
                 targetDurationSeconds: values.targetDurationMinutes ? parseInt(values.targetDurationMinutes) * 60 : null
             };
-
             if (initialData) {
-                // LÓGICA DE EDICIÓN
                 await updateRoutineExercise(routineExerciseId, payload);
                 toast.success('Ejercicio de cardio actualizado');
             } else {
-                // LÓGICA DE CREACIÓN
                 await createRoutineExercise(payload);
                 toast.success('Ejercicio de cardio agregado');
             }
-
-            // Redirección común
             navigate(`/routines/${routineId}/exercises`);
         } catch (error) {
             handleErrors(error, setError, setMessageError);
@@ -63,6 +52,7 @@ export const CardioForm = ({ exercise, routineId, setMessageError, initialData }
                         type="number" 
                         placeholder="Ej: 30"
                         className="input-form"
+                        min={0}
                         {...register("targetDurationMinutes")} 
                     />
                 </div>
@@ -71,6 +61,7 @@ export const CardioForm = ({ exercise, routineId, setMessageError, initialData }
                     <input 
                         type="number" 
                         step="0.1" 
+                        min={0}
                         placeholder="Ej: 5.0"
                         className="input-form"
                         {...register("targetDistanceKm")} 

@@ -12,14 +12,16 @@ export const useCardioLogServices = () => {
             const res = await api.get(`/cardio-logs/${cardioLogId}`);
             return res.data;
         },
-        getAllCardioLogs: async(workoutExerciseId) => {
+        getAllCardioLogs: async ({ workoutId, exerciseId }) => {
             const res = await api.get("/cardio-logs", {
                 params: {
-                    workoutExerciseId: workoutExerciseId,
+                    workoutId,
+                    exerciseId,
                 }
             });
             return res.data;
-        }, 
+        },
+ 
         updateCardioLogs: async(cardioLogId, data) => {
             const res = await api.patch(`/cardio-logs/${cardioLogId}`, data);
             return res.data;

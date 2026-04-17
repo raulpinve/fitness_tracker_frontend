@@ -33,13 +33,13 @@ export const useWorkoutServices = () => {
             return res.data;
         },
         updateRoutineProgress: async (routineId, updates) => {
-            const res = await api.patch(`/workouts/update-routine-progress`, {
-                routineId,
-                updates
-            });
+            const res = await api.patch(`/workouts/${routineId}/update-routine-progress`, { updates }); 
             return res.data;
-        }
-
+        },
+        getWorkoutHistory: async (page = 1, limit = 10) => {
+            const res = await api.get(`/workouts/history?page=${page}&limit=${limit}`);
+            return res.data;
+        },
     }
     return workoutService;
 }

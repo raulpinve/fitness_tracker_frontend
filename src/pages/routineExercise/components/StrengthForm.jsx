@@ -7,17 +7,13 @@ import { useRoutineExerciseService } from '../../../services/routineExercise.ser
 import { handleErrors } from '../../../utils/handleErrors';
 
 export const StrengthForm = ({ exercise, routineId, setMessageError, initialData }) => {
-    // 1. Extraemos el ID de la relación desde la URL (solo existirá al editar)
     const { routineExerciseId } = useParams();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     
-    // 2. Servicios
     const { createRoutineExercise, updateRoutineExercise } = useRoutineExerciseService();
 
-    // 3. Configuración del Formulario
     const { register, handleSubmit, setError, formState: { errors } } = useForm({
-        // Si es edición, initialData llenará los campos automáticamente
         defaultValues: initialData || {
             targetSets: '',
             targetReps: '',
@@ -29,7 +25,6 @@ export const StrengthForm = ({ exercise, routineId, setMessageError, initialData
         setLoading(true);
         setMessageError(false);
         try {
-            // Preparamos el objeto con los tipos de datos correctos
             const payload = {
                 ...values,
                 exerciseId: exercise.id,
@@ -40,11 +35,9 @@ export const StrengthForm = ({ exercise, routineId, setMessageError, initialData
             };
 
             if (initialData) {
-                // Lógica de edición
                 await updateRoutineExercise(routineExerciseId, payload);
                 toast.success('Ejercicio actualizado correctamente');
             } else {
-                // Lógica de creación
                 await createRoutineExercise(payload);
                 toast.success('Ejercicio agregado a la rutina');
             }
@@ -64,6 +57,7 @@ export const StrengthForm = ({ exercise, routineId, setMessageError, initialData
                     <input 
                         type="number" 
                         placeholder="Ej: 4"
+                        min={0}
                         className={`input-form ${errors.targetSets ? 'input-form-error' : ''}`}
                         {...register("targetSets", { 
                             required: "Requerido", 
@@ -77,6 +71,7 @@ export const StrengthForm = ({ exercise, routineId, setMessageError, initialData
                     <input 
                         type="number" 
                         placeholder="Ej: 12"
+                        min={0}
                         className={`input-form ${errors.targetReps ? 'input-form-error' : ''}`}
                         {...register("targetReps", { 
                             required: "Requerido", 
@@ -88,6 +83,8 @@ export const StrengthForm = ({ exercise, routineId, setMessageError, initialData
                 <div>
                     <label className="label-form">Peso (kg)</label>
                     <input 
+                        min={0}
+
                         type="number" 
                         step="0.25"
                         placeholder="Ej: 50"
@@ -98,7 +95,6 @@ export const StrengthForm = ({ exercise, routineId, setMessageError, initialData
                     />
                 </div>
             </div>
-
             <Button colorButton="primary" loading={loading}>
                 {initialData ? 'Actualizar Ejercicio' : 'Guardar Ejercicio'}
             </Button>

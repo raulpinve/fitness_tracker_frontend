@@ -1,43 +1,44 @@
-import React, { useEffect, useState } from 'react';
-import Header from '../../shared/components/Header';
-import { useForm } from 'react-hook-form';
-import MessageError from '../../shared/components/MessageError';
-import { toast } from 'sonner';
-import { useNavigate, useParams } from 'react-router-dom';
-import { IoIosArrowDown } from 'react-icons/io';
 import { useExerciseServices } from '../../services/exercises.service';
+import MessageError from '../../shared/components/MessageError';
 import { StrengthForm } from './components/StrengthForm';
+import { useParams } from 'react-router-dom';
 import { CardioForm } from './components/CardioForm';
+import Header from '../../shared/components/Header';
+import React, { useEffect, useState } from 'react';
+import { IoIosArrowDown } from 'react-icons/io';
+import { useForm, useWatch } from 'react-hook-form';
+import { toast } from 'sonner';
 
 const RoutineExerciseCreatePage = () => {
-    const { register, watch, formState: { errors } } = useForm({ mode: "onChange" });
-    const [messageError, setMessageError] = useState(false);
+    const { register, control, formState: { errors }  } = useForm({ mode: "onChange" });
     const [availableExercises, setAvailableExercises] = useState([]);
+    const [messageError, setMessageError] = useState(false);
     const { getAllExercises } = useExerciseServices();
-    const navigate = useNavigate();
     const { routineId } = useParams();
-
-    const selectedExerciseId = watch("exerciseId");
-    const selectedExercise = availableExercises.find(ex => ex.id === selectedExerciseId);
-
+  
     useEffect(() => {
         const fetchDataExercises = async () => {
             try {
                 const res = await getAllExercises(1, 100);
                 setAvailableExercises(res.data);
-            } catch (error) {
+            } catch {
                 toast.error("Error al recuperar el listado de ejercicios");
             }
         };
         fetchDataExercises();
     }, []);
 
+    const selectedExerciseId = useWatch({
+        control,
+        name: "exerciseId"
+    });
+    const selectedExercise = availableExercises.find(ex => ex.id === selectedExerciseId);
+
     return (
         <>
             <Header title="Agregar ejercicio" showBack={true} />
             <div className="p-4">
                 <div className='grid gap-4'>
-                    {/* Selector del ejercicio fuera de los sub-formularios */}
                     <div>
                         <label className="label-form">Ejercicio <span className="input-required">*</span></label>
                         <div className="relative">
@@ -55,8 +56,6 @@ const RoutineExerciseCreatePage = () => {
                             </span>
                         </div>
                     </div>
-
-                    {/* Formularios Independientes: Cada uno con su propio onSubmit */}
                     {selectedExercise?.type === 'strength' && (
                         <StrengthForm 
                             exercise={selectedExercise} 

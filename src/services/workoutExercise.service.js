@@ -4,6 +4,14 @@ export const useWorkoutExerciseServices = () => {
     const api = useAxiosInterceptor();
 
     const workoutExerciseService = {
+        getWorkoutActiveExercises: async(workoutId) => {
+            const res = await api.get("/workouts-exercises/active", {
+                params: {
+                    workoutId,
+                }
+            });
+            return res.data;
+        },
         createWorkoutExercise: async(data) => {
             const res = await api.post(`/workouts-exercises`, data);
             return res.data;

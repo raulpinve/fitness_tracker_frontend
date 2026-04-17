@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useWorkoutServices } from '../../services/workout.service';
-import Header from '../../shared/components/Header';
-import Button from '../../shared/components/Button';
-import { toast } from 'sonner';
+import { LuTrophy, LuDumbbell, LuTimer, LuChevronRight, LuArrowUp, LuArrowRight, LuArrowUp01  } from 'react-icons/lu';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
-import { FaArrowUp, FaDumbbell, FaRunning } from 'react-icons/fa';
+import confetti from 'canvas-confetti';
+import { useWorkoutServices } from '../../services/workout.service';
+import { toast } from 'sonner';
 
 const WorkoutSummaryPage = () => {
     const { workoutId } = useParams();
     const navigate = useNavigate();
     const { getWorkoutSummary, updateRoutineProgress } = useWorkoutServices();
+    const [isReadOnly, setIsReadOnly] = useState(false);
     
     const [summary, setSummary] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -21,11 +21,26 @@ const WorkoutSummaryPage = () => {
             try {
                 const res = await getWorkoutSummary(workoutId);
                 setSummary(res.data);
-                // Pre-seleccionamos los que pueden progresar
+
+                if (res.data[0]?.finishedAt) {
+                    setIsReadOnly(true);
+                }
+                
+                // Pre-select exercises that can progress
                 const initialSelected = res.data
                     .filter(ex => ex.canProgress)
                     .map(ex => ex.exerciseId);
                 setSelectedIds(initialSelected);
+
+                // CELEBRATION: Trigger confetti if there are PRs or Progressions
+                if (res.data.some(ex => ex.canProgress || ex.isPR)) {
+                    confetti({
+                        particleCount: 150,
+                        spread: 70,
+                        origin: { y: 0.6 },
+                        colors: ['#3b82f6', '#fbbf24', '#ffffff']
+                    });
+                }
             } catch (error) {
                 toast.error("Error al cargar el resumen");
             } finally {
@@ -42,119 +57,159 @@ const WorkoutSummaryPage = () => {
     };
     
     const handleConfirm = async () => {
-        // Verificamos que el resumen tenga datos
-        if (summary.length === 0) return navigate('/workouts');
-
+        // 1. Filtramos los ejercicios que el usuario aceptó (los que están en azul)
         const updates = summary
             .filter(ex => selectedIds.includes(ex.exerciseId))
             .map(ex => ({
-                exerciseId: ex.exerciseId,
+                // AQUÍ ESTÁ LA CLAVE: Usamos el id que ya viene en el objeto 'ex'
+                exerciseId: ex.exerciseId, 
                 newWeight: ex.suggestedWeight
             }));
 
         try {
             if (updates.length > 0) {
-                // Tomamos el routineId del primer elemento del array
-                const routineId = summary[0].routineId; 
+                // Buscamos el routineId que también viene en los datos del summary
+                const routineId = summary.find(ex => ex.routineId)?.routineId;
                 
-                await updateRoutineProgress(routineId, updates);
-                toast.success("¡Pesos actualizados en tu rutina!");
+                if (routineId) {
+                    await updateRoutineProgress(routineId, updates);
+                    toast.success("¡Rutina actualizada con éxito! 💪");
+                }
             }
+            
+            localStorage.removeItem(`pending_extras_${workoutId}`);
             navigate('/workouts');
         } catch (error) {
-            toast.error("Error al actualizar pesos");
+            toast.error("Error al guardar los cambios");
         }
     };
 
-    if (loading) {
-        return (
-            <div className="flex justify-center items-center h-screen dark:bg-zinc-950">
-                <AiOutlineLoading3Quarters className="animate-spin text-blue-600 text-4xl" />
-            </div>
-        );
-    }
+    if (loading) return (
+        <div className="flex justify-center items-center h-screen bg-white dark:bg-zinc-950">
+            <AiOutlineLoading3Quarters className="animate-spin text-blue-600 text-4xl" />
+        </div>
+    );
 
     return (
-        <div className="min-h-screen bg-white dark:bg-zinc-950">
-            <Header title="Resumen de sesión" showBack={false} />
-            
-            <div className="p-4 max-w-2xl mx-auto grid gap-4">
-                <div className="text-center py-6">
-                    <h2 className="text-2xl font-bold text-zinc-800 dark:text-zinc-100">¡Buen trabajo!</h2>
-                    <p className="text-zinc-500 dark:text-zinc-400 text-sm">Analizamos tu desempeño en esta sesión</p>
+        <>
+            <div className="px-4">
+                {/* HERO SECTION */}
+                <div className="pt-10 pb-10 px-6 text-center bg-white dark:bg-zinc-950 border-b border-zinc-100 dark:border-zinc-900 rounded-b-[3rem] shadow-sm">
+                    <div className="inline-flex p-4 bg-amber-50 dark:bg-amber-500/10 rounded-full mb-4 animate-bounce">
+                        <LuTrophy className="text-amber-500" size={40} />
+                    </div>
+                    <h1 className="text-3xl font-black text-zinc-900 dark:text-white uppercase italic tracking-tighter">
+                        ¡Sesión Completada!
+                    </h1>
+                    <p className="text-zinc-500 dark:text-zinc-400 text-[10px] font-black uppercase tracking-[0.3em] mt-2">
+                        Análisis de rendimiento y progresión
+                    </p>
                 </div>
 
-                <div className="grid gap-4">
-                    {summary.map((ex) => (
-                        <div 
-                            key={ex.exerciseId} 
-                            className="border border-gray-200 dark:border-zinc-800 rounded-xl p-4 bg-white dark:bg-zinc-950 shadow-sm relative"
-                        >
-                            <div className="flex justify-between items-start mb-4">
-                                <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                                        {ex.type === 'cardio' ? 
-                                            <FaRunning className="text-blue-600 dark:text-blue-400" /> : 
-                                            <FaDumbbell className="text-blue-600 dark:text-blue-400" />
-                                        }
-                                    </div>
-                                    <div>
-                                        <h3 className="font-bold text-zinc-900 dark:text-zinc-100">{ex.name}</h3>
-                                        <p className="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase font-bold">
-                                            {ex.type === 'strength' 
-                                                ? `Meta: ${ex.targetReps} reps ${ex.oldWeight > 0 ? `• ${ex.oldWeight} kg` : ''}`
-                                                : `Meta: Cardio`}
-                                        </p>
-                                    </div>
-                                </div>
+                <div className="p-6 max-w-2xl mx-auto space-y-6">
+                    
+                    {/* LISTA DE EJERCICIOS */}
+                    <div className="space-y-4">
+                        <h2 className="text-[10px] font-black text-zinc-400 dark:text-zinc-600 uppercase tracking-[0.2em] ml-2">
+                            Resultados por ejercicio
+                        </h2>
+                        
+                        <div className="grid gap-6">
+                            <div className="grid gap-4">
+                                {summary.map((ex, index) => { 
+                                    // Normalizamos variables por si acaso
+                                    const sets = ex.setsDone || 0;
+                                    const weight = ex.maxWeight || 0;
+                                    const reps = ex.repsDone || 0;
+                                    const isSelected = selectedIds.includes(ex.exerciseId);
 
-                                {ex.canProgress && (
-                                    <input 
-                                        type="checkbox" 
-                                        checked={selectedIds.includes(ex.exerciseId)}
-                                        onChange={() => handleToggle(ex.exerciseId)}
-                                        className="w-5 h-5 rounded border-zinc-300 dark:border-zinc-700 text-blue-600 focus:ring-blue-500 dark:bg-zinc-900"
-                                    />
-                                )}
+                                    return (
+                                        <div 
+                                            key={`${ex.exerciseId || 'extra'}-${index}`} 
+                                            className={`relative rounded-[2rem] border transition-all duration-300 ${
+                                                ex.canProgress 
+                                                ? "bg-white dark:bg-zinc-900 border-blue-200 dark:border-blue-900 shadow-lg" 
+                                                : "bg-zinc-50 dark:bg-zinc-900/50 border-zinc-100 dark:border-zinc-800"
+                                            }`}
+                                        >
+                                            <div className="p-6">
+                                                {/* --- CABECERA --- */}
+                                                <div className="flex justify-between items-center mb-5">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className={`p-3 rounded-2xl ${ex.canProgress ? "bg-blue-600 text-white" : "bg-zinc-200 dark:bg-zinc-800 text-zinc-400"}`}>
+                                                            {ex.type === 'cardio' ? <LuTimer size={20} /> : <LuDumbbell size={20} />}
+                                                        </div>
+                                                        <div>
+                                                            <h3 className="font-black text-zinc-800 dark:text-zinc-100 uppercase tracking-tighter leading-none">
+                                                                {ex.name}
+                                                            </h3>
+                                                            <p className="text-[10px] font-bold text-zinc-400 uppercase mt-1">
+                                                                {sets} SERIES REALIZADAS
+                                                            </p>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* BOTÓN DE ACCIÓN: Solo si el sistema detectó que puede progresar */}
+                                                    {ex.canProgress && (
+                                                        <button 
+                                                            onClick={() => handleToggle(ex.exerciseId)}
+                                                            className={`h-10 px-4 rounded-xl font-black text-[10px] uppercase transition-all ${
+                                                                isSelected 
+                                                                ? "bg-blue-600 text-white shadow-md" 
+                                                                : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500"
+                                                            }`}
+                                                        >
+                                                            {isSelected ? "✓ ACEPTADO" : "SUBIR PESO"}
+                                                        </button>
+                                                    )}
+                                                </div>
+
+                                                {/* --- CONTENIDO --- */}
+                                                {ex.canProgress && isSelected ? (
+                                                    /* Vista de Progresión (Si el usuario aceptó subir) */
+                                                    <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-2xl border border-blue-100 dark:border-blue-800/50">
+                                                        <span className="text-[8px] font-black text-blue-600 uppercase block mb-1">Próximo objetivo</span>
+                                                        <div className="flex items-center gap-3">
+                                                            <span className="text-lg font-bold text-zinc-400 line-through">{ex.oldWeight}kg</span>
+                                                            <LuChevronRight className="text-blue-500" />
+                                                            <span className="text-2xl font-black text-zinc-900 dark:text-white italic">{ex.suggestedWeight}kg</span>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    /* Vista de Resumen Simple (Lo que hizo hoy) */
+                                                    <div className="bg-white dark:bg-zinc-800 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-700/50">
+                                                        <span className="text-[8px] font-black text-zinc-400 uppercase block mb-1">Mejor desempeño de hoy</span>
+                                                        <div className="flex items-baseline gap-2">
+                                                            <span className="text-2xl font-black text-zinc-800 dark:text-zinc-100 italic">{weight}kg</span>
+                                                            <span className="text-sm font-bold text-zinc-400">x {reps} reps</span>
+                                                            {ex.isPR && <span className="ml-auto text-lg">🏆</span>}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
                             </div>
-
-                            {ex.canProgress ? (
-                                <div className="bg-gray-50 dark:bg-zinc-900 p-3 rounded-lg border-l-4 border-blue-400 flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <FaArrowUp className="text-blue-500 text-xs" />
-                                        <span className="text-sm font-bold text-zinc-700 dark:text-zinc-200">
-                                            Sugerencia: {ex.suggestedWeight} kg
-                                        </span>
-                                    </div>
-                                    <span className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase">
-                                        Mejora disponible
-                                    </span>
-                                </div>
-                            ) : (
-                                <div className="bg-gray-50 dark:bg-zinc-900/50 p-2 rounded-lg text-center">
-                                    <span className="text-xs text-zinc-400 dark:text-zinc-500 italic">
-                                        Mantener objetivo actual
-                                    </span>
-                                </div>
-                            )}
                         </div>
-                    ))}
-                </div>
+                    </div>
 
-                {/* Botón de acción al final del scroll */}
-                <div className="mt-6">
-                    <Button 
-                        colorButton="primary"
-                        onClick={handleConfirm}
-                        className="w-full py-4 rounded-xl font-bold shadow-lg"
-                    >
-                        {selectedIds.length > 0 
-                            ? `Actualizar ${selectedIds.length} ejercicios y finalizar` 
-                            : "Finalizar resumen"}
-                    </Button>
+                    {!isReadOnly && (
+
+                        <div className="">
+                            <button 
+                                onClick={handleConfirm}
+                                className="w-full py-5 bg-zinc-900 dark:bg-white text-white dark:text-black rounded-4xl font-black uppercase tracking-[0.2em] text-xs shadow-2xl active:scale-[0.97] transition-all flex items-center justify-center gap-3"
+                            >
+                                {selectedIds.length > 0 
+                                    ? <>Actualizar {selectedIds.length} Pesos <LuArrowUp01 size={18} /></>
+                                    : "Guardar progreso"}
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 

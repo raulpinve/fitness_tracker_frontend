@@ -30,10 +30,11 @@ const ProfilePage = () => {
     const nombreCompleto = `${user?.firstName} ${user?.lastName}`;
     
     return (
-        <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 pb-20">
-            <Header title="Mi Perfil" />
+        <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 pt-6 pb-20">
+            {/* <Header title="Mi Perfil" /> */}
 
             <div className="p-4 space-y-6 max-w-md mx-auto">
+                
                 {/* 1. Card de Usuario: El "Hero" de la página */}
                 <div className="bg-white dark:bg-zinc-900 rounded-[2.5rem] p-6 shadow-sm border border-zinc-100 dark:border-zinc-800 flex flex-col items-center text-center">
                     <div className="w-24 h-24 rounded-[2rem] bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center text-white text-4xl font-black italic shadow-lg shadow-blue-500/20 mb-4 border-4 border-white dark:border-zinc-900 transition-transform active:scale-95">

@@ -148,6 +148,17 @@
   background-color: #9ca3af;
 }
 
+/* Utilidad para ocultar scrollbars */
+@utility no-scrollbar {
+  /* IE y Edge */
+  -ms-overflow-style: none;
+  /* Firefox */
+  scrollbar-width: none;
+  /* Chrome, Safari y Opera */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
 
 @keyframes shake {
   0%, 100% { transform: translateX(0); }

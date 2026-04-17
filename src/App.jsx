@@ -16,11 +16,12 @@ import RoutineExercisePage from "./pages/routineExercise/RoutineExercisePage";
 import RoutineExerciseCreatePage from "./pages/routineExercise/RoutineExerciseCreatePage";
 import RoutineExerciseEditPage from "./pages/routineExercise/RoutineExerciseEditPage";
 import WorkoutsPage from "./pages/workouts/WorkoutsPage";
-import WorkoutPage from "./pages/workouts/WorkoutPage";
 import WorkoutsCreatePage from "./pages/workouts/WorkoutsCreatePage";
+import WorkoutDetailPage from "./pages/workouts/WorkoutDetailPage";
 import WorkoutSummaryPage from "./pages/workouts/WorkoutSummaryPage";
 import ExerciseDetailPage from "./pages/exercises/ExerciseDetailPage";
 import ProfilePage from "./pages/profile/ProfilePage";
+import WorkoutLogPage from "./pages/workoutLog/WorkoutLogPage";
 
 function App() {
   return (
@@ -57,9 +58,12 @@ function App() {
 
               {/* Workouts */}
               <Route path="/workouts" element={<WorkoutsPage />} />
-              <Route path="/workouts/:workoutId" element={<WorkoutPage />} />
+              <Route path="/workouts/create" element = {<WorkoutsCreatePage />} /> 
+              <Route path="/workouts/:workoutId" element={<WorkoutDetailPage />} />
               <Route path="/workouts/:workoutId/summary" element={<WorkoutSummaryPage />} />
-              <Route path="/workouts/create" element = {<WorkoutsCreatePage />} />
+
+              {/* History */}
+              <Route path="/history" element={<WorkoutLogPage />} />
 
               {/* Profile */}
               <Route path="/profile" element={<ProfilePage />} />
