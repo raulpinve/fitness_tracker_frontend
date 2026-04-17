@@ -9,9 +9,11 @@ import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import { toast } from 'sonner';
 import HistorySkeleton from './HistorySkeleton';
 import BottomSheet from '../../../shared/components/BottomSheet';
+import { useWorkoutExerciseServices } from '../../../services/workoutExercise.service';
 
-const ExerciseBlock = ({ exercise, workout }) => {
+const ExerciseBlock = ({ exercise, workout, onRemove }) => {
     const { register, handleSubmit, setValue, watch} = useForm();
+    const { deleteWorkoutExercise } = useWorkoutExerciseServices();
     const { getAllWorkoutSets, createWorkoutSet, deleteWorkoutSet } = useWorkoutSetServices();
     const { getAllCardioLogs, createCardioLog, deleteCardioLog } = useCardioLogServices();
     const navigate = useNavigate();
@@ -41,8 +43,6 @@ const ExerciseBlock = ({ exercise, workout }) => {
         if (exercise.targetDistanceKm) parts.push(`${exercise.targetDistanceKm}KM`);
         return parts.length > 0 ? `OBJETIVO: ${parts.join(" • ")}` : null;
     };
-
-
     const targetText = getTargetText();
     
     // Get history data
@@ -148,7 +148,26 @@ const ExerciseBlock = ({ exercise, workout }) => {
         }
     };
 
-        
+    const onDeleteExercise = async () => {
+        const confirm = window.confirm("¿Quitar este ejercicio del entrenamiento?");
+        if (!confirm) return;
+
+        try {
+            // 1. Si ya tiene un ID de base de datos, lo borramos allá
+            if (exercise.workoutExerciseId) {
+                await deleteWorkoutExercise(exercise.workoutExerciseId);
+            }
+
+            // 2. Lo quitamos del estado local del padre para que desaparezca de la vista
+            // Esta función 'onRemove' debe venir por props desde el ActiveWorkoutPage
+            onRemove(exercise.exerciseId);
+            
+            toast.success("Ejercicio quitado");
+        } catch (error) {
+            toast.error("No se pudo quitar el ejercicio");
+        }
+    };
+
     const handleOpenSetActions = (item) => {
         setSelectedItem(item);
         setOpenSetActions(true);
@@ -178,6 +197,7 @@ const ExerciseBlock = ({ exercise, workout }) => {
                 {!isReadOnly && (
                     <button 
                         className="p-2 text-zinc-300 hover:text-red-500 transition-colors"
+                        onClick={onDeleteExercise}
                     >
                         <LuX size={20} />
                     </button>

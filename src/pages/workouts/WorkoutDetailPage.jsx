@@ -18,7 +18,7 @@ import { useWorkoutExerciseServices } from '../../services/workoutExercise.servi
 const WorkoutDetailPage = () => {
     const { getWorkoutActiveExercises } = useWorkoutExerciseServices();
     const { getAllExercises } = useExerciseServices();
-    const { getWorkout, finishWorkout } = useWorkoutServices();
+    const { getWorkout, finishWorkout, deleteWorkout } = useWorkoutServices();
     const { workoutId } = useParams();
     const [ loading, setLoading ] = useState(true);
     const [ workout, setWorkout ] = useState();
@@ -28,7 +28,7 @@ const WorkoutDetailPage = () => {
     const [query, setQuery] = useState("");
     const navigate = useNavigate();
 
-    useEffect(() => {
+       useEffect(() => {
         const loadInitialData = async () => {
             if (!workoutId) return;
             setLoading(true);
@@ -49,7 +49,17 @@ const WorkoutDetailPage = () => {
                     !dbExercises.some(dbEx => dbEx.exerciseId === extra.exerciseId)
                 );
 
-                setActiveExercises([...dbExercises, ...filteredExtras]);
+                // --- NUEVA LÓGICA DE FILTRADO (LISTA NEGRA) ---
+                // Obtenemos los ejercicios que el usuario quitó manualmente de esta sesión
+                const removedIds = JSON.parse(localStorage.getItem(`removed_exercises_${workoutId}`)) || [];
+
+                // Combinamos todo y filtramos los que estén en la "lista negra"
+                const mergedExercises = [...dbExercises, ...filteredExtras];
+                const finalExercises = mergedExercises.filter(ex => !removedIds.includes(ex.exerciseId));
+
+                setActiveExercises(finalExercises);
+                // ----------------------------------------------
+
             } catch (error) {
                 console.log(error);
                 toast.error("Error al sincronizar el entrenamiento");
@@ -61,10 +71,20 @@ const WorkoutDetailPage = () => {
         loadInitialData();
     }, [workoutId]);
 
+
     const handleAddExerciseToWorkout = (libraryEx) => {
         if (activeExercises.some(e => e.exerciseId === libraryEx.id)) {
             return toast.error("Este ejercicio ya está en la lista");
         }
+
+        // --- NUEVA LÓGICA: Limpiar de la lista negra si existía ---
+        const removedKey = `removed_exercises_${workoutId}`;
+        const removed = JSON.parse(localStorage.getItem(removedKey) || "[]");
+        if (removed.includes(libraryEx.id)) {
+            const updatedRemoved = removed.filter(id => id !== libraryEx.id);
+            localStorage.setItem(removedKey, JSON.stringify(updatedRemoved));
+        }
+        // ---------------------------------------------------------
 
         const newEntry = {
             exerciseId: libraryEx.id,
@@ -74,7 +94,7 @@ const WorkoutDetailPage = () => {
             targetSets: null, 
             targetReps: null,
             targetWeight: null,
-            exerciseAvatarThumbnail: libraryEx.avatarThumbnail // Added this to keep the image!
+            exerciseAvatarThumbnail: libraryEx.avatarThumbnail
         };
 
         // 1. Get current extras and filter out the one we are adding (just in case)
@@ -127,6 +147,41 @@ const WorkoutDetailPage = () => {
         }
     };
 
+    const handleDeleteWorkout = async () => {
+        const confirm = window.confirm("¿Seguro que quieres borrar este entrenamiento? Se perderán todos los datos de hoy.");
+        
+        if (confirm) {
+            try {
+                await deleteWorkout(workoutId);
+                
+                localStorage.removeItem(`pending_extras_${workoutId}`);
+                localStorage.removeItem(`workout_timer_${workoutId}`);
+                
+                toast.success("Sesión eliminada");
+                navigate('/workouts');
+            } catch {
+                toast.error("No se pudo eliminar");
+            }
+        }
+    };  
+
+    const handleRemoveExercise = (exerciseId) => {
+        // 1. Actualizamos el estado de React (esto activará el renderizado)
+        setActiveExercises(prev => {
+            const newState = prev.filter(ex => ex.exerciseId !== exerciseId);
+            // Si este era el último, newState.length será 0 y verás el Empty State
+            return newState;
+        });
+
+        // 2. Guardamos en la "Lista Negra" de LocalStorage
+        const storageKey = `removed_exercises_${workoutId}`;
+        const removed = JSON.parse(localStorage.getItem(storageKey) || "[]");
+        
+        if (!removed.includes(exerciseId)) {
+            localStorage.setItem(storageKey, JSON.stringify([...removed, exerciseId]));
+        }
+    };
+
 
     return (
         <>
@@ -137,6 +192,7 @@ const WorkoutDetailPage = () => {
                 rightAction={
                     <button 
                         className="p-2 text-red-500 active:scale-90 transition-transform cursor-pointer"
+                        onClick={handleDeleteWorkout}
                         title="Eliminar entrenamiento"
                     >
                         <LuTrash2 size={20} />
@@ -155,6 +211,7 @@ const WorkoutDetailPage = () => {
                 ) : (
                     activeExercises.map(ex => 
                         <ExerciseBlock 
+                            onRemove = {handleRemoveExercise}
                             key={ex.exerciseId}
                             exercise={ex} 
                             workout={workout}

@@ -1,26 +1,11 @@
 import { HiOutlineLogout } from "react-icons/hi";
 import { LuClipboardList, LuDumbbell, LuFlame, LuHistory, LuMoon, LuSun, LuUser  } from "react-icons/lu";
 import { NavLink, Outlet } from "react-router-dom";
-import { toast } from "sonner";
 import { useAuth } from "../../auth/useAuth";
-import { useState } from "react";
 import BottomSheet from "./BottomSheet";
-import { useDarkMode } from "../hooks/useDarkMode";
 
 export default function MobileLayout() {
     const { logout } = useAuth(); 
-    const [ openProfileSheet, setOpenProfileSheet] = useState(false);
-    const { isDark, toggleDarkMode } = useDarkMode();
-
-    const handleConfirmLogout = async () => {
-        try {
-            await logout(); 
-            toast.success("Sesión cerrada");
-        } catch {
-            toast.error("Error al cerrar sesión");
-        }
-    };
-  
     return (
         <>
             <div className="max-w-md mx-auto h-screen flex flex-col border border-slate-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 relative overflow-hidden z-40">
@@ -60,17 +45,6 @@ export default function MobileLayout() {
                                     <>
                                         <LuFlame size={20} strokeWidth={isActive ? 2.5 : 2} />
                                         <span className="text-[8px] font-black uppercase tracking-tighter mt-1">Entrenar</span>
-                                        {isActive && <div className="absolute inset-0 bg-blue-500/10 dark:bg-blue-400/10 rounded-xl blur-md -z-10 animate-pulse" />}
-                                    </>
-                                )}
-                            </NavLink>
-
-                            {/* Historial */}
-                            <NavLink to="/history" className={({ isActive }) => `relative flex flex-col items-center justify-center w-14 h-12 rounded-xl transition-all duration-300 ${isActive ? "text-blue-600 dark:text-blue-400 scale-110" : "text-zinc-400 dark:text-zinc-500"}`}>
-                                {({ isActive }) => (
-                                    <>
-                                        <LuHistory size={20} strokeWidth={isActive ? 2.5 : 2} />
-                                        <span className="text-[8px] font-black uppercase tracking-tighter mt-1">Bitácora</span>
                                         {isActive && <div className="absolute inset-0 bg-blue-500/10 dark:bg-blue-400/10 rounded-xl blur-md -z-10 animate-pulse" />}
                                     </>
                                 )}

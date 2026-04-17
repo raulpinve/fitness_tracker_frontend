@@ -19,10 +19,8 @@ export default function Header({
         }
     };
 
-
     return (
         <header className="sticky top-0 z-40 h-16 w-full flex items-center justify-between border-b border-gray-100/50 dark:border-zinc-800/50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl px-4 transition-all">
-            
             {/* Botón de Atrás - Estilo 'Pill' sutil */}
             <div className="w-12 flex items-center">
                 {showBack && (

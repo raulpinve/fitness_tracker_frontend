@@ -93,9 +93,9 @@ const ExerciseDetailPage = () => {
     return (
         <>
             <Header title={exercise.name} showBack={true} />
-            <div className="max-w-2xl mx-auto p-4 space-y-6">
+            <div className="max-w-2xl mx-auto p-4 space-y-6 pb-20">
                 {/* Multimedia: Video o Imagen */}
-                <div className="overflow-hidden rounded-3xl bg-zinc-100 dark:bg-zinc-800 shadow-xl aspect-video relative flex items-center justify-center border border-gray-200 dark:border-zinc-800">
+                <div className="overflow-hidden rounded-[2.5rem] bg-zinc-100 dark:bg-zinc-800 shadow-xl aspect-video relative flex items-center justify-center border border-gray-200 dark:border-zinc-800">
                     {view === 'video' && exercise.video ? (
                         <video 
                             src={`${folderPath}${exercise.video}`} 
@@ -114,7 +114,7 @@ const ExerciseDetailPage = () => {
                     )}
                 </div>
 
-                {/* 2. Selector de Vista (Ubicación ergonómica debajo del bloque) */}
+                {/* Selector de Vista */}
                 {exercise.video && exercise.avatar && (
                     <div className="flex bg-zinc-200 dark:bg-zinc-900 p-1 rounded-2xl w-full max-w-[200px] mx-auto shadow-inner">
                         <button 
@@ -133,64 +133,82 @@ const ExerciseDetailPage = () => {
                     </div>
                 )}
 
+                <div className="pt-2 pb-2 px-2 flex items-stretch gap-3">
+                    {/* Barra lateral más delgada y elegante */}
+                    <div className="w-1.5 rounded-full bg-gradient-to-b from-blue-600 to-blue-400 shadow-[2px_0_12px_rgba(37,99,235,0.3)]" />
+                    
+                    <div className="flex flex-col justify-center">
+                        {/* Título en 2xl: Resalta pero no molesta */}
+                        <h1 className="text-2xl font-black text-zinc-900 dark:text-zinc-100 uppercase italic tracking-tight leading-none">
+                            {exercise.name}
+                        </h1>
+                        <div className="flex items-center gap-2 mt-1">
+                            <p className="text-[9px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.2em]">
+                                Ficha <span className="text-blue-600">Técnica</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+
                 {/* Info Card */}
-                <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-zinc-800">
-                    <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-4">
+                <div className="bg-white dark:bg-zinc-950 rounded-[2rem] p-6 shadow-sm border border-zinc-100 dark:border-zinc-900">
+                    <h2 className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-6 border-b border-zinc-50 dark:border-zinc-900 pb-2">
                         Información General
                     </h2>
                     
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="p-4 rounded-xl bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30">
-                            <p className="text-[10px] uppercase font-bold text-blue-600 dark:text-blue-400 mb-1">Tipo</p>
-                            <div className="flex items-center gap-2 text-zinc-800 dark:text-zinc-200 font-semibold">
-                                {exercise.type === 'strength' ? <FaDumbbell /> : <FaRunning />}
-                                <span className="capitalize">{exercise.type === 'strength' ? 'Fuerza' : 'Cardio'}</span>
+                        <div className="p-4 rounded-2xl bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30">
+                            <p className="text-[8px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-1 italic">Tipo</p>
+                            <div className="flex items-center gap-2 text-zinc-800 dark:text-zinc-200 font-black uppercase text-xs italic">
+                                {exercise.type === 'strength' ? <FaDumbbell className="text-blue-500" /> : <FaRunning className="text-blue-500" />}
+                                <span>{exercise.type === 'strength' ? 'Fuerza' : 'Cardio'}</span>
                             </div>
                         </div>
 
-                        <div className="p-4 rounded-xl bg-orange-50 dark:bg-orange-900/10 border border-orange-100 dark:border-orange-900/30">
-                            <p className="text-[10px] uppercase font-bold text-orange-600 dark:text-orange-400 mb-1">Músculo</p>
-                            <p className="text-zinc-800 dark:text-zinc-200 font-semibold">
+                        <div className="p-4 rounded-2xl bg-orange-50 dark:bg-orange-900/10 border border-orange-100 dark:border-orange-900/30">
+                            <p className="text-[8px] font-black text-orange-600 dark:text-orange-400 uppercase tracking-widest mb-1 italic">Músculo</p>
+                            <p className="text-zinc-800 dark:text-zinc-200 font-black uppercase text-xs italic">
                                 {muscleGroupNames[exercise.muscleGroup] || exercise.muscleGroup}
                             </p>
                         </div>
 
-                        <div className="p-4 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 col-span-2">
-                            <p className="text-[10px] uppercase font-bold text-zinc-500 mb-1">Equipamiento</p>
-                            <p className="text-zinc-800 dark:text-zinc-200 font-semibold">
+                        <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800 col-span-2">
+                            <p className="text-[8px] font-black text-zinc-500 uppercase tracking-widest mb-1 italic">Equipamiento</p>
+                            <p className="text-zinc-800 dark:text-zinc-200 font-black uppercase text-xs italic">
                                 {equipmentNames[exercise.equipment] || exercise.equipment}
                             </p>
                         </div>
                     </div>
                 </div>
 
+                {/* Acciones */}
                 <div className="grid gap-3 pt-4">
                     <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">
-                        Acciones del ejercicio
+                        Gestión de ejercicio
                     </p>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 gap-4">
                         <Button 
                             colorButton={`primary`}
                             loading={loading}
                             onClick={() => navigate(`/exercises/${exercise.id}/edit`)}
-                            className='mt-4'
+                            className="py-4 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-blue-500/10"
                         >
-                            <FaDumbbell className="text-xs" />
                             Editar
                         </Button>
 
                         <Button 
                             colorButton={`danger`}
                             loading={loading}
-                            className='mt-4'
                             onClick={() => setOpenButtonSheet(true)}
+                            className="py-4 rounded-2xl font-black uppercase tracking-widest"
                         >
                             Eliminar
                         </Button>
-                     
                     </div>
                 </div>
             </div>
+
 
             <BottomSheet open={openButtonSheet} onClose={() => setOpenButtonSheet(false)}>
                 <div className="max-w-md mx-auto max-h-[85vh] overflow-y-auto no-scrollbar pt-2 pb-6">
@@ -225,8 +243,6 @@ const ExerciseDetailPage = () => {
                     </div>
                 </div>
             </BottomSheet>
-
-
         </>
     );
 };
