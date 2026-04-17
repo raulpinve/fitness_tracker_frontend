@@ -15,8 +15,6 @@ import FilterBarExercise from './components/FilterBarExercise';
 const ExercisesPage = () => {
     const { getAllExercises } = useExerciseServices();
     const navigate = useNavigate();
-
-    // States
     const [exercises, setExercises] = useState([]);
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
@@ -26,8 +24,6 @@ const ExercisesPage = () => {
     // Filtering states
     const [search, setSearch] = useState("");
     const [filters, setFilters] = useState({ type: "", muscleGroup: "" });
-    
-    // We apply debounce only to the search text
     const debouncedSearch = useDebounce(search, 400);
 
     const fetchExercises = async (pageToLoad, searchTerm, currentFilters) => {
@@ -85,7 +81,6 @@ const ExercisesPage = () => {
                         exercises={exercises} 
                     />
                 )}
-
                 <LoadMoreButton 
                     onClick={handleLoadMore} 
                     loading={loading} 

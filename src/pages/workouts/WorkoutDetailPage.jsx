@@ -2,7 +2,7 @@ import React from 'react';
 import ExerciseBlockSkeleton from './components/ExerciseBlockSkeleton';
 import { useExerciseServices } from '../../services/exercises.service';
 import { useWorkoutServices } from '../../services/workout.service';
-import { LuDumbbell, LuPlus, LuTrash2 } from 'react-icons/lu';
+import { LuDumbbell, LuPlus, LuTrash2, LuTrophy } from 'react-icons/lu';
 import EmptyState from '../../shared/components/EmptyState';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import ExerciseBlock from './components/ExerciseBlock';
@@ -25,10 +25,11 @@ const WorkoutDetailPage = () => {
     const [openAddExerciseSheet, setOpenAddExerciseSheet] = useState(false);
     const [ activeExercises, setActiveExercises ] = useState([]);
     const [libraryExercises, setLibraryExercises] = useState([]);
+    const [openFinishSheet, setOpenFinishSheet] = useState(false);
     const [query, setQuery] = useState("");
     const navigate = useNavigate();
 
-       useEffect(() => {
+    useEffect(() => {
         const loadInitialData = async () => {
             if (!workoutId) return;
             setLoading(true);
@@ -70,6 +71,10 @@ const WorkoutDetailPage = () => {
 
         loadInitialData();
     }, [workoutId]);
+
+    const handleFinishClick = () => {
+        setOpenFinishSheet(true); // En lugar de confirm, abrimos el componente
+    };
 
 
     const handleAddExerciseToWorkout = (libraryEx) => {
@@ -128,9 +133,6 @@ const WorkoutDetailPage = () => {
 
     const handleFinishWorkout = async () => {
         try {
-            const confirm = window.confirm("¿Estás seguro de que quieres finalizar el entrenamiento?");
-            if (!confirm) return;
-
             // 1. Informamos al backend que cerramos la sesión
             await finishWorkout(workoutId);
 
@@ -236,7 +238,7 @@ const WorkoutDetailPage = () => {
                     <Button
                         colorButton={`primary`}
                         className='bg-red-600 dark:text-white mt-4'
-                        onClick={handleFinishWorkout}
+                        onClick={handleFinishClick}
                     >
                         Finalizar workout
                     </Button>
@@ -278,6 +280,48 @@ const WorkoutDetailPage = () => {
                                 <LuPlus className="ml-auto text-blue-500" size={18} />
                             </button>
                         ))}
+                    </div>
+                </div>
+            </BottomSheet>
+
+            {/* BOTTOM SHEET DE FINALIZACIÓN */}
+            <BottomSheet open={openFinishSheet} onClose={() => setOpenFinishSheet(false)}>
+                <div className="max-w-md mx-auto flex flex-col pt-2 pb-10">
+                    {/* Tu barrita característica */}
+                    <div className="w-12 h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full mx-auto mb-8" />
+                    
+                    <div className="px-8 text-center">
+                        {/* Icono de Trofeo estilo Zinc */}
+                        <div className="mx-auto w-20 h-20 bg-blue-50 dark:bg-blue-500/10 rounded-[2.5rem] flex items-center justify-center mb-6 shadow-inner border border-blue-100/50 dark:border-blue-500/10">
+                            <LuTrophy className="text-blue-600" size={40} strokeWidth={2.5} />
+                        </div>
+
+                        <h3 className="text-3xl font-black text-zinc-800 dark:text-zinc-100 uppercase italic tracking-tighter leading-none">
+                            ¿Misión Cumplida?
+                        </h3>
+                        <p className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.2em] mt-4 leading-relaxed">
+                            Hiciste un gran trabajo hoy. <br /> ¿Confirmas que terminaste la batalla?
+                        </p>
+                    </div>
+
+                    {/* Botones de Acción */}
+                    <div className="px-8 mt-10 space-y-3">
+                        <button
+                            onClick={() => {
+                                setOpenFinishSheet(false);
+                                handleFinishWorkout(); // Tu función de confirmación real
+                            }}
+                            className="w-full py-5 bg-blue-600 text-white rounded-[2rem] font-black uppercase tracking-[0.2em] shadow-xl shadow-blue-500/20 active:scale-95 transition-all"
+                        >
+                            Finalizar y Guardar
+                        </button>
+                        
+                        <button
+                            onClick={() => setOpenFinishSheet(false)}
+                            className="w-full py-3 text-zinc-400 dark:text-zinc-600 font-black uppercase tracking-widest text-[9px] active:opacity-50"
+                        >
+                            Todavía no, un set más
+                        </button>
                     </div>
                 </div>
             </BottomSheet>

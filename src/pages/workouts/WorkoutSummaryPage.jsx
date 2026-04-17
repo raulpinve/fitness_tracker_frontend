@@ -114,83 +114,92 @@ const WorkoutSummaryPage = () => {
                             Resultados por ejercicio
                         </h2>
                         
-                        <div className="grid gap-6">
-                            <div className="grid gap-4">
-                                {summary.map((ex, index) => { 
-                                    // Normalizamos variables por si acaso
-                                    const sets = ex.setsDone || 0;
-                                    const weight = ex.maxWeight || 0;
-                                    const reps = ex.repsDone || 0;
-                                    const isSelected = selectedIds.includes(ex.exerciseId);
+                        <div className="grid gap-4">
+                            {summary.map((ex, index) => { 
+                                // Normalizamos variables
+                                const exerciseType = ex.type?.toLowerCase();
+                                const isCardio = exerciseType === 'cardio';
+                                const isStrength = exerciseType === 'strength' || !exerciseType; // Default a strength si no viene
+                                const sets = ex.setsDone || 0;
+                                const weight = ex.maxWeight || 0;
+                                const reps = ex.repsDone || 0;
+                                const isSelected = selectedIds.includes(ex.exerciseId);
 
-                                    return (
-                                        <div 
-                                            key={`${ex.exerciseId || 'extra'}-${index}`} 
-                                            className={`relative rounded-[2rem] border transition-all duration-300 ${
-                                                ex.canProgress 
-                                                ? "bg-white dark:bg-zinc-900 border-blue-200 dark:border-blue-900 shadow-lg" 
-                                                : "bg-zinc-50 dark:bg-zinc-900/50 border-zinc-100 dark:border-zinc-800"
-                                            }`}
-                                        >
-                                            <div className="p-6">
-                                                {/* --- CABECERA --- */}
-                                                <div className="flex justify-between items-center mb-5">
-                                                    <div className="flex items-center gap-4">
-                                                        <div className={`p-3 rounded-2xl ${ex.canProgress ? "bg-blue-600 text-white" : "bg-zinc-200 dark:bg-zinc-800 text-zinc-400"}`}>
-                                                            {ex.type === 'cardio' ? <LuTimer size={20} /> : <LuDumbbell size={20} />}
-                                                        </div>
-                                                        <div>
-                                                            <h3 className="font-black text-zinc-800 dark:text-zinc-100 uppercase tracking-tighter leading-none">
-                                                                {ex.name}
-                                                            </h3>
-                                                            <p className="text-[10px] font-bold text-zinc-400 uppercase mt-1">
-                                                                {sets} SERIES REALIZADAS
-                                                            </p>
-                                                        </div>
+                                return (
+                                    <div 
+                                        key={`${ex.exerciseId || 'extra'}-${index}`} 
+                                        className={`relative rounded-[2rem] border transition-all duration-300 ${
+                                            ex.canProgress && isStrength
+                                            ? "bg-white dark:bg-zinc-900 border-blue-200 dark:border-blue-900 shadow-lg" 
+                                            : "bg-zinc-50 dark:bg-zinc-900/50 border-zinc-100 dark:border-zinc-800"
+                                        }`}
+                                    >
+                                        <div className="p-6">
+                                            {/* --- CABECERA --- */}
+                                            <div className="flex justify-between items-center mb-5">
+                                                <div className="flex items-center gap-4">
+                                                    <div className={`p-3 rounded-2xl ${ex.canProgress && isStrength ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" : "bg-zinc-200 dark:bg-zinc-800 text-zinc-400"}`}>
+                                                        {isCardio ? <LuTimer size={20} /> : <LuDumbbell size={20} />}
                                                     </div>
-
-                                                    {/* BOTÓN DE ACCIÓN: Solo si el sistema detectó que puede progresar */}
-                                                    {ex.canProgress && (
-                                                        <button 
-                                                            onClick={() => handleToggle(ex.exerciseId)}
-                                                            className={`h-10 px-4 rounded-xl font-black text-[10px] uppercase transition-all ${
-                                                                isSelected 
-                                                                ? "bg-blue-600 text-white shadow-md" 
-                                                                : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500"
-                                                            }`}
-                                                        >
-                                                            {isSelected ? "✓ ACEPTADO" : "SUBIR PESO"}
-                                                        </button>
-                                                    )}
+                                                    <div>
+                                                        <h3 className="font-black text-zinc-800 dark:text-zinc-100 uppercase tracking-tighter leading-none italic">
+                                                            {ex.name}
+                                                        </h3>
+                                                        <p className="text-[10px] font-bold text-zinc-400 uppercase mt-1">
+                                                            {isCardio ? 'SESIÓN DE RESISTENCIA' : `${sets} SERIES REALIZADAS`}
+                                                        </p>
+                                                    </div>
                                                 </div>
 
-                                                {/* --- CONTENIDO --- */}
-                                                {ex.canProgress && isSelected ? (
-                                                    /* Vista de Progresión (Si el usuario aceptó subir) */
-                                                    <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-2xl border border-blue-100 dark:border-blue-800/50">
-                                                        <span className="text-[8px] font-black text-blue-600 uppercase block mb-1">Próximo objetivo</span>
-                                                        <div className="flex items-center gap-3">
-                                                            <span className="text-lg font-bold text-zinc-400 line-through">{ex.oldWeight}kg</span>
-                                                            <LuChevronRight className="text-blue-500" />
-                                                            <span className="text-2xl font-black text-zinc-900 dark:text-white italic">{ex.suggestedWeight}kg</span>
-                                                        </div>
-                                                    </div>
-                                                ) : (
-                                                    /* Vista de Resumen Simple (Lo que hizo hoy) */
-                                                    <div className="bg-white dark:bg-zinc-800 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-700/50">
-                                                        <span className="text-[8px] font-black text-zinc-400 uppercase block mb-1">Mejor desempeño de hoy</span>
-                                                        <div className="flex items-baseline gap-2">
-                                                            <span className="text-2xl font-black text-zinc-800 dark:text-zinc-100 italic">{weight}kg</span>
-                                                            <span className="text-sm font-bold text-zinc-400">x {reps} reps</span>
-                                                            {ex.isPR && <span className="ml-auto text-lg">🏆</span>}
-                                                        </div>
-                                                    </div>
+                                                {/* BOTÓN DE ACCIÓN: Solo para Fuerza que puede progresar */}
+                                                {ex.canProgress && isStrength && (
+                                                    <button 
+                                                        onClick={() => handleToggle(ex.exerciseId)}
+                                                        className={`h-10 px-4 rounded-xl font-black text-[10px] uppercase transition-all active:scale-90 ${
+                                                            isSelected 
+                                                            ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30" 
+                                                            : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500"
+                                                        }`}
+                                                    >
+                                                        {isSelected ? "✓ ACEPTADO" : "SUBIR PESO"}
+                                                    </button>
                                                 )}
                                             </div>
+
+                                            {/* --- CONTENIDO DINÁMICO --- */}
+                                            {ex.canProgress && isSelected && isStrength ? (
+                                                /* VISTA DE PROGRESIÓN (Solo Fuerza) */
+                                                <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-2xl border border-blue-100 dark:border-blue-800/50 animate-in zoom-in-95 duration-300">
+                                                    <span className="text-[8px] font-black text-blue-600 uppercase block mb-1 italic">Próximo objetivo</span>
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="text-lg font-bold text-zinc-400 line-through tracking-tighter">{ex.oldWeight}kg</span>
+                                                        <LuChevronRight className="text-blue-500" />
+                                                        <span className="text-2xl font-black text-zinc-900 dark:text-white italic tracking-tighter">{ex.suggestedWeight}kg</span>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                /* VISTA DE RESUMEN SIMPLE (Aquí corregimos el 0kg x 0reps) */
+                                                <div className="bg-white dark:bg-zinc-800 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-700/50">
+                                                    <span className="text-[8px] font-black text-zinc-400 uppercase block mb-1 italic">
+                                                        {isCardio ? "Estado de actividad" : "Mejor desempeño de hoy"}
+                                                    </span>
+                                                    <div className="flex items-baseline gap-2">
+                                                        {isCardio ? (
+                                                            <span className="text-xl font-black text-zinc-800 dark:text-zinc-100 italic">COMPLETADO ✓</span>
+                                                        ) : (
+                                                            <>
+                                                                <span className="text-2xl font-black text-zinc-800 dark:text-zinc-100 italic tracking-tighter">{weight}kg</span>
+                                                                <span className="text-sm font-bold text-zinc-400">x {reps} reps</span>
+                                                                {ex.isPR && <span className="ml-auto text-lg drop-shadow-md">🏆</span>}
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
-                                    );
-                                })}
-                            </div>
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
 

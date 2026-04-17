@@ -70,7 +70,7 @@ function App() {
       </BrowserRouter>
         <Toaster
           position="bottom-center"
-          offset={160}
+          offset={80}
           theme="dark"
         />
     </>
