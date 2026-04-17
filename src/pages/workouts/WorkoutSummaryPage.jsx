@@ -194,19 +194,16 @@ const WorkoutSummaryPage = () => {
                         </div>
                     </div>
 
-                    {!isReadOnly && (
-
-                        <div className="">
-                            <button 
-                                onClick={handleConfirm}
-                                className="w-full py-5 bg-zinc-900 dark:bg-white text-white dark:text-black rounded-4xl font-black uppercase tracking-[0.2em] text-xs shadow-2xl active:scale-[0.97] transition-all flex items-center justify-center gap-3"
-                            >
-                                {selectedIds.length > 0 
-                                    ? <>Actualizar {selectedIds.length} Pesos <LuArrowUp01 size={18} /></>
-                                    : "Guardar progreso"}
-                            </button>
-                        </div>
-                    )}
+                    <div className="">
+                        <button 
+                            onClick={handleConfirm}
+                            className="w-full py-5 bg-zinc-900 dark:bg-white text-white dark:text-black rounded-4xl font-black uppercase tracking-[0.2em] text-xs shadow-2xl active:scale-[0.97] transition-all flex items-center justify-center gap-3"
+                        >
+                            {selectedIds.length > 0 
+                                ? <>Actualizar {selectedIds.length} Pesos <LuArrowUp01 size={18} /></>
+                                : "Guardar progreso"}
+                        </button>
+                    </div>
                 </div>
             </div>
         </>

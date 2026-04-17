@@ -63,6 +63,7 @@ const WorkoutsCreatePage = () => {
             />
             <div className="p-4">
                 <form onSubmit={handleSubmit(onSubmit)} autoComplete='off' className='grid gap-4'>
+
                     {/* Nombre del entrenamiento */}
                     <div>
                         <label htmlFor='name' className='label-form'>Nombre del entrenamiento</label>
@@ -81,6 +82,7 @@ const WorkoutsCreatePage = () => {
                             })}
                         />
                     </div>
+
                     <div>
                         <label htmlFor="routineId" className="label-form">
                             Seleccione una rutina
@@ -97,15 +99,22 @@ const WorkoutsCreatePage = () => {
                         </select>
                         <p className="text-xs text-gray-500 mt-1">Si no seleccionas ninguna, podrás añadir ejercicios sobre la marcha.</p>
                     </div>
+
                     <div>
-                        <label htmlFor="startedAt" className="label-form">Fecha de inicio</label>
+                        <label htmlFor="startedAt" className="label-form">Fecha de inicio <span className="input-required">*</span> </label>
                         <input 
                             type="datetime-local"
                             className="input-form"
-                            {...register("startedAt")}
+                            {...register("startedAt", {
+                                required: {
+                                    value: true, 
+                                    message: "Este campo es obligatorio"
+                                }
+                            })}
                             defaultValue={getLocalDatetime()}
                         />
                     </div>
+
                     {messageError && <MessageError>{messageError}</MessageError>}
                     <Button colorButton="primary" loading={loading}>
                         Iniciar entrenamiento

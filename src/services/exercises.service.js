@@ -12,6 +12,10 @@ export const useExerciseServices = () => {
             const res = await api.get(`/exercises/${exerciseId}`);
             return res.data;
         },
+        getExerciseProgress: async (exerciseId) => {
+            const res = await api.get(`/exercises/${exerciseId}/progress`);
+            return res.data; 
+        },
         getAllExercises: async (page = 1, pageSize = 20, name = "", filters = {}) => {
             const res = await api.get("/exercises", {
                 params: {

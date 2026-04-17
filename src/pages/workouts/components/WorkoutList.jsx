@@ -53,25 +53,29 @@ export default function WorkoutsList({ workouts }) {
                                     </>
                                 )}
                             </div>
-                            <div className="flex-1 min-w-0">
-                                <h3 className="font-bold text-zinc-900 dark:text-zinc-100 text-base leading-tight truncate group-hover:text-blue-600 transition-colors">
-                                    {workout.name || "Entrenamiento sin nombre"}
+
+                            <div className="flex-1 min-w-0 ml-1"> 
+                                <h3 className="font-black text-zinc-900 dark:text-zinc-100 text-sm uppercase italic leading-tight truncate group-hover:text-blue-600 transition-colors">
+                                    {workout.name || "Sesión de Entrenamiento"}
                                 </h3>
 
-                                <div className="flex items-center gap-3 mt-2">
-                                    {/* Badge de Duración o Estado */}
-                                    <div className={`flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider border ${
+                                <div className="flex items-center gap-2 mt-1.5"> 
+                                    <div className={`flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-tighter border ${
                                         isInProgress
                                         ? "bg-orange-50 text-orange-600 border-orange-100 dark:bg-orange-500/10 dark:text-orange-400 dark:border-orange-500/20"
                                         : "bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20"
                                     }`}>
-                                        <LuClock size={10} />
-                                        {isInProgress ? "En curso" : duration}
+                                        {isInProgress && <span className="relative flex h-1.5 w-1.5 mr-0.5">
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-orange-500"></span>
+                                        </span>}
+                                        <LuClock size={10} strokeWidth={3} />
+                                        {isInProgress ? "Activo" : duration}
                                     </div>
 
-                                    {/* ID de Rutina / Subtexto */}
-                                    <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest truncate">
-                                        {workout.routineId ? "Rutina asignada" : "Sesión libre"}
+                                    <span className="w-1 h-1 bg-zinc-200 dark:bg-zinc-800 rounded-full flex-shrink-0" />
+                                    <span className="text-[9px] font-black text-zinc-400 dark:text-zinc-600 uppercase tracking-[0.15em] truncate italic">
+                                        {workout.routineName || "Sesión libre"}
                                     </span>
                                 </div>
                             </div>

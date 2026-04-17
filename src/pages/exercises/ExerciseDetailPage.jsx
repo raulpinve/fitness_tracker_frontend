@@ -7,6 +7,7 @@ import { FaDumbbell, FaRunning, FaVideo } from 'react-icons/fa';
 import { toast } from 'sonner';
 import BottomSheet from '../../shared/components/BottomSheet';
 import Button from '../../shared/components/Button';
+import ExerciseProgressChart from './components/ExerciseProgressChart';
 
 const muscleGroupNames = {
     pecho: 'Pecho',
@@ -47,6 +48,45 @@ const ExerciseDetailPage = () => {
     const [openButtonSheet, setOpenButtonSheet] = useState(false);
     const [view, setView] = useState('image');
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+    const { getExerciseProgress } = useExerciseServices();
+
+    const [progressData, setProgressData] = useState([]);
+    const [loadingProgress, setLoadingProgress] = useState(true);
+
+    const [isVertical, setIsVertical] = useState(false);
+
+    // Esta función se activará cuando el video cargue sus metadatos
+    const handleVideoMetadata = (e) => {
+        const { videoWidth, videoHeight } = e.target;
+        // Si el alto es mayor que el ancho, es vertical
+        if (videoHeight > videoWidth) {
+            setIsVertical(true);
+        }
+    };
+
+    const handleImageLoad = (e) => {
+        const { naturalWidth, naturalHeight } = e.target;
+        if (naturalHeight > naturalWidth) {
+            setIsVertical(true);
+        } else {
+            setIsVertical(false);
+        }
+    };
+
+    useEffect(() => {
+        const fetchProgress = async () => {
+            try {
+                const res = await getExerciseProgress(exerciseId);
+                setProgressData(res.data);
+            } catch (error) {
+                console.error("Error al cargar progreso:", error);
+            } finally {
+                setLoadingProgress(false);
+            }
+        };
+
+        if (exerciseId) fetchProgress();
+    }, [exerciseId]);
 
     useEffect(() => {
         const fetchExercise = async () => {
@@ -95,19 +135,24 @@ const ExerciseDetailPage = () => {
             <Header title={exercise.name} showBack={true} />
             <div className="max-w-2xl mx-auto p-4 space-y-6 pb-20">
                 {/* Multimedia: Video o Imagen */}
-                <div className="overflow-hidden rounded-[2.5rem] bg-zinc-100 dark:bg-zinc-800 shadow-xl aspect-video relative flex items-center justify-center border border-gray-200 dark:border-zinc-800">
+                <div className={`overflow-hidden rounded-[2.5rem] bg-zinc-100 dark:bg-zinc-900 shadow-xl relative flex items-center justify-center border border-gray-200 dark:border-zinc-800 transition-all duration-500 mx-auto ${
+                    isVertical ? 'aspect-[3/4] max-w-[320px]' : 'aspect-video w-full'
+                }`}>
                     {view === 'video' && exercise.video ? (
                         <video 
                             src={`${folderPath}${exercise.video}`} 
+                            onLoadedMetadata={handleVideoMetadata}
                             controls 
-                            className="w-full h-full object-contain bg-black" 
+                            className="w-full h-full object-cover bg-black" 
                             muted
+                            loop
                         />
                     ) : exercise.avatar ? (
                         <img 
                             src={`${folderPath}${exercise.avatar}`} 
+                            onLoad={handleImageLoad} // <--- Ahora la imagen también es inteligente
                             alt={exercise.name}
-                            className="w-full h-full object-contain drop-shadow-sm animate-in fade-in duration-300" 
+                            className="w-full h-full object-cover" 
                         />
                     ) : (
                         <FaDumbbell size={48} className="text-zinc-400" />
@@ -118,7 +163,7 @@ const ExerciseDetailPage = () => {
                 {exercise.video && exercise.avatar && (
                     <div className="flex bg-zinc-200 dark:bg-zinc-900 p-1 rounded-2xl w-full max-w-[200px] mx-auto shadow-inner">
                         <button 
-                            onClick={() => setView('image')}
+                            onClick={() => {setView('image'), setIsVertical(false)}}
                             className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-xl text-[10px] font-black transition-all ${view === 'image' ? 'bg-white dark:bg-zinc-700 shadow-md text-blue-600' : 'text-zinc-500'}`}
                         >
                             <FaDumbbell /> FOTO
@@ -150,7 +195,6 @@ const ExerciseDetailPage = () => {
                     </div>
                 </div>
 
-
                 {/* Info Card */}
                 <div className="bg-white dark:bg-zinc-950 rounded-[2rem] p-6 shadow-sm border border-zinc-100 dark:border-zinc-900">
                     <h2 className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-6 border-b border-zinc-50 dark:border-zinc-900 pb-2">
@@ -181,6 +225,19 @@ const ExerciseDetailPage = () => {
                         </div>
                     </div>
                 </div>
+                <div className="pt-4">
+                    {loadingProgress ? (
+                        <div className="h-[200px] bg-zinc-100 dark:bg-zinc-900 animate-pulse rounded-[2.5rem]" />
+                    ) : progressData.length > 1 ? (
+                        <ExerciseProgressChart data={progressData} />
+                    ) : (
+                        <div className="p-8 text-center bg-white dark:bg-zinc-900 rounded-[2.5rem] border border-dashed border-zinc-200 dark:border-zinc-800">
+                            <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest leading-loose">
+                                Necesitas al menos 2 sesiones <br /> para ver tu evolución 📈
+                            </p>
+                        </div>
+                    )}
+                </div>
 
                 {/* Acciones */}
                 <div className="grid gap-3 pt-4">
@@ -208,7 +265,6 @@ const ExerciseDetailPage = () => {
                     </div>
                 </div>
             </div>
-
 
             <BottomSheet open={openButtonSheet} onClose={() => setOpenButtonSheet(false)}>
                 <div className="max-w-md mx-auto max-h-[85vh] overflow-y-auto no-scrollbar pt-2 pb-6">
