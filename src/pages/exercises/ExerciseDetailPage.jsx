@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import BottomSheet from '../../shared/components/BottomSheet';
 import Button from '../../shared/components/Button';
 import ExerciseProgressChart from './components/ExerciseProgressChart';
+import { LuBookOpen } from 'react-icons/lu';
 
 const muscleGroupNames = {
     pecho: 'Pecho',
@@ -229,6 +230,8 @@ const ExerciseDetailPage = () => {
                     </div>
                 </div>
 
+                
+
                 {exercise.type === 'strength' && (
                     <div className="pt-4">
                         {loadingProgress ? (
@@ -244,6 +247,37 @@ const ExerciseDetailPage = () => {
                         )}
                     </div>
                 )}
+
+                {exercise.description.split('|').map((section, index) => {
+                    const titles = ["Posición Inicial", "Ejecución", "Tips Extra"];
+                    
+                    // USAMOS ESTA REGEX: Detecta saltos de línea reales (\n) 
+                    // o el texto literal "\n" si es que viene así de la DB
+                    const lines = section.split(/\r?\n|\\n/).filter(line => line.trim() !== '');
+
+                    return (
+                        <div key={index} className="relative">
+                            <div className="flex items-center gap-2 mb-4">
+                                <span className="text-[10px] font-black text-blue-600 dark:text-blue-500 bg-blue-50 dark:bg-blue-500/10 px-3 py-1 rounded-lg uppercase tracking-[0.2em]">
+                                    {titles[index] || "Detalle"}
+                                </span>
+                            </div>
+                            
+                            <div className="space-y-3 pl-1">
+                                {lines.map((line, i) => (
+                                    <div key={i} className="flex items-start gap-3 group">
+                                        {/* El Bullet Azul Industrial */}
+                                        <div className="w-1 h-3.5 bg-blue-600 rounded-full mt-1 flex-shrink-0" />
+                                        
+                                        <p className="text-sm font-bold text-zinc-600 dark:text-zinc-400 leading-tight italic">
+                                            {line.trim()}
+                                        </p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    );
+                })}
 
                 {/* Actions */}
                 <div className="grid gap-3 pt-4">

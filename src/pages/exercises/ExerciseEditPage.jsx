@@ -11,6 +11,7 @@ import { useParams } from "react-router-dom";
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import { IoIosArrowDown } from 'react-icons/io';
 import { FaDumbbell } from 'react-icons/fa';
+import { LuVideo } from 'react-icons/lu';
 
 const ExerciseEditPage = () => {
     const { register, handleSubmit, setError, formState: { errors }, setValue } = useForm({ mode: "onChange" });
@@ -30,6 +31,7 @@ const ExerciseEditPage = () => {
                 setValue("type", sourceData.type);
                 setValue("muscleGroup", sourceData.muscleGroup);
                 setValue("equipment", sourceData.equipment);
+                setValue("description", sourceData.description);
             } catch {
                 toast.error("Error al obtener la información del ejercicio");
             } finally {
@@ -48,6 +50,7 @@ const ExerciseEditPage = () => {
             formData.append("type", values.type);
             formData.append("muscleGroup", values.muscleGroup);
             formData.append("equipment", values.equipment);
+            formData.append("description", values.description);
 
             // Solo enviamos archivos si el usuario seleccionó uno nuevo
             if (values.image && values.image[0]) {
@@ -186,9 +189,44 @@ const ExerciseEditPage = () => {
                         </div>
                     </div>
 
+                    {/* Descripción con separador mágico */}
+                    <div className="">
+                        <label htmlFor="description" className="label-form">
+                            Instrucciones de Ejecución <span className="text-[10px] text-zinc-400 font-normal">(Opcional)</span>
+                        </label>
+                        <div className="relative">
+                            <textarea
+                                id="description"
+                                {...register("description")}
+                                placeholder="Posición inicial | Ejecución del movimiento | Tips extras"
+                                className={`${errors.description && errors.description.message ? "input-form-error" : ""} input-form h-24`}
+                            />
+                            {/* Tip de ayuda visual debajo del campo */}
+                            <div className="mt-2 flex items-center gap-2 px-1">
+                                <p className="text-[9px] font-bold text-zinc-500 uppercase tracking-tight">
+                                    Usa una barra <span className="text-blue-500">"|"</span> para separar Posición Inicial de Ejecución.
+                                </p>
+                            </div>
+                            {errors.description && (
+                                <p className="input-message-error">{errors.description.message}</p>
+                            )}
+                        </div>
+                    </div>
+                        
+                    <div className="  flex items-center gap-4 pt-8 pb-4">
+                        <div className="h-px flex-1 bg-linear-to-r from-transparent via-zinc-200 dark:via-zinc-800 to-transparent" />
+                        <div className="flex items-center gap-2">
+                            <LuVideo className="text-blue-600" size={14} />
+                            <span className="text-[9px] font-black text-zinc-400 dark:text-zinc-600 uppercase tracking-[0.3em] whitespace-nowrap">
+                                Archivos Multimedia
+                            </span>
+                        </div>
+                        <div className="h-px flex-1 bg-linear-to-r from-transparent via-zinc-200 dark:via-zinc-800 to-transparent" />
+                    </div>
+    
                     {/* Exercise image */}
                     <div>
-                        <label htmlFor="image" className="label-form">Imagen</label>
+                        <label htmlFor="image" className="label-form">Imagen de Portada (Avatar)</label>
                         <input 
                             id="image"
                             type="file" 
@@ -216,7 +254,7 @@ const ExerciseEditPage = () => {
                         
                     {/* Exercise vide */}
                     <div>
-                        <label htmlFor="video" className="label-form">Video</label>
+                        <label htmlFor="video" className="label-form">Video de Ejecución</label>
                         <input 
                             id="video"
                             type="file" 

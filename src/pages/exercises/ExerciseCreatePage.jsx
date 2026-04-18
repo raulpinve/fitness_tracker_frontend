@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { IoIosArrowDown } from 'react-icons/io';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { LuInfo, LuVideo } from 'react-icons/lu';
 
 const ExerciseCreatePage = () => {
     const {register, handleSubmit, setError, formState: { errors }, setValue} = useForm({  mode: "onChange" });
@@ -25,6 +26,7 @@ const ExerciseCreatePage = () => {
             formData.append("type", values.type);
             formData.append("muscleGroup", values.muscleGroup);
             formData.append("equipment", values.equipment);
+            formData.append("description", values.description);
             
             if (values.image && values.image[0]) {
                 formData.append("image", values.image[0]);
@@ -156,9 +158,44 @@ const ExerciseCreatePage = () => {
                         </div>
                     </div>
 
+                    {/* Descripción con separador mágico */}
+                    <div className="">
+                        <label htmlFor="description" className="label-form">
+                            Instrucciones de Ejecución <span className="text-[10px] text-zinc-400 font-normal">(Opcional)</span>
+                        </label>
+                        <div className="relative">
+                            <textarea
+                                id="description"
+                                {...register("description")}
+                                placeholder="Posición inicial | Ejecución del movimiento | Tips extras"
+                                className={`${errors.description && errors.description.message ? "input-form-error" : ""} input-form h-24`}
+                            />
+                            {/* Tip de ayuda visual debajo del campo */}
+                            <div className="mt-2 flex items-center gap-2 px-1">
+                                <p className="text-[9px] font-bold text-zinc-500 uppercase tracking-tight">
+                                    Usa una barra <span className="text-blue-500">"|"</span> para separar Posición Inicial de Ejecución.
+                                </p>
+                            </div>
+                            {errors.description && (
+                                <p className="input-message-error">{errors.description.message}</p>
+                            )}
+                        </div>
+                    </div>
+                        
+                    <div className="  flex items-center gap-4 pt-8 pb-4">
+                        <div className="h-px flex-1 bg-linear-to-r from-transparent via-zinc-200 dark:via-zinc-800 to-transparent" />
+                        <div className="flex items-center gap-2">
+                            <LuVideo className="text-blue-600" size={14} />
+                            <span className="text-[9px] font-black text-zinc-400 dark:text-zinc-600 uppercase tracking-[0.3em] whitespace-nowrap">
+                                Archivos Multimedia
+                            </span>
+                        </div>
+                        <div className="h-px flex-1 bg-linear-to-r from-transparent via-zinc-200 dark:via-zinc-800 to-transparent" />
+                    </div>
+
                     {/* Exercise image */}
-                    <div>
-                        <label htmlFor="image" className="label-form">Imagen</label>
+                    <div className='mt-4'>
+                        <label htmlFor="image" className="label-form">Imagen de Portada (Avatar)</label>
                         <input 
                             id="image"
                             type="file" 
@@ -186,7 +223,7 @@ const ExerciseCreatePage = () => {
                         
                     {/* Exercise video */}
                     <div>
-                        <label htmlFor="video" className="label-form">Video</label>
+                        <label htmlFor="video" className="label-form">Video de Ejecución</label>
                         <input 
                             id="video"
                             type="file" 
