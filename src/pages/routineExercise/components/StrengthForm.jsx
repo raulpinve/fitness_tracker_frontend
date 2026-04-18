@@ -7,12 +7,6 @@ import { useRoutineExerciseService } from '../../../services/routineExercise.ser
 import { handleErrors } from '../../../utils/handleErrors';
 
 export const StrengthForm = ({ exercise, routineId, setMessageError, initialData }) => {
-    const { routineExerciseId } = useParams();
-    const navigate = useNavigate();
-    const [loading, setLoading] = useState(false);
-    
-    const { createRoutineExercise, updateRoutineExercise } = useRoutineExerciseService();
-
     const { register, handleSubmit, setError, formState: { errors } } = useForm({
         defaultValues: initialData || {
             targetSets: '',
@@ -20,6 +14,10 @@ export const StrengthForm = ({ exercise, routineId, setMessageError, initialData
             targetWeight: ''
         }
     });
+    const { routineExerciseId } = useParams();
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+    const { createRoutineExercise, updateRoutineExercise } = useRoutineExerciseService();
 
     const onSubmit = async (values) => {
         setLoading(true);

@@ -9,7 +9,7 @@ const ExerciseBlockSkeleton = () => (
             </div>
         </div>
 
-        {/* Pills Skeleton (Simulando 3 sets previos) */}
+        {/* Pills Skeleton (Simulating 3 previous sets) */}
         <div className="flex gap-3 mb-5">
             {[1, 2, 3].map(i => (
                 <div key={i} className="w-20 h-16 bg-zinc-50 dark:bg-zinc-900 rounded-2xl border border-zinc-100 dark:border-zinc-800" />

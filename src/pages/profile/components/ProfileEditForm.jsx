@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import Button from '../../../shared/components/Button';
 import MessageError from '../../../shared/components/MessageError';
@@ -10,11 +10,10 @@ import { handleErrors } from '../../../utils/handleErrors';
 const ProfileEditForm = ({ onCancel }) => {
     const { user, setUser } = useAuth(); 
     const { updateUserInfo } = useUserServices();
-    
     const [loading, setLoading] = useState(false);
     const [messageError, setMessageError] = useState(null);
 
-    const { register, handleSubmit, setError, reset } = useForm({
+    const { register, handleSubmit, setError } = useForm({
         defaultValues: {
             firstName: user?.firstName || "",
             lastName: user?.lastName || "",
@@ -28,14 +27,11 @@ const ProfileEditForm = ({ onCancel }) => {
         setMessageError(null);
         try {
             const res = await updateUserInfo(data);
-            
-            // Actualizamos el usuario globalmente desde aquí
             setUser(res.data); 
             
             toast.success("Perfil actualizado con éxito");
             onCancel(); 
         } catch (error) {
-            // Aquí setError funciona perfecto
             handleErrors(error, setError, setMessageError);
         } finally {
             setLoading(false);
@@ -44,9 +40,6 @@ const ProfileEditForm = ({ onCancel }) => {
 
     return (
         <div className="max-w-md mx-auto max-h-[85vh] overflow-y-auto no-scrollbar">
-            {/* Handle visual para indicar que es deslizable */}
-            <div className="w-12 h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full mx-auto mt-4 mb-2" />
-
             <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-5 pb-10" autoComplete="off">
                 <div className="text-center mb-6">
                     <p className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] mb-1">Configuración</p>
@@ -83,9 +76,7 @@ const ProfileEditForm = ({ onCancel }) => {
                         />
                     </div>
                 </div>
-
                 {messageError && <MessageError>{messageError}</MessageError>}
-
                 <div className="pt-2">
                     <Button 
                         colorButton="primary" 

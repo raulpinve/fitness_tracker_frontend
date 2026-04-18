@@ -12,17 +12,17 @@ import BottomSheet from '../../../shared/components/BottomSheet';
 import { useWorkoutExerciseServices } from '../../../services/workoutExercise.service';
 
 const ExerciseBlock = ({ exercise, workout, onRemove }) => {
-    const { register, handleSubmit, setValue, watch} = useForm();
-    const { deleteWorkoutExercise } = useWorkoutExerciseServices();
     const { getAllWorkoutSets, createWorkoutSet, deleteWorkoutSet } = useWorkoutSetServices();
     const { getAllCardioLogs, createCardioLog, deleteCardioLog } = useCardioLogServices();
-    const navigate = useNavigate();
-    
+    const { deleteWorkoutExercise } = useWorkoutExerciseServices();
+    const { register, handleSubmit, setValue, watch} = useForm();
     const [history, setHistory] = useState([]);
     const [isLoadingCreate, setIsLoadingCreate] = useState(false);
     const [loadingHistory, setLoadingHistory] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
+    const [weightUnit, setWeightUnit] = useState('kg');
     const [openSetActions, setOpenSetActions] = useState(false);
+    const navigate = useNavigate();
     
     const isCardio = exercise.exerciseType === 'cardio';
     const isReadOnly = !!workout.finishedAt;
@@ -45,7 +45,6 @@ const ExerciseBlock = ({ exercise, workout, onRemove }) => {
     };
     const targetText = getTargetText();
     
-    // Get history data
     useEffect(() => {
         const fetchData = async () => {
             if (!workoutId || !exerciseId) return;
@@ -60,11 +59,9 @@ const ExerciseBlock = ({ exercise, workout, onRemove }) => {
                 if (res.data.length > 0) {
                     const last = res.data[res.data.length - 1];
                     if (isCardio) {
-                        // Pre-fill last cardio values
                         setValue("distance", last.distanceKm);
                         setValue("minutes", last.durationSeconds / 60);
                     } else {
-                        // Pre-fill last used weight
                         setValue("weight", last.weight);
                     }
                 }
@@ -81,6 +78,7 @@ const ExerciseBlock = ({ exercise, workout, onRemove }) => {
         setIsLoadingCreate(true);
         try {
             let response;
+
             if (isCardio) {
                 // Transform minutes to seconds for the Backend
                 response = await createCardioLog({
@@ -98,12 +96,12 @@ const ExerciseBlock = ({ exercise, workout, onRemove }) => {
                     exerciseId: exercise.exerciseId,
                     reps: parseInt(data.reps),
                     weight: parseFloat(data.weight),
-                    rpe: data.rpe ? parseInt(data.rpe) : null
+                    rpe: data.rpe ? parseInt(data.rpe) : null,
+                    weightUnit: weightUnit 
                 });
             }
 
             if (response.statusCode === 201) {
-
                 // 1. Get current pending extras for THIS workout
                 const storageKey = `pending_extras_${workoutId}`;
                 const localExtras = JSON.parse(localStorage.getItem(storageKey)) || [];
@@ -120,11 +118,9 @@ const ExerciseBlock = ({ exercise, workout, onRemove }) => {
                 setHistory(prev => [...prev, response.data]);
                 if (isCardio) setValue("minutes", "");
                 else setValue("reps", "");
-                
                 toast.success("Set guardado con éxito");
             }
-
-        } catch (error) {
+        } catch {
             toast.error("Error saving record");
         } finally {
             setIsLoadingCreate(false);
@@ -138,12 +134,10 @@ const ExerciseBlock = ({ exercise, workout, onRemove }) => {
             } else {
                 await deleteWorkoutSet(id);
             }
-
-            // 3. Update local state
             setHistory(prev => prev.filter(item => item.id !== id));
             toast.success("Registro eliminado");
 
-        } catch (error) {
+        } catch {
             toast.error("Error al eliminar");
         }
     };
@@ -153,17 +147,12 @@ const ExerciseBlock = ({ exercise, workout, onRemove }) => {
         if (!confirm) return;
 
         try {
-            // 1. Si ya tiene un ID de base de datos, lo borramos allá
             if (exercise.workoutExerciseId) {
                 await deleteWorkoutExercise(exercise.workoutExerciseId);
             }
-
-            // 2. Lo quitamos del estado local del padre para que desaparezca de la vista
-            // Esta función 'onRemove' debe venir por props desde el ActiveWorkoutPage
             onRemove(exercise.exerciseId);
-            
             toast.success("Ejercicio quitado");
-        } catch (error) {
+        } catch {
             toast.error("No se pudo quitar el ejercicio");
         }
     };
@@ -174,7 +163,7 @@ const ExerciseBlock = ({ exercise, workout, onRemove }) => {
     };
 
     return (<>
-        <div className="group relative bg-white dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-900 rounded-[2rem] p-6 shadow-sm mb-6 transition-all">
+        <div className="group relative bg-white dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-900 rounded-4xl p-6 shadow-sm mb-6 transition-all">
             <div className="flex justify-between items-center mb-5">
                 <div 
                     className="flex items-center gap-4 cursor-pointer active:scale-95 transition-transform"
@@ -203,15 +192,13 @@ const ExerciseBlock = ({ exercise, workout, onRemove }) => {
                     </button>
                 )}
             </div>
-            
-            {/* Listado de Sets Realizados (Pills Horizontales) */}
+
+            {/* List of Completed Sets (Horizontal Pills) */}
             {loadingHistory ? (
                 <HistorySkeleton />
             ) : history.length > 0 ? (
                 <div className="flex flex-wrap gap-3 mb-5">
                     {history.map((item, index) =>{
-                         // Check if this set is a New Record
-                        // We check if current weight is >= history record
                         const isPR = !isCardio && 
                             exercise.personalRecord && 
                             Number(item.weight) > Number(exercise.personalRecord);
@@ -245,7 +232,6 @@ const ExerciseBlock = ({ exercise, workout, onRemove }) => {
                                     {isCardio ? (
                                         <>
                                             <span className="whitespace-nowrap">
-                                                {/* Convert to number and check it's valid before rendering */}
                                                 {Math.floor(Number(item.durationSeconds || 0) / 60)}m
                                             </span>
                                             <span className="opacity-40 text-[10px]">
@@ -254,7 +240,12 @@ const ExerciseBlock = ({ exercise, workout, onRemove }) => {
                                         </>
                                     ) : (
                                         <>
-                                            <span className="whitespace-nowrap">{item.weight}kg</span>
+                                            <span className="whitespace-nowrap flex items-baseline gap-0.5">
+                                                {item.weight}
+                                                <span className="text-[8px] text-blue-500 uppercase italic">
+                                                    {item.weightUnit || 'kg'}
+                                                </span>
+                                            </span>
                                             <span className="opacity-40 text-[10px]">{item.reps}r</span>
                                         </>
                                     )}
@@ -283,9 +274,7 @@ const ExerciseBlock = ({ exercise, workout, onRemove }) => {
                             key={rpe.val}
                             type="button"
                             onClick={() => {
-                                // Add the vibration first
                                 if ("vibrate" in navigator) navigator.vibrate(20); 
-                                // Then set the value as you already do
                                 setValue("rpe", rpe.val);
                             }}
                             className={`flex-1 flex flex-col items-center py-2 rounded-xl transition-all duration-300 ${
@@ -304,25 +293,57 @@ const ExerciseBlock = ({ exercise, workout, onRemove }) => {
                     ))}
                 </div>
             )}
-            
-            {/* Formulario de Entrada */}
+            {/* Input Form */}
             {!isReadOnly && (
                 <form onSubmit={handleSubmit(onSubmit)} className="bg-zinc-50 dark:bg-zinc-900/50 p-4 rounded-3xl border border-zinc-100 dark:border-zinc-800/50 flex items-center gap-4 shadow-inner">
                     <div className="flex flex-1 gap-2">
+                        {/* BLOQUE DE PESO / MINUTOS */}
                         <div className="flex-1">
-                            <label className="text-[8px] font-black text-zinc-400 uppercase ml-2 tracking-widest">
-                                {isCardio ? 'Minutos' : 'Peso'}
-                            </label>
-                            <input type="number" step="0.25" {...register(isCardio ? "minutes" : "weight", { required: true })} className="w-full bg-transparent text-sm font-black p-1 focus:outline-none dark:text-white" placeholder="0" />
+                            <div className="flex justify-between items-center pr-1 mb-1">
+                                <label className="text-[8px] font-black text-zinc-400 uppercase ml-2 tracking-[0.2em]">
+                                    {isCardio ? 'Minutos' : 'Peso'}
+                                </label>
+                                
+                                {!isCardio && (
+                                    <button 
+                                        type="button"
+                                        onClick={() => setWeightUnit(weightUnit === 'kg' ? 'lb' : 'kg')}
+                                        className={`flex items-center justify-center h-6 px-3 rounded-full text-[9px] font-black tracking-tighter transition-all active:scale-75 ${
+                                            weightUnit === 'lb' 
+                                            ? "bg-blue-600 text-white shadow-[0_0_12px_rgba(37,99,235,0.4)]" 
+                                            : "bg-zinc-200 dark:bg-zinc-800 text-zinc-500 border border-zinc-300/50 dark:border-zinc-700/50"
+                                        }`}
+                                    >
+                                        {weightUnit.toUpperCase()}
+                                    </button>
+                                )}
+                            </div>
+                            <input 
+                                type="number" 
+                                step="0.25" 
+                                {...register(isCardio ? "minutes" : "weight", { required: true })} 
+                                className="w-full bg-transparent text-lg font-black p-1 pl-2 focus:outline-none dark:text-white" 
+                                placeholder="0" 
+                            />
                         </div>
+
                         <div className="w-px h-6 bg-zinc-200 dark:bg-zinc-800 self-end mb-2 opacity-50" />
+
+                        {/* BLOQUE DE REPS / DISTANCIA */}
                         <div className="flex-1">
                             <label className="text-[8px] font-black text-zinc-400 uppercase ml-2 tracking-widest">
                                 {isCardio ? 'Distancia' : 'Reps'}
                             </label>
-                            <input type="number" step="0.1" {...register(isCardio ? "distance" : "reps", { required: true })} className="w-full bg-transparent text-sm font-black p-1 focus:outline-none dark:text-white" placeholder="0" />
+                            <input 
+                                type="number" 
+                                step="0.1" 
+                                {...register(isCardio ? "distance" : "reps", { required: true })} 
+                                className="w-full bg-transparent text-sm font-black p-1 focus:outline-none dark:text-white" 
+                                placeholder="0" 
+                            />
                         </div>
                     </div>
+
                     <button 
                         type="submit" 
                         disabled={isLoadingCreate}
@@ -332,14 +353,12 @@ const ExerciseBlock = ({ exercise, workout, onRemove }) => {
                     </button>
                 </form>
             )}
+
         </div>
 
         <BottomSheet open={openSetActions} onClose={() => setOpenSetActions(false)}>
             <div className="max-w-md mx-auto pt-2 pb-8 px-6">
-                {/* Handle visual (la barrita superior) */}
-                <div className="w-12 h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full mx-auto mb-8" />
-
-                {/* Header del Set Seleccionado */}
+                {/* Selected Set Header */}
                 <div className="text-center mb-8">
                     <p className="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em] mb-2">
                         Detalles del Registro
@@ -357,7 +376,7 @@ const ExerciseBlock = ({ exercise, workout, onRemove }) => {
                             </span>
 
                         </div>
-                        <div className="w-[1px] h-10 bg-zinc-100 dark:bg-zinc-800" />
+                        <div className="w-px h-10 bg-zinc-100 dark:bg-zinc-800" />
                         <div className="flex flex-col">
                             <span className="text-3xl font-black text-zinc-800 dark:text-zinc-100 italic">
                                 {isCardio ? selectedItem?.distanceKm : selectedItem?.reps}
@@ -369,7 +388,7 @@ const ExerciseBlock = ({ exercise, workout, onRemove }) => {
                     </div>
                 </div>
 
-                {/* Acciones */}
+                {/* Actions */}
                 <div className="space-y-3">
                     <button 
                         onClick={() => {

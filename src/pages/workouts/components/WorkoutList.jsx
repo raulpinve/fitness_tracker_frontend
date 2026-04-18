@@ -11,7 +11,6 @@ export default function WorkoutsList({ workouts }) {
         const minutes = Math.floor(diff / 1000 / 60);
         return `${minutes} min`;
     };
-
     const formatDate = (date) => {
         return new Date(date).toLocaleDateString('es-ES', {
             day: '2-digit',
@@ -21,11 +20,9 @@ export default function WorkoutsList({ workouts }) {
 
     return (
         <div className="flex flex-col gap-3">
-
             {workouts.map((workout) => {
                 const duration = getDuration(workout.startedAt, workout.finishedAt);
                 const isInProgress = !workout.finishedAt;
-
                 return (
                     <div
                         key={workout.id}
@@ -34,7 +31,6 @@ export default function WorkoutsList({ workouts }) {
                     >
                         <div className="flex items-center">
 
-                            {/* Indicador de Fecha/Estado */}
                             <div className={`w-12 h-12 rounded-xl flex flex-col items-center justify-center hrink-0 mr-4 border ${
                                 isInProgress 
                                 ? "bg-orange-50 border-orange-100 dark:bg-orange-500/10 dark:border-orange-500/20" 
@@ -53,9 +49,8 @@ export default function WorkoutsList({ workouts }) {
                                     </>
                                 )}
                             </div>
-
                             <div className="flex-1 min-w-0 ml-1"> 
-                                <h3 className="font-black text-zinc-900 dark:text-zinc-100 text-sm uppercase italic leading-tight truncate group-hover:text-blue-600 transition-colors">
+                                <h3 className="font-black text-zinc-900 dark:text-zinc-100 text-sm truncate group-hover:text-blue-600 transition-colors">
                                     {workout.name || "Sesión de Entrenamiento"}
                                 </h3>
 
@@ -73,7 +68,7 @@ export default function WorkoutsList({ workouts }) {
                                         {isInProgress ? "Activo" : duration}
                                     </div>
 
-                                    <span className="w-1 h-1 bg-zinc-200 dark:bg-zinc-800 rounded-full flex-shrink-0" />
+                                    <span className="w-1 h-1 bg-zinc-200 dark:bg-zinc-800 rounded-full shrink-0" />
                                     <span className="text-[9px] font-black text-zinc-400 dark:text-zinc-600 uppercase tracking-[0.15em] truncate italic">
                                         {workout.routineName || "Sesión libre"}
                                     </span>

@@ -27,7 +27,6 @@ const RoutineExerciseCreatePage = () => {
         };
         fetchDataExercises();
     }, []);
-
     const selectedExerciseId = useWatch({
         control,
         name: "exerciseId"

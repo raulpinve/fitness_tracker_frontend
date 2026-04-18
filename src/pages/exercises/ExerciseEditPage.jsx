@@ -106,7 +106,7 @@ const ExerciseEditPage = () => {
                         {errors.name && (<p className="input-message-error">{errors.name.message}</p>)} 
                     </div>
 
-                    {/* Tipo */}
+                    {/* Type */}
                     <div>
                         <label htmlFor="type" className="label-form">
                             Tipo<span className="input-required">*</span>
@@ -186,7 +186,7 @@ const ExerciseEditPage = () => {
                         </div>
                     </div>
 
-                    {/* Imagen del ejercicio */}
+                    {/* Exercise image */}
                     <div>
                         <label htmlFor="image" className="label-form">Imagen</label>
                         <input 
@@ -214,7 +214,7 @@ const ExerciseEditPage = () => {
                         {errors.image && <p className="input-message-error">{errors.image.message}</p>} 
                     </div>
                         
-                    {/* Video del ejercicio */}
+                    {/* Exercise vide */}
                     <div>
                         <label htmlFor="video" className="label-form">Video</label>
                         <input 
@@ -237,7 +237,6 @@ const ExerciseEditPage = () => {
                                         "Solo se permiten videos MP4, WebM o MOV"
                                 }
                             })}
-
                         />
                         {errors.video && <p className="input-message-error">{errors.video.message}</p>} 
                     </div>

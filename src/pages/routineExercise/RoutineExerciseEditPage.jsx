@@ -2,25 +2,24 @@ import React, { useEffect, useState } from 'react';
 import Header from '../../shared/components/Header';
 import MessageError from '../../shared/components/MessageError';
 import { toast } from 'sonner';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { useExerciseServices } from '../../services/exercises.service';
 import { useRoutineExerciseService } from '../../services/routineExercise.service';
 import { StrengthForm } from './components/StrengthForm';
 import { CardioForm } from './components/CardioForm';
+import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 
 const RoutineExerciseEditPage = () => {
-    const { updateRoutineExercise, getRoutineExercise } = useRoutineExerciseService();
+    const { getRoutineExercise } = useRoutineExerciseService();
     const { getAllExercises } = useExerciseServices();
-    const navigate = useNavigate();
     const { routineExerciseId } = useParams();
     const { state } = useLocation();
-
     const [loadingData, setLoadingData] = useState(true);
     const [messageError, setMessageError] = useState(false);
     const [availableExercises, setAvailableExercises] = useState([]);
     const [routineExercise, setRoutineExercise] = useState(state?.routineExercise || null);
 
-    // 1. Cargar lista de ejercicios (para mostrar el nombre en el "label")
+    // 1. Load exercise list (to display the name in the "label")
     useEffect(() => {
         const fetchExercises = async () => {
             try {
@@ -33,7 +32,7 @@ const RoutineExerciseEditPage = () => {
         fetchExercises();
     }, []);
 
-    // 2. Cargar datos del ejercicio a editar si no vienen en el 'state'
+    // 2. Load exercise data to edit if it doesn't come in the 'state'
     useEffect(() => {
         const loadData = async () => {
             if (state?.routineExercise) {
@@ -52,7 +51,11 @@ const RoutineExerciseEditPage = () => {
         loadData();
     }, [routineExerciseId, state]);
 
-    if (loadingData) return <div className="p-4 text-center">Cargando datos...</div>;
+    if (loadingData) return (
+        <div className="flex justify-center items-center h-screen dark:bg-zinc-950">
+            <AiOutlineLoading3Quarters className="animate-spin text-blue-600 text-4xl" />
+        </div>
+    );
 
     return (
         <>

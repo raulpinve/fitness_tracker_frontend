@@ -16,17 +16,17 @@ import BottomSheet from '../../shared/components/BottomSheet';
 import { useWorkoutExerciseServices } from '../../services/workoutExercise.service';
 
 const WorkoutDetailPage = () => {
-    const { getWorkoutActiveExercises } = useWorkoutExerciseServices();
-    const { getAllExercises } = useExerciseServices();
     const { getWorkout, finishWorkout, deleteWorkout } = useWorkoutServices();
-    const { workoutId } = useParams();
-    const [ loading, setLoading ] = useState(true);
-    const [ workout, setWorkout ] = useState();
     const [openAddExerciseSheet, setOpenAddExerciseSheet] = useState(false);
+    const { getWorkoutActiveExercises } = useWorkoutExerciseServices();
     const [ activeExercises, setActiveExercises ] = useState([]);
     const [libraryExercises, setLibraryExercises] = useState([]);
     const [openFinishSheet, setOpenFinishSheet] = useState(false);
+    const { getAllExercises } = useExerciseServices();
+    const [ loading, setLoading ] = useState(true);
+    const [ workout, setWorkout ] = useState();
     const [query, setQuery] = useState("");
+    const { workoutId } = useParams();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -50,17 +50,15 @@ const WorkoutDetailPage = () => {
                     !dbExercises.some(dbEx => dbEx.exerciseId === extra.exerciseId)
                 );
 
-                // --- NUEVA LÓGICA DE FILTRADO (LISTA NEGRA) ---
-                // Obtenemos los ejercicios que el usuario quitó manualmente de esta sesión
+                // --- NEW FILTER LOGIC (BLACKLIST) ---
+                // Get the exercises the user manually removed from this session
                 const removedIds = JSON.parse(localStorage.getItem(`removed_exercises_${workoutId}`)) || [];
 
-                // Combinamos todo y filtramos los que estén en la "lista negra"
+                // Combine everything and filter out those in the "blacklist"
                 const mergedExercises = [...dbExercises, ...filteredExtras];
                 const finalExercises = mergedExercises.filter(ex => !removedIds.includes(ex.exerciseId));
 
                 setActiveExercises(finalExercises);
-                // ----------------------------------------------
-
             } catch (error) {
                 console.log(error);
                 toast.error("Error al sincronizar el entrenamiento");
@@ -73,24 +71,21 @@ const WorkoutDetailPage = () => {
     }, [workoutId]);
 
     const handleFinishClick = () => {
-        setOpenFinishSheet(true); // En lugar de confirm, abrimos el componente
+        setOpenFinishSheet(true); 
     };
-
 
     const handleAddExerciseToWorkout = (libraryEx) => {
         if (activeExercises.some(e => e.exerciseId === libraryEx.id)) {
             return toast.error("Este ejercicio ya está en la lista");
         }
 
-        // --- NUEVA LÓGICA: Limpiar de la lista negra si existía ---
+        // --- NEW LOGIC: Remove from blacklist if it existed ---
         const removedKey = `removed_exercises_${workoutId}`;
         const removed = JSON.parse(localStorage.getItem(removedKey) || "[]");
         if (removed.includes(libraryEx.id)) {
             const updatedRemoved = removed.filter(id => id !== libraryEx.id);
             localStorage.setItem(removedKey, JSON.stringify(updatedRemoved));
         }
-        // ---------------------------------------------------------
-
         const newEntry = {
             exerciseId: libraryEx.id,
             exerciseName: libraryEx.name,
@@ -133,13 +128,13 @@ const WorkoutDetailPage = () => {
 
     const handleFinishWorkout = async () => {
         try {
-            // 1. Informamos al backend que cerramos la sesión
+            // 1. Notify backend that we closed the session
             await finishWorkout(workoutId);
 
-            // 2. Limpieza total de rastros locales (Skipped y Extras)
+            // 2. Full cleanup of local traces (Skipped and Extras)
             localStorage.removeItem(`pending_extras_${workoutId}`);
 
-            // 3. Feedback visual y navegación
+            // 3. Visual feedback and navigation
             toast.success("¡Entrenamiento completado!");
             navigate(`/workouts/${workoutId}/summary`);
 
@@ -151,7 +146,6 @@ const WorkoutDetailPage = () => {
 
     const handleDeleteWorkout = async () => {
         const confirm = window.confirm("¿Seguro que quieres borrar este entrenamiento? Se perderán todos los datos de hoy.");
-        
         if (confirm) {
             try {
                 await deleteWorkout(workoutId);
@@ -168,14 +162,14 @@ const WorkoutDetailPage = () => {
     };  
 
     const handleRemoveExercise = (exerciseId) => {
-        // 1. Actualizamos el estado de React (esto activará el renderizado)
+        // 1. Update React state (this will trigger re-rendering)
         setActiveExercises(prev => {
             const newState = prev.filter(ex => ex.exerciseId !== exerciseId);
-            // Si este era el último, newState.length será 0 y verás el Empty State
+            // If this was the last one, newState.length will be 0 and you'll see the Empty State
             return newState;
         });
 
-        // 2. Guardamos en la "Lista Negra" de LocalStorage
+        // 2. Save to the "Blacklist" in LocalStorage
         const storageKey = `removed_exercises_${workoutId}`;
         const removed = JSON.parse(localStorage.getItem(storageKey) || "[]");
         
@@ -223,7 +217,7 @@ const WorkoutDetailPage = () => {
                 
                 
                 {!workout?.finishedAt && (<>
-                    {/* Botón al final de la lista de ejercicios */}
+                    {/* Button at the end of the exercise list */}
                     <button 
                         onClick={() => setOpenAddExerciseSheet(true)}
                         className="w-full py-6 mt-4 border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-[2.5rem] flex flex-col items-center justify-center gap-2 group active:scale-95 transition-all bg-zinc-50/50 dark:bg-zinc-900/20"
@@ -255,7 +249,7 @@ const WorkoutDetailPage = () => {
                         <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Selecciona un ejercicio para tu sesión</p>
                     </div>
 
-                    {/* Buscador Simple */}
+                    {/* Simple Search */}
                     <div className="px-6 mb-4">
                         <input 
                             type="text"
@@ -265,7 +259,7 @@ const WorkoutDetailPage = () => {
                         />
                     </div>
 
-                    {/* Lista de resultados (Scrollable) */}
+                    {/* Results list (Scrollable) */}
                     <div className="flex-1 overflow-y-auto max-h-[60vh] no-scrollbar px-4 space-y-2">
                         {filteredExercises.map(ex => (
                             <button 
@@ -284,18 +278,15 @@ const WorkoutDetailPage = () => {
                 </div>
             </BottomSheet>
 
-            {/* BOTTOM SHEET DE FINALIZACIÓN */}
             <BottomSheet open={openFinishSheet} onClose={() => setOpenFinishSheet(false)}>
                 <div className="max-w-md mx-auto flex flex-col pt-2 pb-10">
-                    {/* Tu barrita característica */}
+                    {/* Your signature bar */}
                     <div className="w-12 h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full mx-auto mb-8" />
-                    
                     <div className="px-8 text-center">
-                        {/* Icono de Trofeo estilo Zinc */}
+                        {/* Zinc-style Trophy icon */}
                         <div className="mx-auto w-20 h-20 bg-blue-50 dark:bg-blue-500/10 rounded-[2.5rem] flex items-center justify-center mb-6 shadow-inner border border-blue-100/50 dark:border-blue-500/10">
                             <LuTrophy className="text-blue-600" size={40} strokeWidth={2.5} />
                         </div>
-
                         <h3 className="text-3xl font-black text-zinc-800 dark:text-zinc-100 uppercase italic tracking-tighter leading-none">
                             ¿Misión Cumplida?
                         </h3>
@@ -304,14 +295,14 @@ const WorkoutDetailPage = () => {
                         </p>
                     </div>
 
-                    {/* Botones de Acción */}
+                    {/* Action Buttons */}
                     <div className="px-8 mt-10 space-y-3">
                         <button
                             onClick={() => {
                                 setOpenFinishSheet(false);
-                                handleFinishWorkout(); // Tu función de confirmación real
+                                handleFinishWorkout(); 
                             }}
-                            className="w-full py-5 bg-blue-600 text-white rounded-[2rem] font-black uppercase tracking-[0.2em] shadow-xl shadow-blue-500/20 active:scale-95 transition-all"
+                            className="w-full py-5 bg-blue-600 text-white rounded-4xl font-black uppercase tracking-[0.2em] shadow-xl shadow-blue-500/20 active:scale-95 transition-all"
                         >
                             Finalizar y Guardar
                         </button>

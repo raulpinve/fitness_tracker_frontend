@@ -7,24 +7,18 @@ import { useWorkoutServices } from '../../services/workout.service';
 import { toast } from 'sonner';
 
 const WorkoutSummaryPage = () => {
+    const { getWorkoutSummary, updateRoutineProgress } = useWorkoutServices();
+    const [selectedIds, setSelectedIds] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [summary, setSummary] = useState([]);
     const { workoutId } = useParams();
     const navigate = useNavigate();
-    const { getWorkoutSummary, updateRoutineProgress } = useWorkoutServices();
-    const [isReadOnly, setIsReadOnly] = useState(false);
     
-    const [summary, setSummary] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [selectedIds, setSelectedIds] = useState([]);
-
     useEffect(() => {
         const fetchSummary = async () => {
             try {
                 const res = await getWorkoutSummary(workoutId);
                 setSummary(res.data);
-
-                if (res.data[0]?.finishedAt) {
-                    setIsReadOnly(true);
-                }
                 
                 // Pre-select exercises that can progress
                 const initialSelected = res.data
@@ -32,7 +26,7 @@ const WorkoutSummaryPage = () => {
                     .map(ex => ex.exerciseId);
                 setSelectedIds(initialSelected);
 
-                // CELEBRATION: Trigger confetti if there are PRs or Progressions
+                // Celebration: Trigger confetti if there are PRs or Progressions
                 if (res.data.some(ex => ex.canProgress || ex.isPR)) {
                     confetti({
                         particleCount: 150,
@@ -41,7 +35,7 @@ const WorkoutSummaryPage = () => {
                         colors: ['#3b82f6', '#fbbf24', '#ffffff']
                     });
                 }
-            } catch (error) {
+            } catch {
                 toast.error("Error al cargar el resumen");
             } finally {
                 setLoading(false);
@@ -57,20 +51,16 @@ const WorkoutSummaryPage = () => {
     };
     
     const handleConfirm = async () => {
-        // 1. Filtramos los ejercicios que el usuario aceptó (los que están en azul)
         const updates = summary
             .filter(ex => selectedIds.includes(ex.exerciseId))
             .map(ex => ({
-                // AQUÍ ESTÁ LA CLAVE: Usamos el id que ya viene en el objeto 'ex'
                 exerciseId: ex.exerciseId, 
                 newWeight: ex.suggestedWeight
             }));
 
         try {
             if (updates.length > 0) {
-                // Buscamos el routineId que también viene en los datos del summary
                 const routineId = summary.find(ex => ex.routineId)?.routineId;
-                
                 if (routineId) {
                     await updateRoutineProgress(routineId, updates);
                     toast.success("¡Rutina actualizada con éxito! 💪");
@@ -79,7 +69,7 @@ const WorkoutSummaryPage = () => {
             
             localStorage.removeItem(`pending_extras_${workoutId}`);
             navigate('/workouts');
-        } catch (error) {
+        } catch  {
             toast.error("Error al guardar los cambios");
         }
     };
@@ -93,7 +83,6 @@ const WorkoutSummaryPage = () => {
     return (
         <>
             <div className="px-4">
-                {/* HERO SECTION */}
                 <div className="pt-10 pb-10 px-6 text-center bg-white dark:bg-zinc-950 border-b border-zinc-100 dark:border-zinc-900 rounded-b-[3rem] shadow-sm">
                     <div className="inline-flex p-4 bg-amber-50 dark:bg-amber-500/10 rounded-full mb-4 animate-bounce">
                         <LuTrophy className="text-amber-500" size={40} />
@@ -107,8 +96,6 @@ const WorkoutSummaryPage = () => {
                 </div>
 
                 <div className="p-6 max-w-2xl mx-auto space-y-6">
-                    
-                    {/* LISTA DE EJERCICIOS */}
                     <div className="space-y-4">
                         <h2 className="text-[10px] font-black text-zinc-400 dark:text-zinc-600 uppercase tracking-[0.2em] ml-2">
                             Resultados por ejercicio
@@ -116,10 +103,9 @@ const WorkoutSummaryPage = () => {
                         
                         <div className="grid gap-4">
                             {summary.map((ex, index) => { 
-                                // Normalizamos variables
                                 const exerciseType = ex.type?.toLowerCase();
                                 const isCardio = exerciseType === 'cardio';
-                                const isStrength = exerciseType === 'strength' || !exerciseType; // Default a strength si no viene
+                                const isStrength = exerciseType === 'strength' || !exerciseType; 
                                 const sets = ex.setsDone || 0;
                                 const weight = ex.maxWeight || 0;
                                 const reps = ex.repsDone || 0;
@@ -128,14 +114,13 @@ const WorkoutSummaryPage = () => {
                                 return (
                                     <div 
                                         key={`${ex.exerciseId || 'extra'}-${index}`} 
-                                        className={`relative rounded-[2rem] border transition-all duration-300 ${
+                                        className={`relative rounded-4xl border transition-all duration-300 ${
                                             ex.canProgress && isStrength
                                             ? "bg-white dark:bg-zinc-900 border-blue-200 dark:border-blue-900 shadow-lg" 
                                             : "bg-zinc-50 dark:bg-zinc-900/50 border-zinc-100 dark:border-zinc-800"
                                         }`}
                                     >
                                         <div className="p-6">
-                                            {/* --- CABECERA --- */}
                                             <div className="flex justify-between items-center mb-5">
                                                 <div className="flex items-center gap-4">
                                                     <div className={`p-3 rounded-2xl ${ex.canProgress && isStrength ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" : "bg-zinc-200 dark:bg-zinc-800 text-zinc-400"}`}>
@@ -151,7 +136,7 @@ const WorkoutSummaryPage = () => {
                                                     </div>
                                                 </div>
 
-                                                {/* BOTÓN DE ACCIÓN: Solo para Fuerza que puede progresar */}
+                                                {/* ACTION BUTTON: Only for Strength that can progress */}
                                                 {ex.canProgress && isStrength && (
                                                     <button 
                                                         onClick={() => handleToggle(ex.exerciseId)}
@@ -166,9 +151,8 @@ const WorkoutSummaryPage = () => {
                                                 )}
                                             </div>
 
-                                            {/* --- CONTENIDO DINÁMICO --- */}
                                             {ex.canProgress && isSelected && isStrength ? (
-                                                /* VISTA DE PROGRESIÓN (Solo Fuerza) */
+                                                /* PROGRESSION VIEW (Strength only) */
                                                 <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-2xl border border-blue-100 dark:border-blue-800/50 animate-in zoom-in-95 duration-300">
                                                     <span className="text-[8px] font-black text-blue-600 uppercase block mb-1 italic">Próximo objetivo</span>
                                                     <div className="flex items-center gap-3">
@@ -178,17 +162,25 @@ const WorkoutSummaryPage = () => {
                                                     </div>
                                                 </div>
                                             ) : (
-                                                /* VISTA DE RESUMEN SIMPLE (Aquí corregimos el 0kg x 0reps) */
+                                                /* SIMPLE SUMMARY VIEW (Here we fix the 0kg x 0reps issue) */
                                                 <div className="bg-white dark:bg-zinc-800 p-4 rounded-2xl border border-zinc-100 dark:border-zinc-700/50">
                                                     <span className="text-[8px] font-black text-zinc-400 uppercase block mb-1 italic">
                                                         {isCardio ? "Estado de actividad" : "Mejor desempeño de hoy"}
                                                     </span>
+                                                    
                                                     <div className="flex items-baseline gap-2">
                                                         {isCardio ? (
                                                             <span className="text-xl font-black text-zinc-800 dark:text-zinc-100 italic">COMPLETADO ✓</span>
                                                         ) : (
                                                             <>
-                                                                <span className="text-2xl font-black text-zinc-800 dark:text-zinc-100 italic tracking-tighter">{weight}kg</span>
+                                                                {/* AQUÍ ESTÁ EL CAMBIO - REEMPLAZA EL peso y kg POR ESTO: */}
+                                                                <span className="text-2xl font-black text-zinc-800 dark:text-zinc-100 italic tracking-tighter">
+                                                                    {weight}
+                                                                    <span className="text-[10px] ml-1 uppercase text-blue-500 not-italic font-black">
+                                                                        {ex.weightUnit || 'kg'}
+                                                                    </span>
+                                                                </span>
+
                                                                 <span className="text-sm font-bold text-zinc-400">x {reps} reps</span>
                                                                 {ex.isPR && <span className="ml-auto text-lg drop-shadow-md">🏆</span>}
                                                             </>
@@ -203,7 +195,7 @@ const WorkoutSummaryPage = () => {
                         </div>
                     </div>
 
-                    <div className="">
+                    <div>
                         <button 
                             onClick={handleConfirm}
                             className="w-full py-5 bg-zinc-900 dark:bg-white text-white dark:text-black rounded-4xl font-black uppercase tracking-[0.2em] text-xs shadow-2xl active:scale-[0.97] transition-all flex items-center justify-center gap-3"

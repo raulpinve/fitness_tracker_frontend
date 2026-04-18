@@ -13,17 +13,15 @@ import { toast } from 'sonner';
 import FilterBarExercise from './components/FilterBarExercise';
 
 const ExercisesPage = () => {
+    const [filters, setFilters] = useState({ type: "", muscleGroup: "" });
+    const [pagination, setPagination] = useState({ totalRecords: 0 });
     const { getAllExercises } = useExerciseServices();
-    const navigate = useNavigate();
     const [exercises, setExercises] = useState([]);
-    const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
-    const [pagination, setPagination] = useState({ totalRecords: 0 });
-    
-    // Filtering states
+    const [page, setPage] = useState(1);
     const [search, setSearch] = useState("");
-    const [filters, setFilters] = useState({ type: "", muscleGroup: "" });
+    const navigate = useNavigate();
     const debouncedSearch = useDebounce(search, 400);
 
     const fetchExercises = async (pageToLoad, searchTerm, currentFilters) => {
@@ -42,8 +40,6 @@ const ExercisesPage = () => {
         }
     };
 
-    // This effect runs when the user stops typing
-    // Or when a selection filter changes (which is instant)
     useEffect(() => {
         setPage(1);
         fetchExercises(1, debouncedSearch, filters);
@@ -95,5 +91,4 @@ const ExercisesPage = () => {
         </>
     );
 };
-
 export default ExercisesPage;

@@ -49,16 +49,14 @@ const ExerciseDetailPage = () => {
     const [view, setView] = useState('image');
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
     const { getExerciseProgress } = useExerciseServices();
-
     const [progressData, setProgressData] = useState([]);
     const [loadingProgress, setLoadingProgress] = useState(true);
-
     const [isVertical, setIsVertical] = useState(false);
 
-    // Esta función se activará cuando el video cargue sus metadatos
+    // This function will be triggered when the video loads its metadata
     const handleVideoMetadata = (e) => {
         const { videoWidth, videoHeight } = e.target;
-        // Si el alto es mayor que el ancho, es vertical
+        // If height is greater than width, it's vertical
         if (videoHeight > videoWidth) {
             setIsVertical(true);
         }
@@ -77,7 +75,16 @@ const ExerciseDetailPage = () => {
         const fetchProgress = async () => {
             try {
                 const res = await getExerciseProgress(exerciseId);
-                setProgressData(res.data);
+
+                // Limpiamos los datos antes de guardarlos en el estado
+                const formattedData = res.data.map(item => ({
+                    ...item,
+                    // El signo + convierte el string a número inmediatamente
+                    // parseFloat también funciona, pero + es más rápido
+                    value: +Number(item.value).toFixed(1) 
+                }));
+
+                setProgressData(formattedData);
             } catch (error) {
                 console.error("Error al cargar progreso:", error);
             } finally {
@@ -93,7 +100,7 @@ const ExerciseDetailPage = () => {
             try {
                 const res = await getExercise(exerciseId);
                 setExercise(res.data);
-            } catch (error) {
+            } catch {
                 toast.error("No se pudo cargar la información del ejercicio");
                 navigate('/exercises');
             } finally {
@@ -121,7 +128,6 @@ const ExerciseDetailPage = () => {
             setIsLoadingDelete(false);
         }
     }
-
     if (loading) return (
         <div className="flex justify-center items-center h-screen dark:bg-zinc-950">
             <AiOutlineLoading3Quarters className="animate-spin text-blue-600 text-4xl" />
@@ -134,9 +140,9 @@ const ExerciseDetailPage = () => {
         <>
             <Header title={exercise.name} showBack={true} />
             <div className="max-w-2xl mx-auto p-4 space-y-6 pb-20">
-                {/* Multimedia: Video o Imagen */}
+                {/* Multimedia: Video or Image */}
                 <div className={`overflow-hidden rounded-[2.5rem] bg-zinc-100 dark:bg-zinc-900 shadow-xl relative flex items-center justify-center border border-gray-200 dark:border-zinc-800 transition-all duration-500 mx-auto ${
-                    isVertical ? 'aspect-[3/4] max-w-[320px]' : 'aspect-video w-full'
+                    isVertical ? 'aspect-3/4 max-w-[320px]' : 'aspect-video w-full'
                 }`}>
                     {view === 'video' && exercise.video ? (
                         <video 
@@ -159,9 +165,9 @@ const ExerciseDetailPage = () => {
                     )}
                 </div>
 
-                {/* Selector de Vista */}
+                {/* View Selector */}
                 {exercise.video && exercise.avatar && (
-                    <div className="flex bg-zinc-200 dark:bg-zinc-900 p-1 rounded-2xl w-full max-w-[200px] mx-auto shadow-inner">
+                    <div className="flex bg-zinc-200 dark:bg-zinc-900 p-1 rounded-2xl w-full max-w-50 mx-auto shadow-inner">
                         <button 
                             onClick={() => {setView('image'), setIsVertical(false)}}
                             className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-xl text-[10px] font-black transition-all ${view === 'image' ? 'bg-white dark:bg-zinc-700 shadow-md text-blue-600' : 'text-zinc-500'}`}
@@ -179,11 +185,8 @@ const ExerciseDetailPage = () => {
                 )}
 
                 <div className="pt-2 pb-2 px-2 flex items-stretch gap-3">
-                    {/* Barra lateral más delgada y elegante */}
-                    <div className="w-1.5 rounded-full bg-gradient-to-b from-blue-600 to-blue-400 shadow-[2px_0_12px_rgba(37,99,235,0.3)]" />
-                    
+                    <div className="w-1.5 rounded-full bg-linear-to-b from-blue-600 to-blue-400 shadow-[2px_0_12px_rgba(37,99,235,0.3)]" />
                     <div className="flex flex-col justify-center">
-                        {/* Título en 2xl: Resalta pero no molesta */}
                         <h1 className="text-2xl font-black text-zinc-900 dark:text-zinc-100 uppercase italic tracking-tight leading-none">
                             {exercise.name}
                         </h1>
@@ -196,7 +199,7 @@ const ExerciseDetailPage = () => {
                 </div>
 
                 {/* Info Card */}
-                <div className="bg-white dark:bg-zinc-950 rounded-[2rem] p-6 shadow-sm border border-zinc-100 dark:border-zinc-900">
+                <div className="bg-white dark:bg-zinc-950 rounded-4xl p-6 shadow-sm border border-zinc-100 dark:border-zinc-900">
                     <h2 className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-6 border-b border-zinc-50 dark:border-zinc-900 pb-2">
                         Información General
                     </h2>
@@ -225,21 +228,24 @@ const ExerciseDetailPage = () => {
                         </div>
                     </div>
                 </div>
-                <div className="pt-4">
-                    {loadingProgress ? (
-                        <div className="h-[200px] bg-zinc-100 dark:bg-zinc-900 animate-pulse rounded-[2.5rem]" />
-                    ) : progressData.length > 1 ? (
-                        <ExerciseProgressChart data={progressData} />
-                    ) : (
-                        <div className="p-8 text-center bg-white dark:bg-zinc-900 rounded-[2.5rem] border border-dashed border-zinc-200 dark:border-zinc-800">
-                            <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest leading-loose">
-                                Necesitas al menos 2 sesiones <br /> para ver tu evolución 📈
-                            </p>
-                        </div>
-                    )}
-                </div>
 
-                {/* Acciones */}
+                {exercise.type === 'strength' && (
+                    <div className="pt-4">
+                        {loadingProgress ? (
+                            <div className="h-55 bg-zinc-100 dark:bg-zinc-900 animate-pulse rounded-[2.5rem]" />
+                        ) : progressData.length > 1 ? (
+                            <ExerciseProgressChart data={progressData} />
+                        ) : (
+                            <div className="p-8 text-center bg-white dark:bg-zinc-900/50 rounded-[2.5rem] border border-dashed border-zinc-200 dark:border-zinc-800">
+                                <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest leading-loose">
+                                    Entrena más para ver tu <span className="text-blue-500">progreso</span> 📈
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Actions */}
                 <div className="grid gap-3 pt-4">
                     <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">
                         Gestión de ejercicio

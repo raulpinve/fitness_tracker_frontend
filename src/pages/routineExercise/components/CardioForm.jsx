@@ -7,16 +7,16 @@ import { useRoutineExerciseService } from '../../../services/routineExercise.ser
 import { handleErrors } from '../../../utils/handleErrors';
 
 export const CardioForm = ({ exercise, routineId, setMessageError, initialData }) => {
-    const { createRoutineExercise, updateRoutineExercise } = useRoutineExerciseService();
-    const [loading, setLoading] = useState(false);
-    const { routineExerciseId } = useParams();
-    const navigate = useNavigate();
     const { register, handleSubmit, setError } = useForm({
         defaultValues: initialData ? {
             targetDurationMinutes: initialData.targetDurationSeconds ? initialData.targetDurationSeconds / 60 : '',
             targetDistanceKm: initialData.targetDistanceKm || ''
         } : {}
     });
+    const { createRoutineExercise, updateRoutineExercise } = useRoutineExerciseService();
+    const [loading, setLoading] = useState(false);
+    const { routineExerciseId } = useParams();
+    const navigate = useNavigate();
 
     const onSubmit = async (values) => {
         setLoading(true);
@@ -69,7 +69,6 @@ export const CardioForm = ({ exercise, routineId, setMessageError, initialData }
                 </div>
             </div>
             <p className="text-xs text-gray-400 italic">Define al menos una meta: tiempo o distancia.</p>
-            
             <Button colorButton="primary" loading={loading}>
                 {initialData ? 'Actualizar Cardio' : 'Guardar Cardio'}
             </Button>

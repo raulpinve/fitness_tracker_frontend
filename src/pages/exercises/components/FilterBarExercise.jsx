@@ -9,12 +9,10 @@ const FilterBarExercise = ({
     totalRecords, 
     placeholder = "BUSCAR..." 
 }) => {
-    
     const hasActiveFilters = filters.type || filters.muscleGroup;
-
     return (
         <div className="flex flex-col">
-            {/* 1. Barra de Búsqueda */}
+            {/* 1. Search Bar */}
             <div className="pt-4 mb-2">
                 <div className="relative group">
                     <input 
@@ -36,7 +34,7 @@ const FilterBarExercise = ({
                 </div>
             </div>
 
-            {/* 2. Filtros Horizontales */}
+            {/* 2. Horizontal Filters */}
             <div className="relative py-2">
                 <div className="flex gap-2 overflow-x-auto no-scrollbar pr-12">
                     {/* Selector Tipo */}
@@ -53,7 +51,7 @@ const FilterBarExercise = ({
                         <LuChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none" size={10} />
                     </div>
 
-                    {/* Selector Músculo */}
+                    {/* Type Selector */}
                     <div className="relative shrink-0">
                         <select 
                             value={filters.muscleGroup}
@@ -77,7 +75,7 @@ const FilterBarExercise = ({
                     </div>
                 </div>
 
-                {/* Botón de Limpiar Flotante */}
+                {/* Floating Clear Button */}
                 {hasActiveFilters && (
                     <div className="absolute right-0 top-0 h-full flex items-center bg-linear-to-l from-gray-50 dark:from-zinc-950 via-gray-50/80 dark:via-zinc-950/80 to-transparent pl-16 pointer-events-none">
                         <button 
@@ -91,7 +89,7 @@ const FilterBarExercise = ({
                 )}
             </div>
 
-            {/* 3. Contador de Resultados */}
+            {/* 3. Results Counter */}
             <div className="px-1 py-2 flex items-center gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)]" />
                 <span className="text-[10px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.2em]">

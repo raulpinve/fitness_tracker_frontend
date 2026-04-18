@@ -34,10 +34,9 @@ const ProfilePage = () => {
             <Header title="Mi Perfil" />
 
             <div className="p-4 space-y-6 max-w-md mx-auto">
-                
-                {/* 1. Card de Usuario: El "Hero" de la página */}
+                {/* 1. User Card: The page's "Hero" */}
                 <div className="bg-white dark:bg-zinc-900 rounded-[2.5rem] p-6 shadow-sm border border-zinc-100 dark:border-zinc-800 flex flex-col items-center text-center">
-                    <div className="w-24 h-24 rounded-[2rem] bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center text-white text-4xl font-black italic shadow-lg shadow-blue-500/20 mb-4 border-4 border-white dark:border-zinc-900 transition-transform active:scale-95">
+                    <div className="w-24 h-24 rounded-4xl bg-linear-to-br from-blue-600 to-blue-700 flex items-center justify-center text-white text-4xl font-black italic shadow-lg shadow-blue-500/20 mb-4 border-4 border-white dark:border-zinc-900 transition-transform active:scale-95">
                         {user?.firstName?.charAt(0) || 'A'}
                     </div>
                     <h2 className="text-xl font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-tighter">
@@ -54,7 +53,7 @@ const ProfilePage = () => {
                     Editar Perfil
                 </button>
 
-                {/* 2. Sección de Estadísticas Rápidas (Placeholders para el futuro) */}
+                {/* 2. Quick Stats Section (Placeholders for the future) */}
                 <div className="grid grid-cols-2 gap-3">
                     <div className="bg-white dark:bg-zinc-900 p-4 rounded-3xl border border-zinc-100 dark:border-zinc-800">
                         <p className="text-[8px] font-black text-zinc-400 uppercase tracking-widest mb-1">Entrenamientos</p>
@@ -70,11 +69,10 @@ const ProfilePage = () => {
                     </div>
                 </div>
 
-                {/* 3. Menú de Ajustes */}
+                {/* 3. Settings Menu */}
                 <div className="space-y-2">
                     <p className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] ml-4 mb-2">Preferencias</p>
-                    
-                    {/* Switch de Modo Oscuro */}
+                    {/* Dark Mode Switch */}
                     <button 
                         onClick={toggleDarkMode}
                         className="w-full flex items-center justify-between p-4 bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-100 dark:border-zinc-800 active:scale-[0.98] transition-all"
@@ -90,7 +88,7 @@ const ProfilePage = () => {
                         </div>
                     </button>
 
-                    {/* Botón de Logout */}
+                    {/* Logout Button */}
                     <button 
                         onClick={logout}
                         className="w-full flex items-center justify-between p-4 bg-red-50/50 dark:bg-red-950/10 rounded-2xl border border-red-100/50 dark:border-red-900/20 active:scale-[0.98] transition-all group"
@@ -105,7 +103,6 @@ const ProfilePage = () => {
                     </button>
                 </div>
             </div>
-
             <BottomSheet open={openEditSheet} onClose={() => setOpenEditSheet(false)}>
                 <ProfileEditForm onCancel={() => setOpenEditSheet(false)} />
             </BottomSheet>

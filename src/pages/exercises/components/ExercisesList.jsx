@@ -2,7 +2,7 @@ import { LuDumbbell } from 'react-icons/lu';
 import { Link } from 'react-router-dom';
 
 export default function ExercisesList({ exercises }) {
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+    const API_URL = import.meta.env.VITE_API_URL;
 
     const labels = {
         // Muscle
@@ -10,6 +10,7 @@ export default function ExercisesList({ exercises }) {
         triceps: "Tríceps", antebrazos: "Antebrazos", cuadriceps: "Cuádriceps",
         isquios: "Isquios", gluteos: "Glúteos", gemelos: "Gemelos",
         abs: "Abs", cardio: "Cardio", full_body: "Full Body",
+        
         // Equipment
         barras: "Barras", mancuernas: "Mancuernas", máquinas: "Máquinas",
         poleas: "Poleas", peso_corporal: "Peso corporal", bandas: "Bandas",
@@ -40,19 +41,19 @@ export default function ExercisesList({ exercises }) {
                         )}
                     </div>
 
-                    {/* Info Principal */}
+                    {/* Main info */}
                     <div className="flex-1 ml-4 min-w-0">
                         <p className="font-bold text-zinc-800 dark:text-zinc-100 text-base leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
                             {exercise.name || "Ejercicio sin nombre"}
                         </p>
                         
                         <div className="flex items-center gap-2 mt-2">
-                            {/* Badge de Músculo Normalizado */}
+                            {/* Normalized Muscle Badge */}
                             <span className="px-2 py-0.5 bg-zinc-50 dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 text-[9px] font-black uppercase tracking-wider rounded-md border border-zinc-100 dark:border-zinc-800">
                                 {labels[exercise.muscleGroup] || exercise.muscleGroup || 'General'}
                             </span>
 
-                            {/* Equipo Normalizado */}
+                            {/* Normalized Equipment */}
                             <span className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 italic truncate">
                                 {labels[exercise.equipment] || exercise.equipment || 'Sin equipo'}
                             </span>

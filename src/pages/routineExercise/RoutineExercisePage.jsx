@@ -27,11 +27,10 @@ const RoutineExercisePage = () => {
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(false);
     const { state } = useLocation();
-    const { getRoutine } = useRoutineServices(); // Tu servicio para obtener una 
+    const { getRoutine } = useRoutineServices(); 
     const [routineName, setRoutineName] = useState(state?.routineName || "");
 
     const fetchRoutineExercises = async (pageToLoad) => {
-        // Prevents loading multiples petitions
         if (loading) return;
         setLoading(true);
 
@@ -56,13 +55,6 @@ const RoutineExercisePage = () => {
         fetchRoutineExercises(1);
     }, []);
 
-    // Load more routines
-    const handleLoadMore = () => {
-        const nextPage = page + 1;
-        setPage(nextPage);
-        fetchRoutineExercises(nextPage);
-    };
-    
     /** Handlers */
     const handleOpenButtonSheet = (exercise) => {
         setSelectedRoutineExercise(exercise);
@@ -93,14 +85,13 @@ const RoutineExercisePage = () => {
 
      useEffect(() => {
         const loadInitialData = async () => {
-            // Si NO hay nombre en el state, lo pedimos a la BD
             if (!routineName) {
                 try {
                     const res = await getRoutine(routineExerciseId);
                     setRoutineName(res.data.name);
                 } catch (error) {
                     console.error("Error al recuperar el nombre de la rutina", error);
-                    setRoutineName("Rutina"); // Fallback por si todo falla
+                    setRoutineName("Rutina");
                 }
             }
         };
@@ -132,17 +123,14 @@ const RoutineExercisePage = () => {
                 )}
 
                 <FloatingActionButton 
-                    text="Ejercicio a rutina" 
+                    text="Ejercicio" 
                     onClick={() => navigate(`/routines/${routineExerciseId}/exercises/create`)} 
                 />
 
                 <BottomSheet open={openButtonSheet} onClose={() => setOpenButtonSheet(false)}>
                     <div className="max-w-md mx-auto max-h-[85vh] overflow-y-auto no-scrollbar pt-2 pb-6">
-                        
-                        {/* MODO ACCIONES: Lista limpia (Estilo Menú Nativo) */}
                         {modeButtonSheet === "actions" && (
                             <div className="flex flex-col">
-                                {/* Título opcional sutil */}
                                 <div className="px-6 py-2">
                                     <p className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em]">Opciones de ejercicio</p>
                                 </div>
@@ -152,7 +140,6 @@ const RoutineExercisePage = () => {
                                         className="w-full py-5 px-6 flex items-center gap-4 text-sm font-bold text-zinc-700 dark:text-zinc-200 active:bg-zinc-50 dark:active:bg-zinc-900/50 transition-colors"
                                         onClick={() => handleEdit(selectedRoutineExercise)}
                                     >
-                                        {/* <LuEdit3 className="text-blue-500" size={20} /> */}
                                         <span className="flex-1 text-left">Editar metas (Sets/Reps)</span>
                                     </button>
 
@@ -167,7 +154,6 @@ const RoutineExercisePage = () => {
                             </div>
                         )}
 
-                        {/* MODO CONFIRMACIÓN: Bloque de impacto visual */}
                         {modeButtonSheet === "confirm-delete" && (
                             <div className="max-w-md mx-auto max-h-[85vh] overflow-y-auto no-scrollbar pt-2 pb-6">
                                 {/* Cabecera de Alerta */}
@@ -183,7 +169,6 @@ const RoutineExercisePage = () => {
                                     </p>
                                 </div>
 
-                                {/* Botonera Principal */}
                                 <div className="grid gap-3 px-2">
                                     <button
                                         disabled={isLoadingDelete}

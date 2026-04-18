@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { useExerciseServices } from '../../services/exercises.service';
+import MessageError from '../../shared/components/MessageError';
+import { handleErrors } from '../../utils/handleErrors';
 import Header from '../../shared/components/Header';
 import Button from '../../shared/components/Button';
-import { useForm } from 'react-hook-form';
-import MessageError from '../../shared/components/MessageError';
-import { toast } from 'sonner';
-import { handleErrors } from '../../utils/handleErrors';
-import { useExerciseServices } from '../../services/exercises.service';
 import { useNavigate } from 'react-router-dom';
 import { IoIosArrowDown } from 'react-icons/io';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 
 const ExerciseCreatePage = () => {
     const {register, handleSubmit, setError, formState: { errors }, setValue} = useForm({  mode: "onChange" });
@@ -19,29 +19,20 @@ const ExerciseCreatePage = () => {
     const onSubmit = async (values) => {
         setMessageError(false);
         setLoading(true);
-
         try {
-            // 1. Convertimos los valores a FormData
             const formData = new FormData();
-            
             formData.append("name", values.name);
             formData.append("type", values.type);
             formData.append("muscleGroup", values.muscleGroup);
             formData.append("equipment", values.equipment);
             
-            // 2. Agregamos los archivos (FileList[0] para obtener el archivo real)
             if (values.image && values.image[0]) {
                 formData.append("image", values.image[0]);
             }
-            
             if (values.video && values.video[0]) {
                 formData.append("video", values.video[0]);
             }
-
-            // 3. Enviamos el formData al servicio
-            // Tu función 'createExercise' recibirá este formData y Axios hará el resto
             await createExercise(formData);
-
             setValue("name", "");
             navigate("/exercises");
             toast.success('Ejercicio creado exitosamente.');
@@ -60,7 +51,7 @@ const ExerciseCreatePage = () => {
             />
             <div className="p-4">
                 <form onSubmit={handleSubmit(onSubmit)} autoComplete='off' className='grid gap-2'>
-                    {/* Nombre */}
+                    {/* Name */}
                     <div>
                         <label htmlFor="name" className="label-form">
                             Nombre del ejercicio<span className="input-required">*</span>
@@ -85,8 +76,7 @@ const ExerciseCreatePage = () => {
                         />
                         {errors.name && (<p className="input-message-error">{errors.name.message}</p>)} 
                     </div>
-
-                    {/* Tipo */}
+                    {/* type */}
                     <div>
                         <label htmlFor="type" className="label-form">
                             Tipo<span className="input-required">*</span>
@@ -139,7 +129,7 @@ const ExerciseCreatePage = () => {
                         </div>
                     </div>
 
-                    {/* Equipamiento */}
+                    {/* Equipment */}
                     <div>
                         <label htmlFor="equipment" className="label-form">
                             Equipamiento<span className="input-required">*</span>
@@ -166,7 +156,7 @@ const ExerciseCreatePage = () => {
                         </div>
                     </div>
 
-                    {/* Imagen del ejercicio */}
+                    {/* Exercise image */}
                     <div>
                         <label htmlFor="image" className="label-form">Imagen</label>
                         <input 
@@ -194,7 +184,7 @@ const ExerciseCreatePage = () => {
                         {errors.image && <p className="input-message-error">{errors.image.message}</p>} 
                     </div>
                         
-                    {/* Video del ejercicio */}
+                    {/* Exercise video */}
                     <div>
                         <label htmlFor="video" className="label-form">Video</label>
                         <input 
@@ -223,7 +213,7 @@ const ExerciseCreatePage = () => {
                     </div>
 
                     {messageError && <MessageError> {messageError} </MessageError>}   
-
+                    
                     <Button 
                         colorButton={`primary`}
                         loading={loading}

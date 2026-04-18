@@ -16,7 +16,6 @@ const WorkoutsCreatePage = () => {
     const {getAllRoutines} = useRoutineServices();
     const {createWorkout} = useWorkoutServices();
     const [routines, setRoutines] = useState([]);
-    const [isLoadingRoutineData, setIsLoadingRoutineData] = useState();
     const navigate = useNavigate();
 
     const onSubmit = async(values) => {
@@ -35,16 +34,13 @@ const WorkoutsCreatePage = () => {
 
     useEffect(() => {
         const fecthData = async () => {
-            setIsLoadingRoutineData(true);
             try {
                 const res = await getAllRoutines(1, 100);
                 setRoutines(res.data);
             } catch (error) {
                 console.error(error);
                 toast.error("No se pudieron cargar las rutinas");
-            } finally {
-                setIsLoadingRoutineData(false);
-            }
+            } 
         }
         fecthData();
     }, [])
@@ -63,8 +59,7 @@ const WorkoutsCreatePage = () => {
             />
             <div className="p-4">
                 <form onSubmit={handleSubmit(onSubmit)} autoComplete='off' className='grid gap-4'>
-
-                    {/* Nombre del entrenamiento */}
+                    {/* Training name */}
                     <div>
                         <label htmlFor='name' className='label-form'>Nombre del entrenamiento</label>
                         <input 
@@ -82,7 +77,6 @@ const WorkoutsCreatePage = () => {
                             })}
                         />
                     </div>
-
                     <div>
                         <label htmlFor="routineId" className="label-form">
                             Seleccione una rutina

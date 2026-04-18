@@ -1,26 +1,26 @@
+import RoutineExerciseCreatePage from "./pages/routineExercise/RoutineExerciseCreatePage";
+import RoutineExerciseEditPage from "./pages/routineExercise/RoutineExerciseEditPage";
+import RoutineExercisePage from "./pages/routineExercise/RoutineExercisePage";
+import ExercisesCreatePage from "./pages/exercises/ExerciseCreatePage";
+import ExerciseEditPage from "./pages/exercises/ExerciseEditPage";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./shared/components/ProtectedRoute";
-import LoginPage from "./pages/auth/LoginPage";
-import SignupPage from "./pages/auth/SignupPage";
 import RootRedirect from "./shared/components/RootRedirect";
 import PublicRoute from "./shared/components/PublicRoute";
 import MobileLayout from "./shared/components/MobileLayout";
 import ExercisesPage from "./pages/exercises/ExercisesPage";
-import ExercisesCreatePage from "./pages/exercises/ExerciseCreatePage";
-import { Toaster } from 'sonner';
-import ExerciseEditPage from "./pages/exercises/ExerciseEditPage";
 import RoutinesPage from "./pages/routines/RoutinesPage";
 import RoutineCreatePage from "./pages/routines/RoutineCreatePage";
 import RoutineUpdatePage from "./pages/routines/RoutineUpdatePage";
-import RoutineExercisePage from "./pages/routineExercise/RoutineExercisePage";
-import RoutineExerciseCreatePage from "./pages/routineExercise/RoutineExerciseCreatePage";
-import RoutineExerciseEditPage from "./pages/routineExercise/RoutineExerciseEditPage";
-import WorkoutsPage from "./pages/workouts/WorkoutsPage";
 import WorkoutsCreatePage from "./pages/workouts/WorkoutsCreatePage";
-import WorkoutDetailPage from "./pages/workouts/WorkoutDetailPage";
 import WorkoutSummaryPage from "./pages/workouts/WorkoutSummaryPage";
 import ExerciseDetailPage from "./pages/exercises/ExerciseDetailPage";
+import WorkoutDetailPage from "./pages/workouts/WorkoutDetailPage";
+import WorkoutsPage from "./pages/workouts/WorkoutsPage";
 import ProfilePage from "./pages/profile/ProfilePage";
+import SignupPage from "./pages/auth/SignupPage";
+import LoginPage from "./pages/auth/LoginPage";
+import { Toaster } from 'sonner';
 
 function App() {
   return (
