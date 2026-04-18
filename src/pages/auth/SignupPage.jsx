@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form"
 import { IoFitnessOutline } from "react-icons/io5"
 import { useAuth } from "../../auth/useAuth"
 import { useAuthServices } from "../../services/auth.service"
+import MessageError from "../../shared/components/MessageError"
 
 const SignupPage = () => {
     const { register, handleSubmit, setError, formState: { errors }, setValue } = useForm({ mode: "onChange"});
@@ -67,7 +68,7 @@ const SignupPage = () => {
 
                         {/* lastName */}
                         <div>
-                            <label htmlFor="lastName" className="font-semibold">lastName <span className="text-red-600">*</span></label>
+                            <label htmlFor="lastName" className="font-semibold">Apellidos <span className="text-red-600">*</span></label>
                             <input
                                 className={`${(errors.lastName && errors.lastName.message) ? "input-form-error": ""} input-form`}
                                 type="text"
@@ -152,11 +153,8 @@ const SignupPage = () => {
                         )}
                     </div>
 
-                    {messageError && 
-                        <p className="message-error">
-                            {messageError}
-                        </p>
-                    }
+                    {messageError && <MessageError>{messageError}</MessageError>}
+
                     <Button type="submit" loading={loading} className="my-3" colorButton="primary" textButton="Registrarse"/>
                     <p className="text-sm text-gray-600 dark:text-white">¿Ya tienes una cuenta creada? <Link to="/login" className="text-indigo-700 dark:text-white underline">Loguéate aquí</Link></p>
                 </form>
