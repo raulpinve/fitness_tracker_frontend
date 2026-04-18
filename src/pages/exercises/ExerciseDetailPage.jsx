@@ -48,7 +48,7 @@ const ExerciseDetailPage = () => {
     const [isLoadingDelete, setIsLoadingDelete] = useState();
     const [openButtonSheet, setOpenButtonSheet] = useState(false);
     const [view, setView] = useState('image');
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+    const API_URL = import.meta.env.VITE_API_URL;
     const { getExerciseProgress } = useExerciseServices();
     const [progressData, setProgressData] = useState([]);
     const [loadingProgress, setLoadingProgress] = useState(true);

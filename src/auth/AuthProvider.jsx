@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { AuthContext } from "./AuthContext";
 import axios from "axios";
 
+const baseUrl = import.meta.env.VITE_API_URL;
+
 export function AuthProvider({ children }) {
     const [accessToken, setAccessToken] = useState(null);
     const [isLoading, setIsLoading] = useState(true); 
@@ -10,7 +12,7 @@ export function AuthProvider({ children }) {
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                const res = await axios.post('http://localhost:3000/auth/refresh', {}, { withCredentials: true });
+                const res = await axios.post(`${baseUrl}/auth/refresh`, {}, { withCredentials: true });
                 setAccessToken(res?.data?.data?.accessToken);
                 if (res?.data?.data?.user) {
                     setUser(res.data.data.user);
@@ -26,7 +28,7 @@ export function AuthProvider({ children }) {
 
     const logout = async () => {
         try {
-            await fetch("http://localhost:3000/auth/logout", {
+            await fetch(`${baseUrl}/auth/logout`, {
                 method: "POST",
                 credentials: "include"
             });

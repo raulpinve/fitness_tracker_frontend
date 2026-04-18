@@ -34,15 +34,10 @@ const LoginPage = () => {
             setLoadingPage(false)
         }
     }
-    useEffect(() => {
-        setValue("username", "raulpinve");
-        setValue("password", "Raul1234!");
-    }, [])
-
     return (
         <div className='h-screen flex items-center justify-center'>
             <div className="flex flex-col p-4 justify-center flex-1 w-full max-w-md mx-auto">
-                <h1 className="mb-2 font-bold text-gray-800 text-title-sm dark:text-white/90 text-3xl text-center justify-center flex items-center gap-2"><IoFitnessOutline /> Fitness tracker</h1>
+                <h1 className="mb-2 font-bold text-gray-800 text-title-sm dark:text-white/90 text-3xl text-center justify-center flex items-center gap-2"><IoFitnessOutline /> Fitness</h1>
                 <p className="text-sm text-gray-500 dark:text-gray-400">Ingresa tu nombre de usuario y contraseña para iniciar sesión</p>
 
                 {/* Formulario para iniciar sesión */}

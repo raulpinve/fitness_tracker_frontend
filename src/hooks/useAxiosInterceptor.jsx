@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../auth/useAuth';
+const baseUrl = import.meta.env.VITE_API_URL;
 
 const api = axios.create({
-  baseURL: 'http://localhost:3000',
+  baseURL: baseUrl,
   withCredentials: true,
 });
 
@@ -32,7 +33,7 @@ export const useAxiosInterceptor = () => {
 
           try {
             // Llamada al refresh
-            const response = await axios.post('http://localhost:3000/auth/refresh', {}, { withCredentials: true });
+            const response = await axios.post(`${baseUrl}/auth/refresh`, {}, { withCredentials: true });
             const newAccessToken = response.data.accessToken;
 
             setAccessToken(newAccessToken); // Actualizamos el Contexto
@@ -56,4 +57,4 @@ export const useAxiosInterceptor = () => {
   }, [accessToken, setAccessToken, logout]);
 
   return api;
-};
+};  

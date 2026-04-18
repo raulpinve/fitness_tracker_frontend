@@ -1,12 +1,11 @@
 import axios from "axios";
+const baseUrl = import.meta.env.VITE_API_URL;
 
 export const api = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: baseUrl,
   withCredentials: true,
 });
 
-
-// 🔥 TOKEN GLOBAL (LO QUE PREGUNTASTE)
 let accessToken = null;
 
 export const setAccessTokenGlobal = (token) => {
@@ -16,7 +15,6 @@ export const setAccessTokenGlobal = (token) => {
 export const getAccessToken = () => accessToken;
 
 
-// 🔐 REQUEST INTERCEPTOR
 api.interceptors.request.use((config) => {
   const token = getAccessToken();
 
@@ -27,8 +25,6 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-
-// 🔄 RESPONSE INTERCEPTOR (REFRESH)
 api.interceptors.response.use(
   (res) => res,
   async (error) => {
@@ -39,7 +35,7 @@ api.interceptors.response.use(
 
       try {
         const { data } = await axios.post(
-          "http://localhost:3000/auth/refresh",
+          baseUrl,
           {},
           { withCredentials: true }
         );
