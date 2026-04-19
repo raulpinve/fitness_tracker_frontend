@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Header from '../../shared/components/Header';
 import Button from '../../shared/components/Button';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller  } from 'react-hook-form';
 import MessageError from '../../shared/components/MessageError';
 import { toast } from 'sonner';
 import { handleErrors } from '../../utils/handleErrors';
@@ -15,10 +15,16 @@ import { LuVideo } from 'react-icons/lu';
 import { equipmentNames, muscleGroupNames } from './utils/exerciseConstants';
 
 const ExerciseEditPage = () => {
-    const { register, handleSubmit, setError, formState: { errors }, setValue } = useForm({ mode: "onChange" });
+    const { register, handleSubmit, setError, formState: { errors }, setValue, watch, control } = useForm({ 
+    mode: "onChange",
+        defaultValues: {
+            muscleGroups: [] 
+        }
+    });
     const [loading, setLoading] = useState(false);
     const [messageError, setMessageError] = useState(false);
     const { updateExercise, getExercise } = useExerciseServices();
+    const [selectedMuscles, setSelectedMuscles] = useState([]);
     const navigate = useNavigate();
     const { exerciseId } = useParams();
     const { state } = useLocation();
@@ -27,20 +33,34 @@ const ExerciseEditPage = () => {
     useEffect(() => {
         const loadData = async () => {
             try {
+                // 1. Evitamos llamadas si ya estamos cargando
                 const sourceData = state?.exercise || (await getExercise(exerciseId)).data;
+                
+                // 2. Seteamos valores de uno en uno
                 setValue("name", sourceData.name);
                 setValue("type", sourceData.type);
-                setValue("muscleGroup", sourceData.muscleGroup);
                 setValue("equipment", sourceData.equipment);
-                setValue("description", sourceData.description);
-            } catch {
-                toast.error("Error al obtener la información del ejercicio");
+                setValue("description", sourceData.description || "");
+
+                const muscles = Array.isArray(sourceData.muscleGroups) 
+                    ? sourceData.muscleGroups 
+                    : sourceData.muscleGroups ? [sourceData.muscleGroups] : [];
+
+                // 3. Sincronizamos estados
+                setSelectedMuscles(muscles);
+                setValue("muscleGroups", muscles);
+                
+            } catch (error) {
+                console.error("Error en loadData:", error);
             } finally {
                 setLoadingData(false);
             }
         };
+
         loadData();
-    }, [exerciseId, state, setValue, getExercise]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [exerciseId]); 
+
 
     const onSubmit = async (values) => {
         setMessageError(false);
@@ -49,27 +69,38 @@ const ExerciseEditPage = () => {
             const formData = new FormData();
             formData.append("name", values.name);
             formData.append("type", values.type);
-            formData.append("muscleGroup", values.muscleGroup);
             formData.append("equipment", values.equipment);
             formData.append("description", values.description);
 
+            // Iteramos sobre el array para que el Backend (Formidable) lo reconstruya correctamente
+            if (values.muscleGroups && values.muscleGroups.length > 0) {
+                values.muscleGroups.forEach(muscle => {
+                    formData.append("muscleGroups", muscle);
+                });
+            }
+
             // Solo enviamos archivos si el usuario seleccionó uno nuevo
-            if (values.image && values.image[0]) {
+            // Verificamos si es un File (nuevo) o solo el nombre del string (viejo)
+            if (values.image && values.image[0] instanceof File) {
                 formData.append("image", values.image[0]);
             }
-            if (values.video && values.video[0]) {
+            
+            if (values.video && values.video[0] instanceof File) {
                 formData.append("video", values.video[0]);
             }
 
             await updateExercise(exerciseId, formData);
+            
             toast.success('Ejercicio editado exitosamente.');
             navigate("/exercises/" + exerciseId);
+            
         } catch (error) {
             handleErrors(error, setError, setMessageError);
         } finally {
             setLoading(false);
         }
     };
+
 
     if (loadingData) {
         return (
@@ -131,31 +162,68 @@ const ExerciseEditPage = () => {
                         </div>
                     </div>
 
-                    {/* Muscular group */}
+                    {/* Sección de Músculos con Controller */}
                     <div>
-                        <label htmlFor="muscleGroup" className="label-form">
-                            Grupo muscular<span className="input-required">*</span>
+                        <label className="label-form mb-3 block">
+                            Grupos Musculares<span className="input-required">*</span>
                         </label>
-                        <div className="relative">
-                            <select
-                                {...register("muscleGroup", {
-                                    required: "Debe seleccionar un grupo muscular"
-                                })}
-                                className={`${errors.muscleGroup ? "input-form-error" : ""} input-form`}
-                            >
-                                <option value="">Seleccionar</option>
-                                {Object.entries(muscleGroupNames).map(([key, value]) => (
-                                    <option key={key} value={key}>
-                                        {value}
-                                    </option>
-                                ))}
-                            </select>
-                            <IoIosArrowDown className='absolute top-3.5 right-3 dark:text-zinc-400 pointer-events-none' />
-                            {errors.muscleGroup && (
-                                <p className="input-message-error">{errors.muscleGroup.message}</p>
-                            )} 
-                        </div>
+                        
+                        <Controller
+                            name="muscleGroups"
+                            control={control} // <--- Asegúrate de extraer 'control' de useForm
+                            rules={{ required: "Selecciona al menos un grupo muscular" }}
+                            render={({ field: { value, onChange } }) => {
+                                // 'value' es el array actual de músculos
+                                const currentSelected = Array.isArray(value) ? value : [];
+
+                                return (
+                                    <div className="flex flex-wrap gap-2 p-4 rounded-[2rem] border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/30">
+                                        {Object.entries(muscleGroupNames).map(([key, name]) => {
+                                            const isSelected = currentSelected.includes(key);
+                                            const isPrimary = currentSelected[0] === key;
+
+                                            return (
+                                                <button
+                                                    key={key}
+                                                    type="button"
+                                                    onClick={() => {
+                                                        const newSelection = isSelected
+                                                            ? currentSelected.filter(m => m !== key)
+                                                            : [...currentSelected, key];
+                                                        
+                                                        // 'onChange' actualiza el valor en react-hook-form automáticamente
+                                                        onChange(newSelection);
+                                                    }}
+                                                    className={`px-3 py-2 rounded-xl text-[10px] font-black uppercase italic transition-all duration-300 border ${
+                                                        isSelected 
+                                                        ? isPrimary 
+                                                            ? "bg-orange-600 border-orange-500 text-white shadow-lg scale-105" 
+                                                            : "bg-zinc-800 dark:bg-zinc-200 border-zinc-700 dark:text-zinc-900 text-white"
+                                                        : "bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-400"
+                                                    }`}
+                                                >
+                                                    {name}
+                                                    {isPrimary && <span className="ml-1 text-[8px] opacity-60">★</span>}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                );
+                            }}
+                        />
+                        {errors.muscleGroups && (
+                            <p className="input-message-error mt-2">{errors.muscleGroups.message}</p>
+                        )}
                     </div>
+
+                    {/* Mensaje de error para los músculos */}
+                    {errors.muscleGroups && <p className="input-message-error mt-2">{errors.muscleGroups.message}</p>}
+
+
+                    {/* Registro oculto para que la validación "required" funcione */}
+                    <input type="hidden" {...register("muscleGroups", { required: true })} />
+
+
 
                     {/* Equipment */}
                     <div>

@@ -12,7 +12,20 @@ import { LuInfo, LuVideo } from 'react-icons/lu';
 import { equipmentNames, muscleGroupNames } from './utils/exerciseConstants';
 
 const ExerciseCreatePage = () => {
-    const {register, handleSubmit, setError, formState: { errors }, setValue} = useForm({  mode: "onChange" });
+    const { 
+        register, 
+        handleSubmit, 
+        watch, 
+        reset,
+        setError,
+        setValue, 
+        formState: { errors } 
+    } = useForm({
+        defaultValues: {
+            muscleGroups: [] 
+        }
+    });
+
     const [loading, setLoading] = useState(false);
     const [messageError, setMessageError] = useState(false);
     const {createExercise} = useExerciseServices();
@@ -25,18 +38,31 @@ const ExerciseCreatePage = () => {
             const formData = new FormData();
             formData.append("name", values.name);
             formData.append("type", values.type);
-            formData.append("muscleGroup", values.muscleGroup);
             formData.append("equipment", values.equipment);
             formData.append("description", values.description);
             
+            // Debemos añadir cada músculo individualmente bajo el mismo nombre de llave
+            // para que el Backend (multer/express) lo reconstruya como un array.
+            if (values.muscleGroups && values.muscleGroups.length > 0) {
+                values.muscleGroups.forEach(muscle => {
+                    // Quitamos los corchetes [] del nombre
+                    formData.append("muscleGroups", muscle); 
+                });
+            }
+
+
             if (values.image && values.image[0]) {
                 formData.append("image", values.image[0]);
             }
             if (values.video && values.video[0]) {
                 formData.append("video", values.video[0]);
             }
+
             const res = await createExercise(formData);
-            setValue("name", "");
+            
+            // Limpiamos el formulario (reset de react-hook-form es más limpio)
+            reset(); 
+            
             navigate(`/exercises/${res?.data?.id || ""}`);
             toast.success('Ejercicio creado exitosamente.');
         } catch (error) {
@@ -45,6 +71,7 @@ const ExerciseCreatePage = () => {
             setLoading(false);
         }
     };
+
 
     return (
         <>
@@ -102,29 +129,61 @@ const ExerciseCreatePage = () => {
 
                     {/* Muscle Group */}
                     <div>
-                        <label htmlFor="muscleGroup" className="label-form">
-                            Grupo muscular<span className="input-required">*</span>
+                        <label className="label-form mb-3 block">
+                            Grupos Musculares<span className="input-required">*</span> 
+                            <span className="text-[9px] font-normal lowercase ml-2 opacity-50 italic">(Toca para seleccionar varios)</span>
                         </label>
-                        <div className="relative">
-                            <select
-                                {...register("muscleGroup", {
-                                    required: "Debe seleccionar un grupo muscular"
-                                })}
-                                className={`${errors.muscleGroup ? "input-form-error" : ""} input-form`}
-                            >
-                                <option value="">Seleccionar</option>
-                                {Object.entries(muscleGroupNames).map(([key, value]) => (
-                                    <option key={key} value={key}>
+
+                        <div className={`flex flex-wrap gap-2 p-4 rounded-[2rem] border transition-all ${
+                            errors.muscleGroups ? "border-red-500 bg-red-50/10" : "border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/30"
+                        }`}>
+                            {Object.entries(muscleGroupNames).map(([key, value]) => {
+                                // Obtenemos el valor actual del array desde react-hook-form
+                                const currentMuscles = watch("muscleGroups") || [];
+                                const isSelected = currentMuscles.includes(key);
+                                const isPrimary = currentMuscles[0] === key;
+
+                                return (
+                                    <button
+                                        key={key}
+                                        type="button"
+                                        onClick={() => {
+                                            const newMuscles = isSelected
+                                                ? currentMuscles.filter(m => m !== key) // Quitar si ya está
+                                                : [...currentMuscles, key];            // Agregar si no está
+                                            
+                                            // Actualizamos react-hook-form manualmente
+                                            setValue("muscleGroups", newMuscles, { shouldValidate: true });
+                                        }}
+                                        className={`px-3 py-2 rounded-xl text-[10px] font-black uppercase italic transition-all duration-300 border ${
+                                            isSelected 
+                                            ? isPrimary 
+                                                ? "bg-orange-600 border-orange-500 text-white shadow-lg shadow-orange-500/20 scale-105" 
+                                                : "bg-zinc-800 dark:bg-zinc-200 border-zinc-700 dark:border-zinc-300 text-white dark:text-zinc-900"
+                                            : "bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-400"
+                                        }`}
+                                    >
                                         {value}
-                                    </option>
-                                ))}
-                            </select>
-                            <IoIosArrowDown className='absolute top-3.5 right-3 dark:text-zinc-400 pointer-events-none' />
-                            {errors.muscleGroup && (
-                                <p className="input-message-error">{errors.muscleGroup.message}</p>
-                            )} 
+                                        {isPrimary && <span className="ml-1 text-[8px] opacity-60">★</span>}
+                                    </button>
+                                );
+                            })}
                         </div>
+
+                        {/* Input oculto para que react-hook-form mantenga la validación */}
+                        <input 
+                            type="hidden" 
+                            {...register("muscleGroups", { 
+                                required: "Debes seleccionar al menos un grupo muscular",
+                                validate: v => v.length > 0 || "Selecciona al menos uno"
+                            })} 
+                        />
+
+                        {errors.muscleGroups && (
+                            <p className="input-message-error mt-2">{errors.muscleGroups.message}</p>
+                        )}
                     </div>
+
 
                     {/* Equipment */}
                     <div>

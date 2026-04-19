@@ -210,37 +210,71 @@ const ExerciseDetailPage = () => {
                 </div>
 
                 {/* Info Card */}
-                <div className="bg-white dark:bg-zinc-950 rounded-4xl p-6 shadow-sm border border-zinc-100 dark:border-zinc-900">
-                    <h2 className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-6 border-b border-zinc-50 dark:border-zinc-900 pb-2">
-                        Información General
+                <div className="bg-white dark:bg-zinc-950 rounded-[2.5rem] p-8 shadow-sm border border-zinc-100 dark:border-zinc-900">
+                    <h2 className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-6 border-b border-zinc-50 dark:border-zinc-900 pb-2 italic">
+                        Especificaciones Técnicas
                     </h2>
                     
                     <div className="grid grid-cols-2 gap-4">
-                        <div className="p-4 rounded-2xl bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30">
+                        {/* TIPO DE EJERCICIO */}
+                        <div className="p-4 rounded-2xl bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30 flex flex-col justify-center">
                             <p className="text-[8px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-1 italic">Tipo</p>
-                            <div className="flex items-center gap-2 text-zinc-800 dark:text-zinc-200 font-black uppercase text-xs italic">
+                            <div className="flex items-center gap-2 text-zinc-800 dark:text-zinc-200 font-black uppercase text-xs italic leading-none">
                                 {exercise.type === 'strength' ? <FaDumbbell className="text-blue-500" /> : <FaRunning className="text-blue-500" />}
                                 <span>{exercise.type === 'strength' ? 'Fuerza' : 'Cardio'}</span>
                             </div>
                         </div>
 
-                        <div className="p-4 rounded-2xl bg-orange-50 dark:bg-orange-900/10 border border-orange-100 dark:border-orange-900/30">
-                            <p className="text-[8px] font-black text-orange-600 dark:text-orange-400 uppercase tracking-widest mb-1 italic">Músculo</p>
-                            <p className="text-zinc-800 dark:text-zinc-200 font-black uppercase text-xs italic">
-                                {muscleGroupNames[exercise.muscleGroup] || exercise.muscleGroup}
+                        {/* EQUIPAMIENTO */}
+                        <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800 flex flex-col justify-center">
+                            <p className="text-[8px] font-black text-zinc-500 uppercase tracking-widest mb-1 italic">Equipamiento</p>
+                            <p className="text-zinc-800 dark:text-zinc-200 font-black uppercase text-xs italic leading-none tracking-tighter">
+                                {equipmentNames[exercise.equipment] || exercise.equipment}
                             </p>
                         </div>
 
-                        <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800 col-span-2">
-                            <p className="text-[8px] font-black text-zinc-500 uppercase tracking-widest mb-1 italic">Equipamiento</p>
-                            <p className="text-zinc-800 dark:text-zinc-200 font-black uppercase text-xs italic">
-                                {equipmentNames[exercise.equipment] || exercise.equipment}
-                            </p>
+                        {/* MÚSCULOS INVOLUCRADOS (Layout de Alto Impacto) */}
+                        <div className="p-6 rounded-[2.2rem] bg-orange-50 dark:bg-orange-900/10 border border-orange-100/50 dark:border-orange-900/20 col-span-2 shadow-inner">
+                            <div className="flex justify-between items-center mb-4">
+                                <p className="text-[8px] font-black text-orange-600 dark:text-orange-400 uppercase tracking-[0.2em] italic">
+                                    Grupos Musculares <span className="opacity-40">/ Target</span>
+                                </p>
+                                {/* Un pequeño contador técnico */}
+                                <span className="text-[8px] font-black text-orange-300 dark:text-orange-800">
+                                    {exercise.muscleGroups?.length || 0} SELECCIONADOS
+                                </span>
+                            </div>
+                            
+                            <div className="flex flex-wrap gap-2.5">
+                                {exercise.muscleGroups && exercise.muscleGroups.map((muscle, index) => {
+                                    const isPrimary = index === 0;
+                                    return (
+                                        <span 
+                                            key={muscle} 
+                                            className={`px-3.5 py-1.5 rounded-xl font-black uppercase text-[10px] italic transition-all duration-500 flex items-center gap-1.5 ${
+                                                isPrimary 
+                                                ? "bg-orange-600 text-white shadow-[0_8px_16px_rgba(234,88,12,0.3)] scale-105 border border-orange-500" 
+                                                : "bg-white dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800"
+                                            }`}
+                                        >
+                                            {/* Punto indicador para el primario */}
+                                            {isPrimary && <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />}
+                                            
+                                            {muscleGroupNames[muscle] || muscle}
+                                            
+                                            {isPrimary && (
+                                                <span className="text-[7px] font-black bg-orange-700/50 px-1 rounded ml-0.5">
+                                                    PRI
+                                                </span>
+                                            )}
+                                        </span>
+                                    );
+                                })}
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                
 
                 {exercise.type === 'strength' && (
                     <div className="pt-4">
