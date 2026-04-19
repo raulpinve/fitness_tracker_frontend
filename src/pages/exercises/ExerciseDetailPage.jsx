@@ -13,14 +13,16 @@ import { LuBookOpen } from 'react-icons/lu';
 const muscleGroupNames = {
     pecho: 'Pecho',
     espalda: 'Espalda',
+    lumbares: 'Lumbares',
     hombros: 'Hombros',
     biceps: 'Bíceps',
     triceps: 'Tríceps',
     antebrazos: 'Antebrazos',
     cuadriceps: 'Cuádriceps',
-    isquios: 'Isquios',
+    isquios: 'Isquiotibiales', 
     gluteos: 'Glúteos',
     gemelos: 'Gemelos',
+    aductores: 'Aductores',
     abs: 'Abdominales',
     cardio: 'Cardio',
     full_body: 'Cuerpo Completo'
@@ -30,13 +32,14 @@ const equipmentNames = {
     barras: 'Barras',
     mancuernas: 'Mancuernas',
     maquinas: 'Máquinas',
-    máquinas: 'Máquinas', 
     poleas: 'Poleas',
+    banco: 'Banco',
     peso_corporal: 'Peso Corporal',
     bandas: 'Bandas Elásticas',
     kettlebells: 'Kettlebells',
     ninguno: 'Sin equipo'
 };
+
 
 const ExerciseDetailPage = () => {
     const navigate = useNavigate();
@@ -173,8 +176,6 @@ const ExerciseDetailPage = () => {
                         <FaDumbbell size={48} className="text-zinc-400" />
                     )}
                 </div>
-
-
 
                 {/* View Selector */}
                 {exercise.video && exercise.avatar && (

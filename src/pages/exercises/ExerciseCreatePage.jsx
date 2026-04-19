@@ -9,6 +9,7 @@ import { IoIosArrowDown } from 'react-icons/io';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { LuInfo, LuVideo } from 'react-icons/lu';
+import { equipmentNames, muscleGroupNames } from './utils/exerciseConstants';
 
 const ExerciseCreatePage = () => {
     const {register, handleSubmit, setError, formState: { errors }, setValue} = useForm({  mode: "onChange" });
@@ -99,7 +100,7 @@ const ExerciseCreatePage = () => {
                         </div>
                     </div>
 
-                    {/* Muscular group */}
+                    {/* Muscle Group */}
                     <div>
                         <label htmlFor="muscleGroup" className="label-form">
                             Grupo muscular<span className="input-required">*</span>
@@ -107,27 +108,21 @@ const ExerciseCreatePage = () => {
                         <div className="relative">
                             <select
                                 {...register("muscleGroup", {
-                                    required: "Debe seleccionar un tipo"
+                                    required: "Debe seleccionar un grupo muscular"
                                 })}
-                                className={`${errors.muscleGroup && errors.muscleGroup.message ? "input-form-error" : ""} input-form`}
+                                className={`${errors.muscleGroup ? "input-form-error" : ""} input-form`}
                             >
                                 <option value="">Seleccionar</option>
-                                <option value="pecho">Pecho</option>
-                                <option value="espalda">Espalda</option>
-                                <option value="hombros">Hombros</option>
-                                <option value="biceps">Bíceps</option>
-                                <option value="triceps">Triceps</option>
-                                <option value="antebrazos">Antebrazos</option>
-                                <option value="cuadriceps">Cuádriceps</option>
-                                <option value="isquios">Isquios</option>
-                                <option value="gluteos">Gluteos</option>
-                                <option value="gemelos">Gemelos</option>
-                                <option value="abs">Abdominales</option>
-                                <option value="cardio">Cardio</option>
-                                <option value="full_body">Full body</option>
+                                {Object.entries(muscleGroupNames).map(([key, value]) => (
+                                    <option key={key} value={key}>
+                                        {value}
+                                    </option>
+                                ))}
                             </select>
-                            <IoIosArrowDown className='absolute top-3.5 right-3 dark:text-zinc-400' />
-                            {errors.muscleGroup && (<p className="input-message-error">{errors.muscleGroup.message}</p>)} 
+                            <IoIosArrowDown className='absolute top-3.5 right-3 dark:text-zinc-400 pointer-events-none' />
+                            {errors.muscleGroup && (
+                                <p className="input-message-error">{errors.muscleGroup.message}</p>
+                            )} 
                         </div>
                     </div>
 
@@ -139,22 +134,21 @@ const ExerciseCreatePage = () => {
                         <div className="relative">
                             <select
                                 {...register("equipment", {
-                                    required: "Debe seleccionar un tipo"
+                                    required: "Debe seleccionar el equipamiento"
                                 })}
-                                className={`${errors.equipment && errors.equipment.message ? "input-form-error" : ""} input-form`}
+                                className={`${errors.equipment ? "input-form-error" : ""} input-form`}
                             >
                                 <option value="">Seleccionar</option>
-                                <option value="barras">Barras</option>
-                                <option value="mancuernas">Mancuernas</option>
-                                <option value="maquinas">Máquinas</option>
-                                <option value="poleas">Poleas</option>
-                                <option value="peso_corporal">Peso corporal</option>
-                                <option value="bandas">Bandas</option>
-                                <option value="kettlebells">Kettlebells</option>
-                                <option value="ninguno">Ninguno</option>
+                                {Object.entries(equipmentNames).map(([key, value]) => (
+                                    <option key={key} value={key}>
+                                        {value}
+                                    </option>
+                                ))}
                             </select>
-                            <IoIosArrowDown className='absolute top-3.5 right-3 dark:text-zinc-400' />
-                            {errors.equipment && (<p className="input-message-error">{errors.equipment.message}</p>)} 
+                            <IoIosArrowDown className='absolute top-3.5 right-3 dark:text-zinc-400 pointer-events-none' />
+                            {errors.equipment && (
+                                <p className="input-message-error">{errors.equipment.message}</p>
+                            )} 
                         </div>
                     </div>
 
