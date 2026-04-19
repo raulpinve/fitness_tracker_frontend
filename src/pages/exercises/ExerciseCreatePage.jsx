@@ -34,9 +34,9 @@ const ExerciseCreatePage = () => {
             if (values.video && values.video[0]) {
                 formData.append("video", values.video[0]);
             }
-            await createExercise(formData);
+            const res = await createExercise(formData);
             setValue("name", "");
-            navigate("/exercises");
+            navigate(`/exercises/${res?.data?.id || ""}`);
             toast.success('Ejercicio creado exitosamente.');
         } catch (error) {
             handleErrors(error, setError, setMessageError);
