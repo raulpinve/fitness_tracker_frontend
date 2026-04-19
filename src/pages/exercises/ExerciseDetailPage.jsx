@@ -141,30 +141,40 @@ const ExerciseDetailPage = () => {
         <>
             <Header title={exercise.name} showBack={true} />
             <div className="max-w-2xl mx-auto p-4 space-y-6 pb-20">
-                {/* Multimedia: Video or Image */}
-                <div className={`overflow-hidden rounded-[2.5rem] bg-zinc-100 dark:bg-zinc-900 shadow-xl relative flex items-center justify-center border border-gray-200 dark:border-zinc-800 transition-all duration-500 mx-auto ${
-                    isVertical ? 'aspect-3/4 max-w-[320px]' : 'aspect-video w-full'
-                }`}>
+               {/* Multimedia: Video or Image */}
+                <div className={`overflow-hidden rounded-[2.5rem] bg-zinc-100 dark:bg-zinc-900 shadow-xl relative flex items-center justify-center border border-gray-200 dark:border-zinc-800 mx-auto 
+                    /* Transición suave de todas las propiedades físicas */
+                    transition-[aspect-ratio,max-width,height] duration-700 ease-in-out
+                    ${view === 'video' 
+                        ? (isVertical ? 'aspect-3/4 max-w-[320px]' : 'aspect-video w-full') 
+                        : 'aspect-square max-w-[400px] w-full' // Usamos aspect-square como base para que no "salte"
+                    }`}>
+                    
                     {view === 'video' && exercise.video ? (
                         <video 
+                            key="video-player" // Key ayuda a React a renderizar limpio
                             src={`${folderPath}${exercise.video}`} 
                             onLoadedMetadata={handleVideoMetadata}
                             controls 
-                            className="w-full h-full object-cover bg-black" 
+                            className="w-full h-full object-cover bg-black animate-in fade-in duration-500" 
                             muted
                             loop
                         />
                     ) : exercise.avatar ? (
                         <img 
+                            key="image-display"
                             src={`${folderPath}${exercise.avatar}`} 
-                            onLoad={handleImageLoad} // <--- Ahora la imagen también es inteligente
+                            onLoad={handleImageLoad} 
                             alt={exercise.name}
-                            className="w-full h-full object-cover" 
+                            /* 'object-contain' mantiene la imagen entera sin deformar el contenedor */
+                            className="w-full h-full object-contain p-4 animate-in fade-in duration-500" 
                         />
                     ) : (
                         <FaDumbbell size={48} className="text-zinc-400" />
                     )}
                 </div>
+
+
 
                 {/* View Selector */}
                 {exercise.video && exercise.avatar && (
