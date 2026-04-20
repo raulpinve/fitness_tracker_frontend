@@ -19,23 +19,24 @@ const WorkoutsPage = () => {
     const navigate = useNavigate();
 
     const fetchWorkout = async (pageToLoad) => {
-        if (loading) return;
         setLoading(true);
         try {
-            const res = await getAllWorkouts(pageToLoad); 
+            const pageSize = 10; // Asegúrate de que este número coincida con tu backend
+            const res = await getAllWorkouts(pageToLoad, pageSize); 
             const newData = res.data;
-            const total = res.pagination?.totalRecords || 0; 
-
-            setWorkouts(prev => {
-                return pageToLoad === 1 ? newData : [...prev, ...newData];
-            });
-            setHasMore(workouts.length + newData.length < total);
-        } catch{
-            toast.error("Error al cargar ejercicios");
+            
+            setWorkouts(prev => (pageToLoad === 1 ? newData : [...prev, ...newData]));
+            const totalRecords = res.pagination?.totalRecords || 0;
+            setHasMore(pageToLoad * pageSize < totalRecords);
+            
+        } catch (error) {
+            toast.error("Error al cargar el historial de entrenamientos");
+            console.error(error);
         } finally {
             setLoading(false);
         }
     };
+
     
     useEffect(() => {
         fetchWorkout(1);

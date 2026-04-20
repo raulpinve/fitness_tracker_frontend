@@ -54,7 +54,7 @@ export const StrengthForm = ({ exercise, routineId, setMessageError, initialData
                     <label className="label-form">Series <span className="input-required">*</span></label>
                     <input 
                         type="number" 
-                        placeholder="Ej: 4"
+                        placeholder="Ej: 3"
                         min={0}
                         className={`input-form ${errors.targetSets ? 'input-form-error' : ''}`}
                         {...register("targetSets", { 
