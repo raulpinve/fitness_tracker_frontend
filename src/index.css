@@ -9,12 +9,12 @@
   --font-display: "Anton", sans-serif;
   
   /* Barlow: Condensada y técnica, ideal para tips y datos */
-  --font-sans: "Barlow Semi Condensed", sans-serif;
+  --font-sans: "Barlow", sans-serif;
 }
 
 @layer base {
   html, body {
-    font-family: "Barlow Semi Condensed", sans-serif;
+    font-family: "Barlow", sans-serif;
   }
 } 
 .header-profile-li{
