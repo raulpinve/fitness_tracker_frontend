@@ -44,7 +44,7 @@ export default function RoutineExerciseList({ routinesExercises, onOpenActions }
                             )}
                         </div>
                         <div className="flex-1 ml-3 overflow-hidden">
-                            <p className="font-bold text-zinc-800 dark:text-zinc-100 text-sm truncate leading-tight group-hover:text-blue-600 transition-colors">
+                            <p className="font-bold text-zinc-800 dark:text-zinc-100 text-base truncate leading-tight group-hover:text-blue-600 transition-colors">
                                 {item.exerciseName || "Ejercicio"}
                             </p>
                             <div className="flex items-center gap-1.5 mt-1">

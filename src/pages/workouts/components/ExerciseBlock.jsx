@@ -4,7 +4,7 @@ import { useCardioLogServices } from '../../../services/cardioLog.service';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { LuDumbbell, LuPlus, LuTimer, LuTrash2, LuX } from 'react-icons/lu';
+import { LuDumbbell, LuPenLine, LuPlus, LuTimer, LuTrash2, LuX } from 'react-icons/lu';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import { toast } from 'sonner';
 import HistorySkeleton from './HistorySkeleton';
@@ -22,6 +22,7 @@ const ExerciseBlock = ({ exercise, workout, onRemove }) => {
     const [selectedItem, setSelectedItem] = useState(null);
     const [weightUnit, setWeightUnit] = useState('kg');
     const [openSetActions, setOpenSetActions] = useState(false);
+    const [showNotes, setShowNotes] = useState(exercise.notes ? true : false);
     const navigate = useNavigate();
     
     const isCardio = exercise.exerciseType === 'cardio';
@@ -293,6 +294,7 @@ const ExerciseBlock = ({ exercise, workout, onRemove }) => {
                     ))}
                 </div>
             )}
+
             {/* Input Form */}
             {!isReadOnly && (
                 <form onSubmit={handleSubmit(onSubmit)} className="bg-zinc-50 dark:bg-zinc-900/50 p-4 rounded-3xl border border-zinc-100 dark:border-zinc-800/50 flex items-center gap-4 shadow-inner">

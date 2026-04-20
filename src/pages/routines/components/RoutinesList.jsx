@@ -18,7 +18,7 @@ export default function RoutinesList({ routines, setSelectedRoutineExercise, set
                         </div>
 
                         <div className="flex-1 min-w-0 pr-8"> {/* Añadimos padding a la derecha para el botón */}
-                            <h3 className="font-bold text-zinc-900 dark:text-zinc-100 text-base leading-tight truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                            <h3 className="font-bold text-zinc-900 text dark:text-zinc-100 text-base leading-tight truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                                 {routine.name || "Rutina sin nombre"}
                             </h3>
                             <div className="flex items-center gap-1.5 mt-2 overflow-hidden">

@@ -50,7 +50,7 @@ export default function WorkoutsList({ workouts }) {
                                 )}
                             </div>
                             <div className="flex-1 min-w-0 ml-1"> 
-                                <h3 className="font-black text-zinc-900 dark:text-zinc-100 text-sm truncate group-hover:text-blue-600 transition-colors">
+                                <h3 className="font-bold text-zinc-900 text dark:text-zinc-100 text-base leading-tight truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                                     {workout.name || "Sesión de Entrenamiento"}
                                 </h3>
 
