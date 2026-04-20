@@ -1,11 +1,10 @@
 import { useNavigate } from "react-router-dom";
 
-export default function RoutinesList({ routines }) {
+export default function RoutinesList({ routines, setSelectedRoutineExercise, setOpenButtonSheet }) {
     const navigate = useNavigate();
     return (
         <div className="flex flex-col gap-3">
-            {
-            routines.map(routine => (
+            {routines.map(routine => (
                 <div
                     key={routine.id}
                     onClick={() => navigate(`/routines/${routine.id}/exercises`, { 
@@ -18,7 +17,7 @@ export default function RoutinesList({ routines }) {
                             <span className="text-blue-600 dark:text-blue-400 font-bold text-lg">{routine.name[0]}</span>
                         </div>
 
-                        <div className="flex-1 min-w-0">
+                        <div className="flex-1 min-w-0 pr-8"> {/* Añadimos padding a la derecha para el botón */}
                             <h3 className="font-bold text-zinc-900 dark:text-zinc-100 text-base leading-tight truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                                 {routine.name || "Rutina sin nombre"}
                             </h3>
@@ -47,6 +46,18 @@ export default function RoutinesList({ routines }) {
                                 )}
                             </div>
                         </div>
+
+                        {/* Botón reposicionado absolutamente dentro de la card */}
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation(); // IMPORTANTE: Evita el navigate
+                                setSelectedRoutineExercise(routine);
+                                setOpenButtonSheet(true);
+                            }}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 p-3 cursor-pointer text-zinc-300 dark:text-zinc-600 hover:text-zinc-600 dark:hover:text-zinc-200 transition-all active:bg-zinc-100 dark:active:bg-zinc-800 rounded-full z-10"
+                        >
+                            <span className="text-2xl leading-none">⋮</span>
+                        </button>
                     </div>
                 </div>
             ))}

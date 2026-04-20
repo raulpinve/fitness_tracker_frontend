@@ -64,7 +64,6 @@ const ExercisesPage = () => {
                     totalRecords={pagination.totalRecords}
                     placeholder="BUSCAR EJERCICIO..."
                 />
-
                 {loading && page === 1 ? (
                     [...Array(10)].map((_, i) => <ExerciseSkeleton key={i} />)
                 ) : exercises.length === 0 ? (
@@ -73,16 +72,22 @@ const ExercisesPage = () => {
                         icon={LuDumbbell}
                     />
                 ) : (
-                    <ExercisesList 
-                        exercises={exercises} 
-                    />
+                    <>
+                        <ExercisesList exercises={exercises} />
+                        
+                        {/* El botón solo aparece si hay ejercicios Y si el backend dice que hay más */}
+                        {hasMore && (
+                            <div className="pt-4 animate-in fade-in zoom-in duration-300">
+                                <LoadMoreButton 
+                                    onClick={handleLoadMore} 
+                                    loading={loading} 
+                                    hasMore={hasMore} 
+                                    text="Cargar más ejercicios" 
+                                />
+                            </div>
+                        )}
+                    </>
                 )}
-                <LoadMoreButton 
-                    onClick={handleLoadMore} 
-                    loading={loading} 
-                    hasMore={hasMore} 
-                    text="Cargar más ejercicios" 
-                />
             </div>
             <FloatingActionButton 
                 text="Ejercicio" 

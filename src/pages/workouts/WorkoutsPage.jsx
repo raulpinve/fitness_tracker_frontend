@@ -53,23 +53,32 @@ const WorkoutsPage = () => {
        
         <div className='p-4'>
             {loading && page === 1 ? (
+                /* Skeleton de carga inicial */
                 <WorkoutSkeleton />
             ) : workouts.length === 0 ? (
+                /* Estado vacío si no hay data */
                 <EmptyState 
                     message="No se encontraron entrenamientos" 
                     icon={LuFlame}
                 />
             ) : (
-                <WorkoutsList 
-                    workouts={workouts} 
-                />
+                <>
+                    {/* Lista de Entrenamientos */}
+                    <WorkoutsList workouts={workouts} />
+
+                    {/* El botón solo aparece si hay data Y si el backend confirma que hay más páginas */}
+                    {hasMore && (
+                        <div className="pt-8 pb-20 animate-in fade-in zoom-in duration-500">
+                            <LoadMoreButton 
+                                onClick={handleLoadMore} 
+                                loading={loading} 
+                                hasMore={hasMore} 
+                                text="Cargar más historial" 
+                            />
+                        </div>
+                    )}
+                </>
             )}
-            <LoadMoreButton 
-                onClick={handleLoadMore} 
-                loading={loading} 
-                hasMore={hasMore} 
-                text="Cargar más entrenamientos" 
-            />
         </div>
 
         <FloatingActionButton 

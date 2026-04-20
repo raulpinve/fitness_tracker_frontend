@@ -13,6 +13,7 @@ import { FaDumbbell, FaTrash } from 'react-icons/fa';
 import RoutineExerciseSkeleton from './components/RoutineExerciseSkeleton';
 import { LuDumbbell, LuTrash2 } from 'react-icons/lu';
 import EmptyState from '../../shared/components/EmptyState';
+import Button from '../../shared/components/Button';
 
 const RoutineExercisePage = () => {
     const navigate = useNavigate();
