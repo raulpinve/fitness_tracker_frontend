@@ -5,14 +5,12 @@
 
 
 @theme {
-  /* La fuente Sans (Barlow) es perfecta para etiquetas y datos técnicos */
-  --font-sans: 'Barlow Semi Condensed', sans-serif;
-
-  /* La fuente Display (Archivo Black) es para tus títulos XL en cursiva */
-  --font-display: 'Archivo Black', sans-serif;
+  /* Anton: Fuerte y compacta, perfecta para nombres de ejercicios */
+  --font-display: "Anton", sans-serif;
+  
+  /* Barlow: Condensada y técnica, ideal para tips y datos */
+  --font-sans: "Barlow Semi Condensed", sans-serif;
 }
-
-
 .header-profile-li{
   @apply flex items-center w-full gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-200 dark:hover:bg-white/5 dark:hover:text-gray-300 cursor-pointer
 }
