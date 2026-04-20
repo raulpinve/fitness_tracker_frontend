@@ -11,8 +11,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'logo.png', 'apple-touch-icon.png'],
       manifest: {
-        name: 'TYTAN Fitness',
-        short_name: 'TYTAN',
+        name: 'Fitness',
+        short_name: 'Fitness',
         description: 'Sistema Táctico de Entrenamiento de Alto Rendimiento',
         theme_color: '#09090b',
         background_color: '#09090b',
