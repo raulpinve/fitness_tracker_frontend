@@ -30,7 +30,7 @@ export default function MobileLayout() {
                                                 <div className="absolute -top-1 -right-1 w-2 h-2 bg-blue-600 rounded-full border-2 border-white dark:border-zinc-950 animate-pulse" />
                                             )}
                                         </div>
-                                        <span className={`text-[8px] font-black uppercase tracking-[0.15em] mt-1 italic transition-all ${isActive ? "opacity-100" : "opacity-60"}`}>
+                                        <span className={`text-[8px] font-black uppercase tracking-[0.15em] mt-1  transition-all ${isActive ? "opacity-100" : "opacity-60"}`}>
                                             Gimnasio
                                         </span>
                                     </>
@@ -47,7 +47,7 @@ export default function MobileLayout() {
                                                 <div className="absolute -top-1 -right-1 w-2 h-2 bg-blue-600 rounded-full border-2 border-white dark:border-zinc-950 animate-pulse" />
                                             )}
                                         </div>
-                                        <span className={`text-[8px] font-black uppercase tracking-[0.15em] mt-1 italic transition-all ${isActive ? "opacity-100" : "opacity-60"}`}>
+                                        <span className={`text-[8px] font-black uppercase tracking-[0.15em] mt-1  transition-all ${isActive ? "opacity-100" : "opacity-60"}`}>
                                             Rutinas
                                         </span>
                                     </>
@@ -64,7 +64,7 @@ export default function MobileLayout() {
                                                 <div className="absolute -top-1 -right-1 w-2 h-2 bg-blue-600 rounded-full border-2 border-white dark:border-zinc-950 animate-pulse" />
                                             )}
                                         </div>
-                                        <span className={`text-[8px] font-black uppercase tracking-[0.15em] mt-1 italic transition-all ${isActive ? "opacity-100" : "opacity-60"}`}>
+                                        <span className={`text-[8px] font-black uppercase tracking-[0.15em] mt-1  transition-all ${isActive ? "opacity-100" : "opacity-60"}`}>
                                             Entrenar
                                         </span>
                                     </>
@@ -81,7 +81,7 @@ export default function MobileLayout() {
                                                 <div className="absolute -top-1 -right-1 w-2 h-2 bg-blue-600 rounded-full border-2 border-white dark:border-zinc-950 animate-pulse" />
                                             )}
                                         </div>
-                                        <span className={`text-[8px] font-black uppercase tracking-[0.15em] mt-1 italic transition-all ${isActive ? "opacity-100" : "opacity-60"}`}>
+                                        <span className={`text-[8px] font-black uppercase tracking-[0.15em] mt-1  transition-all ${isActive ? "opacity-100" : "opacity-60"}`}>
                                             Perfil
                                         </span>
                                     </>

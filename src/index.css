@@ -3,20 +3,11 @@
 /* Esta línea es la que activa el modo oscuro por clase en Tailwind v4 */
 @custom-variant dark (&:where(.dark, .dark *));
 
-
 @theme {
-  /* Anton: Fuerte y compacta, perfecta para nombres de ejercicios */
-  --font-display: "Anton", sans-serif;
-  
-  /* Barlow: Condensada y técnica, ideal para tips y datos */
-  --font-sans: "Barlow", sans-serif;
+  --font-sans: 'Inter', sans-serif;
+  --font-serif: 'Playfair Display', serif;
 }
 
-@layer base {
-  html, body {
-    font-family: "Barlow", sans-serif;
-  }
-} 
 .header-profile-li{
   @apply flex items-center w-full gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-200 dark:hover:bg-white/5 dark:hover:text-gray-300 cursor-pointer
 }
