@@ -14,9 +14,9 @@ export default defineConfig({
         name: 'TYTAN Fitness',
         short_name: 'TYTAN',
         description: 'Sistema Táctico de Entrenamiento de Alto Rendimiento',
-        theme_color: '#09090b', 
+        theme_color: '#09090b', // Color Zinc-950 de tu app
         background_color: '#09090b',
-        display: 'standalone', 
+        display: 'standalone',
         orientation: 'portrait',
         icons: [
           {
