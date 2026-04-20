@@ -87,7 +87,7 @@ const FilterBarExercise = ({
 
                 {/* Floating Clear Button */}
                 {hasActiveFilters && (
-                    <div className="absolute right-0 top-0 h-full flex items-center bg-gradient-to-l from-white dark:from-zinc-950 via-white/90 dark:via-zinc-950/90 to-transparent pl-12 pointer-events-none">
+                    <div className="absolute right-0 top-0 h-full flex items-center pl-12 pointer-events-none">
                         <button 
                             onClick={() => setFilters({ type: "", muscleGroup: "" })} 
                             className="pointer-events-auto flex items-center gap-1.5 px-3 py-2 bg-red-500/10 text-red-600 dark:text-red-400 rounded-xl border border-red-500/20 active:scale-90 transition-all"

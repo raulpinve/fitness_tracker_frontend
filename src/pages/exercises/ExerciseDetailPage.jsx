@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import BottomSheet from '../../shared/components/BottomSheet';
 import Button from '../../shared/components/Button';
 import ExerciseProgressChart from './components/ExerciseProgressChart';
-import { LuBookOpen } from 'react-icons/lu';
+import { LuBookOpen, LuDumbbell, LuInfo } from 'react-icons/lu';
 
 const muscleGroupNames = {
     pecho: 'Pecho',
@@ -211,70 +211,78 @@ const ExerciseDetailPage = () => {
 
                 {/* Info Card */}
                 <div className="bg-white dark:bg-zinc-950 rounded-[2.5rem] p-8 shadow-sm border border-zinc-100 dark:border-zinc-900">
-                    <h2 className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-6 border-b border-zinc-50 dark:border-zinc-900 pb-2 italic">
-                        Especificaciones Técnicas
-                    </h2>
+                    <div className="flex items-center justify-between mb-8">
+                        <div className="flex flex-col">
+                            <span className="text-[10px] font-black text-blue-600 uppercase tracking-[0.3em] italic">
+                                Data <span className="text-zinc-400">Sheet</span>
+                            </span>
+                            <h2 className="text-lg font-black text-zinc-800 dark:text-zinc-100 uppercase italic tracking-tighter leading-none">
+                                Especificaciones
+                            </h2>
+                        </div>
+                        <LuInfo className="text-zinc-300 dark:text-zinc-800" size={20} />
+                    </div>
                     
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-3">
                         {/* TIPO DE EJERCICIO */}
-                        <div className="p-4 rounded-2xl bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30 flex flex-col justify-center">
-                            <p className="text-[8px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-1 italic">Tipo</p>
-                            <div className="flex items-center gap-2 text-zinc-800 dark:text-zinc-200 font-black uppercase text-xs italic leading-none">
-                                {exercise.type === 'strength' ? <FaDumbbell className="text-blue-500" /> : <FaRunning className="text-blue-500" />}
-                                <span>{exercise.type === 'strength' ? 'Fuerza' : 'Cardio'}</span>
+                        <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800 flex flex-col gap-2">
+                            <span className="text-[8px] font-black text-zinc-400 uppercase tracking-widest italic">Categoría</span>
+                            <div className="flex items-center gap-2 text-zinc-900 dark:text-zinc-100 font-black uppercase text-[11px] italic">
+                                <div className="p-1.5 bg-blue-600/10 rounded-lg text-blue-600">
+                                    {exercise.type === 'strength' ? <FaDumbbell size={12} /> : <FaRunning size={12} />}
+                                </div>
+                                {exercise.type === 'strength' ? 'Fuerza' : 'Cardio'}
                             </div>
                         </div>
 
                         {/* EQUIPAMIENTO */}
-                        <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800 flex flex-col justify-center">
-                            <p className="text-[8px] font-black text-zinc-500 uppercase tracking-widest mb-1 italic">Equipamiento</p>
-                            <p className="text-zinc-800 dark:text-zinc-200 font-black uppercase text-xs italic leading-none tracking-tighter">
-                                {equipmentNames[exercise.equipment] || exercise.equipment}
-                            </p>
+                        <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800 flex flex-col gap-2">
+                            <span className="text-[8px] font-black text-zinc-400 uppercase tracking-widest italic">Herramienta</span>
+                            <div className="flex items-center gap-2 text-zinc-900 dark:text-zinc-100 font-black uppercase text-[11px] italic">
+                                <div className="p-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-lg text-zinc-500">
+                                    <LuDumbbell size={12} />
+                                </div>
+                                <span className="truncate">{equipmentNames[exercise.equipment] || exercise.equipment}</span>
+                            </div>
                         </div>
 
-                        {/* MÚSCULOS INVOLUCRADOS (Layout de Alto Impacto) */}
-                        <div className="p-6 rounded-[2.2rem] bg-orange-50 dark:bg-orange-900/10 border border-orange-100/50 dark:border-orange-900/20 col-span-2 shadow-inner">
-                            <div className="flex justify-between items-center mb-4">
-                                <p className="text-[8px] font-black text-orange-600 dark:text-orange-400 uppercase tracking-[0.2em] italic">
-                                    Grupos Musculares <span className="opacity-40">/ Target</span>
-                                </p>
-                                {/* Un pequeño contador técnico */}
-                                <span className="text-[8px] font-black text-orange-300 dark:text-orange-800">
-                                    {exercise.muscleGroups?.length || 0} SELECCIONADOS
+                        {/* MÚSCULOS INVOLUCRADOS - Ya no es un ovni naranja */}
+                        <div className="col-span-2 mt-2 p-5 rounded-[2rem] bg-zinc-50/50 dark:bg-zinc-900/30 border border-zinc-100 dark:border-zinc-800">
+                            <div className="flex justify-between items-center mb-4 px-1">
+                                <span className="text-[8px] font-black text-zinc-400 uppercase tracking-[0.2em] italic">
+                                    Grupos Musculares
+                                </span>
+                                <span className="text-[7px] font-bold text-zinc-300 dark:text-zinc-700 uppercase tracking-widest">
+                                    Target System v1.0
                                 </span>
                             </div>
                             
-                            <div className="flex flex-wrap gap-2.5">
+                            <div className="flex flex-wrap gap-2">
                                 {exercise.muscleGroups && exercise.muscleGroups.map((muscle, index) => {
                                     const isPrimary = index === 0;
                                     return (
-                                        <span 
+                                        <div 
                                             key={muscle} 
-                                            className={`px-3.5 py-1.5 rounded-xl font-black uppercase text-[10px] italic transition-all duration-500 flex items-center gap-1.5 ${
+                                            className={`px-3 py-2 rounded-xl font-black uppercase text-[9px] italic flex items-center gap-2 border transition-all ${
                                                 isPrimary 
-                                                ? "bg-orange-600 text-white shadow-[0_8px_16px_rgba(234,88,12,0.3)] scale-105 border border-orange-500" 
-                                                : "bg-white dark:bg-zinc-900 text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-800"
+                                                ? "bg-white dark:bg-zinc-100 text-zinc-950 border-white shadow-md scale-[1.02]" 
+                                                : "bg-transparent text-zinc-500 border-zinc-200 dark:border-zinc-800"
                                             }`}
                                         >
-                                            {/* Punto indicador para el primario */}
-                                            {isPrimary && <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />}
-                                            
-                                            {muscleGroupNames[muscle] || muscle}
-                                            
                                             {isPrimary && (
-                                                <span className="text-[7px] font-black bg-orange-700/50 px-1 rounded ml-0.5">
-                                                    PRI
-                                                </span>
+                                                <div className="w-1 h-3 bg-blue-600 rounded-full" />
                                             )}
-                                        </span>
+                                            {muscleGroupNames[muscle] || muscle}
+                                            {isPrimary && (
+                                                <span className="text-[7px] text-blue-600 font-black ml-1">★</span>
+                                            )}
+                                        </div>
                                     );
                                 })}
                             </div>
                         </div>
                     </div>
                 </div>
-
 
                 {exercise.type === 'strength' && (
                     <div className="pt-4">
@@ -333,7 +341,6 @@ const ExerciseDetailPage = () => {
                             colorButton={`primary`}
                             loading={loading}
                             onClick={() => navigate(`/exercises/${exercise.id}/edit`)}
-                            className="py-4 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-blue-500/10"
                         >
                             Editar
                         </Button>
@@ -342,7 +349,6 @@ const ExerciseDetailPage = () => {
                             colorButton={`danger`}
                             loading={loading}
                             onClick={() => setOpenButtonSheet(true)}
-                            className="py-4 rounded-2xl font-black uppercase tracking-widest"
                         >
                             Eliminar
                         </Button>
