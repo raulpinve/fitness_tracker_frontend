@@ -5,7 +5,7 @@ import { LuPlus } from 'react-icons/lu'; // Usamos Lucide para consistencia
 const FloatingActionButton = ({ text, onClick, icon: Icon = LuPlus }) => {
     return (
         /* El bottom-26 está perfecto para quedar sobre tu Nav bar */
-        <div className="fixed bottom-32 left-0 right-0 flex justify-center z-40 pointer-events-none">
+        <div className="fixed bottom-28 left-0 right-0 flex justify-center z-40 pointer-events-none">
             <button 
                 onClick={onClick}
                 className="pointer-events-auto cursor-pointer flex items-center gap-3 px-8 h-14 
