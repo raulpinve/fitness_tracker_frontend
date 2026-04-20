@@ -1,12 +1,108 @@
-import { 
-    AreaChart, Area, XAxis, YAxis, CartesianGrid, 
-    Tooltip, ResponsiveContainer 
-} from 'recharts';
+import React from 'react';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Filler,
+  Legend,
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
+
+// Registramos los motores de Chart.js
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Filler,
+  Legend
+);
 
 const ExerciseProgressChart = ({ data }) => {
+    // 1. Preparamos los datos para Chart.js
+    const chartData = {
+        labels: data.map(d => d.date),
+        datasets: [
+            {
+                fill: true,
+                label: 'Peso',
+                data: data.map(d => d.value),
+                borderColor: '#2563eb', // Azul TYTAN
+                borderWidth: 4,
+                backgroundColor: (context) => {
+                    const ctx = context.chart.ctx;
+                    const gradient = ctx.createLinearGradient(0, 0, 0, 200);
+                    gradient.addColorStop(0, 'rgba(37, 99, 235, 0.3)');
+                    gradient.addColorStop(1, 'rgba(37, 99, 235, 0)');
+                    return gradient;
+                },
+                lineTension: 0.4, // Suavizado monotone
+                pointRadius: 4,
+                pointBackgroundColor: '#09090b',
+                pointBorderColor: '#2563eb',
+                pointBorderWidth: 2.5,
+                pointHoverRadius: 6,
+                pointHoverBackgroundColor: '#2563eb',
+                pointHoverBorderColor: '#ffffff',
+                pointHoverBorderWidth: 2,
+            },
+        ],
+    };
+
+    // 2. Opciones de configuración (Estética Industrial)
+    const options = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                enabled: true,
+                backgroundColor: '#18181b', // Zinc-900
+                titleFont: { size: 10, weight: '900', family: 'Inter' },
+                bodyFont: { size: 16, weight: '900', family: 'Inter' },
+                padding: 12,
+                cornerRadius: 16,
+                displayColors: false,
+                callbacks: {
+                    label: (context) => `${context.parsed.y} KG`,
+                }
+            },
+        },
+        scales: {
+            x: {
+                grid: { display: false },
+                border: { display: false },
+                ticks: {
+                    color: '#52525b',
+                    font: { size: 9, weight: '900' },
+                    padding: 10,
+                },
+            },
+            y: {
+                grid: { 
+                    color: 'rgba(39, 39, 42, 0.1)',
+                    drawTicks: false,
+                },
+                border: { display: false, dash: [4, 4] },
+                ticks: {
+                    color: '#52525b',
+                    font: { size: 9, weight: '900' },
+                    padding: 10,
+                    callback: (value) => `${value}kg`
+                },
+            },
+        },
+    };
+
     return (
         <div className="bg-white dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-900 rounded-[2rem] p-6 shadow-sm mb-6 overflow-hidden">
-            {/* Header con el estilo de tus otras tarjetas */}
+            {/* Header Idéntico */}
             <div className="flex justify-between items-start mb-8">
                 <div className="flex flex-col gap-1">
                     <span className="text-[10px] font-black text-blue-600 dark:text-blue-500 uppercase tracking-[0.3em] leading-none">
@@ -23,90 +119,8 @@ const ExerciseProgressChart = ({ data }) => {
                 </div>
             </div>
 
-            <div className="w-full" style={{ height: '220px', minWidth: '0px' }}>
-                <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart 
-                        data={data} 
-                        /* 1. AJUSTE DE MÁRGENES: 
-                        Aumentamos 'left' para que el eje Y no se corte y 
-                        'right' para que el último punto respire */
-                        margin={{ top: 10, right: 25, left: -25, bottom: 0 }}
-                    >
-                        <defs>
-                            <linearGradient id="zincGradient" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="#2563eb" stopOpacity={0.3}/>
-                                <stop offset="95%" stopColor="#2563eb" stopOpacity={0}/>
-                            </linearGradient>
-                        </defs>
-                        
-                        <CartesianGrid 
-                            strokeDasharray="4 4" 
-                            vertical={false} 
-                            stroke="#27272a" 
-                            opacity={0.2} 
-                        />
-                        
-                        <XAxis 
-                            dataKey="date" 
-                            axisLine={false} 
-                            tickLine={false} 
-                            /* 2. PADDING EN EL EJE X: Evita que el primer y último texto se corten */
-                            padding={{ left: 10, right: 10 }}
-                            tick={{fontSize: 9, fontWeight: '900', fill: '#52525b', textTransform: 'uppercase'}}
-                            dy={15}
-                        />
-                        
-                        <YAxis 
-                            axisLine={false}
-                            tickLine={false}
-                            /* 3. ALINEACIÓN: Aseguramos que los números de peso tengan espacio */
-                            tick={{fontSize: 9, fontWeight: '900', fill: '#52525b'}}
-                            domain={['dataMin - 5', 'dataMax + 5']} 
-                        />
-
-                        <Tooltip 
-                            /* 4. MEJORA DEL CURSOR: Línea más fina para no tapar el dato */
-                            cursor={{ stroke: '#2563eb', strokeWidth: 1, strokeDasharray: '4 4' }}
-                            content={({ active, payload, label }) => {
-                                if (active && payload && payload.length) {
-                                    return (
-                                        <div className="bg-zinc-900 dark:bg-white p-3 rounded-2xl shadow-2xl border border-zinc-800 dark:border-zinc-200 animate-in zoom-in-95 duration-200 z-50">
-                                            <p className="text-[8px] font-black text-zinc-400 dark:text-zinc-500 uppercase tracking-tighter mb-1">FECHA: {label}</p>
-                                            <div className="flex items-baseline gap-1">
-                                                <span className="text-xl font-black text-white dark:text-black italic tracking-tighter leading-none">
-                                                    {payload[0].value}
-                                                </span>
-                                                <span className="text-[10px] font-black text-blue-500 uppercase">kg</span>
-                                            </div>
-                                        </div>
-                                    );
-                                }
-                                return null;
-                            }}
-                        />
-
-                        <Area 
-                            type="monotone" 
-                            dataKey="value" 
-                            stroke="#2563eb" 
-                            strokeWidth={4} 
-                            fill="url(#zincGradient)" 
-                            /* 5. DOTS: Bajamos un pelín el radio para que no toquen el borde superior */
-                            dot={{ 
-                                r: 4, 
-                                fill: "#09090b", 
-                                stroke: "#2563eb", 
-                                strokeWidth: 2.5 
-                            }}
-                            activeDot={{ 
-                                r: 6, 
-                                fill: "#2563eb", 
-                                stroke: "#fff", 
-                                strokeWidth: 2,
-                            }}
-                        />
-                    </AreaChart>
-                </ResponsiveContainer>
+            <div className="w-full" style={{ height: '220px' }}>
+                <Line data={chartData} options={options} />
             </div>
 
             {/* Footer técnico */}
