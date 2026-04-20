@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
-import { VitePWA } from 'vite-plugin-pwa' // <--- 1. Importa el plugin
+import { VitePWA } from 'vite-plugin-pwa' 
 
 export default defineConfig({
   plugins: [
@@ -14,7 +14,7 @@ export default defineConfig({
         name: 'TYTAN Fitness',
         short_name: 'TYTAN',
         description: 'Sistema Táctico de Entrenamiento de Alto Rendimiento',
-        theme_color: '#09090b', // Color Zinc-950 de tu app
+        theme_color: '#09090b',
         background_color: '#09090b',
         display: 'standalone',
         orientation: 'portrait',
@@ -33,7 +33,7 @@ export default defineConfig({
             src: 'pwa-512x512.png',
             sizes: '512x512',
             type: 'image/png',
-            purpose: 'any maskable' // Clave para que el icono se vea pro
+            purpose: 'any maskable'
           }
         ]
       }
