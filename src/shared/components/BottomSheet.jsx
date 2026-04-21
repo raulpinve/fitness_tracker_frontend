@@ -21,7 +21,7 @@ export default function BottomSheet({ open, onClose, children }) {
           <div className="w-10 h-1 bg-gray-300 dark:bg-zinc-700 rounded-full mx-auto my-3" />
 
           {/* Contenido */}
-          <div className="flex flex-col divide-y divide-gray-200 dark:divide-zinc-800 px-4 py-2">
+          <div className="flex flex-col divide-y divide-gray-200 dark:divide-zinc-800 px-4 py-2 mx-auto max-w-lg">
               {children}
           </div>
         </div>

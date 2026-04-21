@@ -117,9 +117,13 @@ const ExerciseBlock = ({ exercise, workout, onRemove }) => {
                 }
 
                 setHistory(prev => [...prev, response.data]);
-                if (isCardio) setValue("minutes", "");
-                else setValue("reps", "");
-                toast.success("Set guardado con éxito");
+                if (isCardio) {
+                    setValue("minutes", "");
+                    setValue("distance", "");
+                } else {
+                    setValue("reps", ""); 
+                    setValue("rpe", null); 
+                }
             }
         } catch {
             toast.error("Error saving record");
@@ -276,7 +280,13 @@ const ExerciseBlock = ({ exercise, workout, onRemove }) => {
                             type="button"
                             onClick={() => {
                                 if ("vibrate" in navigator) navigator.vibrate(20); 
-                                setValue("rpe", rpe.val);
+                                
+                                // Obtenemos el valor actual
+                                const currentRpe = watch("rpe");
+                                
+                                // Si el valor que tocas es el mismo que ya está, lo quitamos (null)
+                                // De lo contrario, ponemos el nuevo valor
+                                setValue("rpe", currentRpe === rpe.val ? null : rpe.val);
                             }}
                             className={`flex-1 flex flex-col items-center py-2 rounded-xl transition-all duration-300 ${
                                 watch("rpe") === rpe.val 
@@ -298,10 +308,11 @@ const ExerciseBlock = ({ exercise, workout, onRemove }) => {
             {/* Input Form */}
             {!isReadOnly && (
                 <form onSubmit={handleSubmit(onSubmit)} className="bg-zinc-50 dark:bg-zinc-900/50 p-4 rounded-3xl border border-zinc-100 dark:border-zinc-800/50 flex items-center gap-4 shadow-inner">
-                    <div className="flex flex-1 gap-2">
+                    <div className="flex flex-1 gap-2 items-end"> {/* 1. Cambiamos a items-end para alinear los inputs abajo */}
+                        
                         {/* BLOQUE DE PESO / MINUTOS */}
-                        <div className="flex-1">
-                            <div className="flex justify-between items-center pr-1 mb-1">
+                        <div className="flex-1 flex flex-col justify-end min-h-[54px]"> {/* 2. Altura mínima para igualar bloques */}
+                            <div className="flex justify-between items-center pr-1 mb-1.5">
                                 <label className="text-[8px] font-black text-zinc-400 uppercase ml-2 tracking-[0.2em]">
                                     {isCardio ? 'Minutos' : 'Peso'}
                                 </label>
@@ -310,7 +321,7 @@ const ExerciseBlock = ({ exercise, workout, onRemove }) => {
                                     <button 
                                         type="button"
                                         onClick={() => setWeightUnit(weightUnit === 'kg' ? 'lb' : 'kg')}
-                                        className={`flex items-center justify-center h-6 px-3 rounded-full text-[9px] font-black tracking-tighter transition-all active:scale-75 ${
+                                        className={`flex items-center justify-center h-5 px-2 rounded-full text-[8px] font-black tracking-tighter transition-all active:scale-75 ${
                                             weightUnit === 'lb' 
                                             ? "bg-blue-600 text-white shadow-[0_0_12px_rgba(37,99,235,0.4)]" 
                                             : "bg-zinc-200 dark:bg-zinc-800 text-zinc-500 border border-zinc-300/50 dark:border-zinc-700/50"
@@ -324,23 +335,26 @@ const ExerciseBlock = ({ exercise, workout, onRemove }) => {
                                 type="number" 
                                 step="0.25" 
                                 {...register(isCardio ? "minutes" : "weight", { required: true })} 
-                                className="w-full bg-transparent text-lg font-black p-1 pl-2 focus:outline-none dark:text-white" 
+                                className="w-full bg-transparent text-lg font-black pl-2 focus:outline-none dark:text-white leading-none" 
                                 placeholder="0" 
                             />
                         </div>
 
-                        <div className="w-px h-6 bg-zinc-200 dark:bg-zinc-800 self-end mb-2 opacity-50" />
+                        {/* Separador visual centrado con los inputs */}
+                        <div className="w-px h-8 bg-zinc-200 dark:bg-zinc-800 mb-1 opacity-50" />
 
                         {/* BLOQUE DE REPS / DISTANCIA */}
-                        <div className="flex-1">
-                            <label className="text-[8px] font-black text-zinc-400 uppercase ml-2 tracking-widest">
-                                {isCardio ? 'Distancia' : 'Reps'}
-                            </label>
+                        <div className="flex-1 flex flex-col justify-end min-h-[54px]"> {/* 3. Misma altura mínima y flex-col */}
+                            <div className="h-5 mb-1.5 flex items-center"> {/* 4. Placeholder invisible para igualar el botón de arriba */}
+                                <label className="text-[8px] font-black text-zinc-400 uppercase ml-2 tracking-widest">
+                                    {isCardio ? 'Distancia' : 'Reps'}
+                                </label>
+                            </div>
                             <input 
                                 type="number" 
                                 step="0.1" 
                                 {...register(isCardio ? "distance" : "reps", { required: true })} 
-                                className="w-full bg-transparent text-sm font-black p-1 focus:outline-none dark:text-white" 
+                                className="w-full bg-transparent text-lg font-black pl-2 focus:outline-none dark:text-white leading-none" 
                                 placeholder="0" 
                             />
                         </div>
@@ -349,13 +363,12 @@ const ExerciseBlock = ({ exercise, workout, onRemove }) => {
                     <button 
                         type="submit" 
                         disabled={isLoadingCreate}
-                        className="w-12 h-12 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30 active:scale-[0.85] transition-all disabled:opacity-50"
+                        className="w-12 h-12 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30 active:scale-[0.85] transition-all disabled:opacity-50 shrink-0"
                     >
                         {isLoadingCreate ? <AiOutlineLoading3Quarters className="animate-spin text-xs" /> : <LuPlus size={24} strokeWidth={4} />}
                     </button>
                 </form>
             )}
-
         </div>
 
         <BottomSheet open={openSetActions} onClose={() => setOpenSetActions(false)}>

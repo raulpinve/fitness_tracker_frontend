@@ -2,7 +2,7 @@ import React from 'react';
 import ExerciseBlockSkeleton from './components/ExerciseBlockSkeleton';
 import { useExerciseServices } from '../../services/exercises.service';
 import { useWorkoutServices } from '../../services/workout.service';
-import { LuDumbbell, LuPlus, LuTrash2, LuTrophy } from 'react-icons/lu';
+import { LuDumbbell, LuPlus, LuSearch, LuTrash2, LuTrophy } from 'react-icons/lu';
 import EmptyState from '../../shared/components/EmptyState';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import ExerciseBlock from './components/ExerciseBlock';
@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import Button from '../../shared/components/Button';
 import BottomSheet from '../../shared/components/BottomSheet';
 import { useWorkoutExerciseServices } from '../../services/workoutExercise.service';
+import useDebounce from '../../shared/hooks/useDebounce';
 
 const WorkoutDetailPage = () => {
     const { getWorkout, finishWorkout, deleteWorkout } = useWorkoutServices();
@@ -26,6 +27,8 @@ const WorkoutDetailPage = () => {
     const [ loading, setLoading ] = useState(true);
     const [ workout, setWorkout ] = useState();
     const [query, setQuery] = useState("");
+    const debouncedQuery = useDebounce(query, 400);
+    const [loadingSearch, setLoadingSearch] = useState(false);
     const { workoutId } = useParams();
     const navigate = useNavigate();
 
@@ -122,10 +125,6 @@ const WorkoutDetailPage = () => {
         fetchLibrary();
     }, []);
 
-    const filteredExercises = libraryExercises.filter(ex => 
-        ex.name.toLowerCase().includes(query.toLowerCase())
-    );
-
     const handleFinishWorkout = async () => {
         try {
             // 1. Notify backend that we closed the session
@@ -177,6 +176,22 @@ const WorkoutDetailPage = () => {
             localStorage.setItem(storageKey, JSON.stringify([...removed, exerciseId]));
         }
     };
+
+    useEffect(() => {
+        const fetchFromDB = async () => {
+            setLoadingSearch(true);
+            try {
+                const res = await getAllExercises(1, 20, debouncedQuery);
+                setLibraryExercises(res.data);
+            } catch (error) {
+                console.error("Error en búsqueda TYTAN:", error);
+            } finally {
+                setLoadingSearch(false);
+            }
+        };
+
+        fetchFromDB();
+    }, [debouncedQuery]); 
 
 
     return (
@@ -241,42 +256,84 @@ const WorkoutDetailPage = () => {
             </div>
 
             <BottomSheet open={openAddExerciseSheet} onClose={() => setOpenAddExerciseSheet(false)}>
-                <div className="max-w-md mx-auto max-h-[80vh] flex flex-col pt-2 pb-8">
-                    <div className="w-12 h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full mx-auto mb-6" />
-                    
-                    <div className="px-6 mb-4">
-                        <h3 className="text-xl font-black text-zinc-800 dark:text-zinc-100 uppercase tracking-tighter">Biblioteca</h3>
-                        <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Selecciona un ejercicio para tu sesión</p>
+                <div className=" max-h-[85vh] flex flex-col pt-2 pb-6">
+                    {/* Encabezado estilo "Opciones" */}
+                    <div className="px-6 py-4">
+                        <p className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-1">
+                            Base de datos de ejercicios
+                        </p>
+                        <h3 className="text-xl font-black text-zinc-800 dark:text-zinc-100 uppercase italic tracking-tighter">
+                            Biblioteca <span className="text-blue-600 font-bold">TYTAN</span>
+                        </h3>
                     </div>
 
-                    {/* Simple Search */}
+                    {/* Input de búsqueda integrado */}
                     <div className="px-6 mb-4">
-                        <input 
-                            type="text"
-                            placeholder="BUSCAR EJERCICIO..."
-                            className="w-full bg-zinc-100 dark:bg-zinc-900 border-none rounded-2xl p-4 text-xs font-black uppercase tracking-widest focus:ring-2 focus:ring-blue-500 transition-all"
-                            onChange={(e) => setQuery(e.target.value)}
-                        />
+                        <div className="relative flex items-center">
+                            <input 
+                                type="text"
+                                value={query}
+                                placeholder="BUSCAR EJERCICIO..."
+                                className="w-full bg-zinc-100 dark:bg-zinc-900 border-none rounded-2xl p-4 text-xs font-black uppercase tracking-widest focus:ring-2 focus:ring-blue-500 transition-all outline-none"
+                                onChange={(e) => setQuery(e.target.value)}
+                            />
+                            {loadingSearch && (
+                                <AiOutlineLoading3Quarters className="absolute right-4 animate-spin text-blue-600" size={16} />
+                            )}
+                        </div>
                     </div>
 
-                    {/* Results list (Scrollable) */}
-                    <div className="flex-1 overflow-y-auto max-h-[60vh] no-scrollbar px-4 space-y-2">
-                        {filteredExercises.map(ex => (
-                            <button 
-                                key={ex.id}
-                                onClick={() => handleAddExerciseToWorkout(ex)}
-                                className="w-full flex items-center p-3 bg-white dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-900 rounded-2xl active:bg-blue-50 dark:active:bg-blue-900/20 transition-all"
-                            >
-                                <div className="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-400 font-bold">
-                                    {ex.name[0]}
+                    {/* Lista de Resultados con el mismo estilo de botones del menu de acciones */}
+                    <div className="flex-1 overflow-y-auto no-scrollbar">
+                        <div className="flex flex-col divide-y divide-zinc-100 dark:divide-zinc-800/50">
+                            {libraryExercises.length > 0 ? (
+                                libraryExercises.map(ex => (
+                                    <button 
+                                        key={ex.id}
+                                        onClick={() => {
+                                            handleAddExerciseToWorkout(ex);
+                                            setOpenAddExerciseSheet(false);
+                                            setQuery("");
+                                        }}
+                                        className="w-full py-5 px-6 flex items-center gap-4 active:bg-zinc-50 dark:active:bg-zinc-900/50 transition-colors group text-left"
+                                    >
+                                        {/* Avatar pequeño como el icono de Trash */}
+                                        <div className="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center shrink-0 overflow-hidden border border-zinc-200 dark:border-zinc-800 group-hover:border-blue-500/50 transition-colors">
+                                            {ex.avatarThumbnail ? (
+                                                <img 
+                                                    src={`${import.meta.env.VITE_API_URL}/uploads/exercises/${ex.id}/${ex.avatarThumbnail}`} 
+                                                    className="w-full h-full object-cover" 
+                                                />
+                                            ) : (
+                                                <span className="text-blue-600 font-bold">{ex.name[0]}</span>
+                                            )}
+                                        </div>
+
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-bold text-zinc-700 dark:text-zinc-200 truncate uppercase tracking-tight">
+                                                {ex.name}
+                                            </p>
+                                            <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest mt-0.5">
+                                                {ex.equipment} • {ex.muscleGroups}
+                                            </p>
+                                        </div>
+
+                                        <LuPlus className="text-blue-500 group-hover:scale-125 transition-transform" size={20} />
+                                    </button>
+                                ))
+                            ) : (
+                                <div className="py-12 text-center">
+                                    <p className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em]">
+                                        {loadingSearch ? "Sincronizando..." : "No hay resultados"}
+                                    </p>
                                 </div>
-                                <span className="ml-4 text-sm font-bold text-zinc-700 dark:text-zinc-200">{ex.name}</span>
-                                <LuPlus className="ml-auto text-blue-500" size={18} />
-                            </button>
-                        ))}
+                            )}
+                        </div>
                     </div>
                 </div>
             </BottomSheet>
+
+
 
             <BottomSheet open={openFinishSheet} onClose={() => setOpenFinishSheet(false)}>
                 <div className="max-w-md mx-auto flex flex-col pt-2 pb-10">
