@@ -35,12 +35,12 @@ const ExerciseEditPage = () => {
             try {
                 // 1. Evitamos llamadas si ya estamos cargando
                 const sourceData = state?.exercise || (await getExercise(exerciseId)).data;
-                
+
                 // 2. Seteamos valores de uno en uno
                 setValue("name", sourceData.name);
                 setValue("type", sourceData.type);
                 setValue("equipment", sourceData.equipment);
-                setValue("description", sourceData.description || "");
+                setValue("descriptionText", sourceData.descriptionText || "");
 
                 const muscles = Array.isArray(sourceData.muscleGroups) 
                     ? sourceData.muscleGroups 
@@ -61,7 +61,6 @@ const ExerciseEditPage = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [exerciseId]); 
 
-
     const onSubmit = async (values) => {
         setMessageError(false);
         setLoading(true);
@@ -70,7 +69,7 @@ const ExerciseEditPage = () => {
             formData.append("name", values.name);
             formData.append("type", values.type);
             formData.append("equipment", values.equipment);
-            formData.append("description", values.description);
+            formData.append("descriptionText", values.descriptionText);
 
             // Iteramos sobre el array para que el Backend (Formidable) lo reconstruya correctamente
             if (values.muscleGroups && values.muscleGroups.length > 0) {
@@ -223,8 +222,6 @@ const ExerciseEditPage = () => {
                     {/* Registro oculto para que la validación "required" funcione */}
                     <input type="hidden" {...register("muscleGroups", { required: true })} />
 
-
-
                     {/* Equipment */}
                     <div>
                         <label htmlFor="equipment" className="label-form">
@@ -253,15 +250,15 @@ const ExerciseEditPage = () => {
 
                     {/* Descripción con separador mágico */}
                     <div className="">
-                        <label htmlFor="description" className="label-form">
+                        <label htmlFor="descriptionText" className="label-form">
                             Instrucciones de Ejecución <span className="text-[10px] text-zinc-400 font-normal">(Opcional)</span>
                         </label>
                         <div className="relative">
                             <textarea
-                                id="description"
-                                {...register("description")}
+                                id="descriptionText"
+                                {...register("descriptionText")}
                                 placeholder="Posición inicial | Ejecución del movimiento | Tips extras"
-                                className={`${errors.description && errors.description.message ? "input-form-error" : ""} input-form h-24`}
+                                className={`${errors.descriptionText && errors.descriptionText.message ? "input-form-error" : ""} input-form h-24`}
                             />
                             {/* Tip de ayuda visual debajo del campo */}
                             <div className="mt-2 flex items-center gap-2 px-1">
@@ -269,8 +266,8 @@ const ExerciseEditPage = () => {
                                     Usa una barra <span className="text-blue-500">"|"</span> para separar Posición Inicial de Ejecución.
                                 </p>
                             </div>
-                            {errors.description && (
-                                <p className="input-message-error">{errors.description.message}</p>
+                            {errors.descriptionText && (
+                                <p className="input-message-error">{errors.descriptionText.message}</p>
                             )}
                         </div>
                     </div>

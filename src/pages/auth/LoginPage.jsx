@@ -11,7 +11,7 @@ import MessageError from '../../shared/components/MessageError';
 const LoginPage = () => {
     const { register, handleSubmit, setError, formState: { errors }, setValue } = useForm({ mode: "onChange" });
     const [ messageError, setMessageError ] = useState(null);
-    const { setAccessToken, setUser } = useAuth();
+    const {  setUser, setAccessToken } = useAuth();
     const [ loadingPage, setLoadingPage ] = useState(false);
     const navigate = useNavigate();
     const { login } = useAuthServices();
@@ -21,8 +21,9 @@ const LoginPage = () => {
         setLoadingPage(true)
         try {
             const resultado = await login(data)
-            setAccessToken(resultado.data.accessToken);
+            localStorage.setItem("token", resultado.data.accessToken);
             setUser(resultado.data.user);
+            setAccessToken(resultado.data.accessToken);
             navigate("/exercises");
         } catch (error) {
             if(error === "errorInterno"){

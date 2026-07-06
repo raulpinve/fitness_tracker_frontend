@@ -36,8 +36,7 @@ export default function MobileLayout() {
                                     </>
                                 )}
                             </NavLink>
-
-                            {/* Rutinas */}
+{/* 
                             <NavLink to="/routines" className={({ isActive }) => `group relative flex flex-col items-center justify-center flex-1 h-full rounded-2xl transition-all duration-500 ${isActive ? "text-blue-600 dark:text-blue-500" : "text-zinc-400 dark:text-zinc-600 hover:text-zinc-500"}`}>
                                 {({ isActive }) => (
                                     <>
@@ -54,7 +53,6 @@ export default function MobileLayout() {
                                 )}
                             </NavLink>
 
-                            {/* Workouts (Entrenar - El Botón Central destaca un poco más) */}
                             <NavLink to="/workouts" className={({ isActive }) => `group relative flex flex-col items-center justify-center flex-1 h-full rounded-2xl transition-all duration-500 ${isActive ? "text-blue-600 dark:text-blue-500" : "text-zinc-400 dark:text-zinc-600 hover:text-zinc-500"}`}>
                                 {({ isActive }) => (
                                     <>
@@ -70,8 +68,7 @@ export default function MobileLayout() {
                                     </>
                                 )}
                             </NavLink>
-
-                            {/* Perfil */}
+ */}
                             <NavLink to="/profile" className={({ isActive }) => `group relative flex flex-col items-center justify-center flex-1 h-full rounded-2xl transition-all duration-500 ${isActive ? "text-blue-600 dark:text-blue-500" : "text-zinc-400 dark:text-zinc-600 hover:text-zinc-500"}`}>
                                 {({ isActive }) => (
                                     <>

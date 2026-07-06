@@ -135,7 +135,7 @@ const WorkoutDetailPage = () => {
 
             // 3. Visual feedback and navigation
             toast.success("¡Entrenamiento completado!");
-            navigate(`/workouts/${workoutId}/summary`);
+            navigate(`/workouts`);
 
         } catch (error){
             console.error("Error finishing workout:", error);

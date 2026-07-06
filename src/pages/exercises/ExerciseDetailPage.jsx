@@ -300,7 +300,7 @@ const ExerciseDetailPage = () => {
                     </div>
                 )}
 
-                {exercise.description.split('|').map((section, index) => {
+                {exercise.descriptionText.split('|').map((section, index) => {
                     const titles = ["Posición Inicial", "Ejecución", "Tips Extra"];
                     
                     // USAMOS ESTA REGEX: Detecta saltos de línea reales (\n) 

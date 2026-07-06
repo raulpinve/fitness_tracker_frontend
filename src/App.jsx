@@ -13,7 +13,6 @@ import RoutinesPage from "./pages/routines/RoutinesPage";
 import RoutineCreatePage from "./pages/routines/RoutineCreatePage";
 import RoutineUpdatePage from "./pages/routines/RoutineUpdatePage";
 import WorkoutsCreatePage from "./pages/workouts/WorkoutsCreatePage";
-import WorkoutSummaryPage from "./pages/workouts/WorkoutSummaryPage";
 import ExerciseDetailPage from "./pages/exercises/ExerciseDetailPage";
 import WorkoutDetailPage from "./pages/workouts/WorkoutDetailPage";
 import WorkoutsPage from "./pages/workouts/WorkoutsPage";
@@ -59,7 +58,6 @@ function App() {
               <Route path="/workouts" element={<WorkoutsPage />} />
               <Route path="/workouts/create" element = {<WorkoutsCreatePage />} /> 
               <Route path="/workouts/:workoutId" element={<WorkoutDetailPage />} />
-              <Route path="/workouts/:workoutId/summary" element={<WorkoutSummaryPage />} />
 
               {/* Profile */}
               <Route path="/profile" element={<ProfilePage />} />

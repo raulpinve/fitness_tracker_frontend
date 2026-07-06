@@ -10,14 +10,17 @@ export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
+        const token = localStorage.getItem("token");    
+
         const checkAuth = async () => {
             try {
-                const res = await axios.post(`${baseUrl}/auth/refresh`, {}, { withCredentials: true });
-                setAccessToken(res?.data?.data?.accessToken);
+                const res = await axios.post(`${baseUrl}/auth/autheticate-token`, {}, { headers: { Authorization: `Bearer ${token}` } });
+                setAccessToken(token);
                 if (res?.data?.data?.user) {
                     setUser(res.data.data.user);
                 }
             } catch (err) {
+                console.log(err)
                 setAccessToken(null);
             } finally {
                 setIsLoading(false);
@@ -28,10 +31,7 @@ export function AuthProvider({ children }) {
 
     const logout = async () => {
         try {
-            await fetch(`${baseUrl}/auth/logout`, {
-                method: "POST",
-                credentials: "include"
-            });
+            localStorage.removeItem("token");
         } catch (err) {
             console.log("Error logout", err);
         } finally {
